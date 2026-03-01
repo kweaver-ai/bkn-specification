@@ -162,6 +162,8 @@ class Action:
     schedule: Optional[Schedule] = None
     scope_of_impact: list[dict[str, str]] = field(default_factory=list)
     execution_description: str = ""
+    # Runtime/computed by risk assessment module: "allow" | "not_allow"; not read from BKN
+    risk: str = ""
 
 
 @dataclass

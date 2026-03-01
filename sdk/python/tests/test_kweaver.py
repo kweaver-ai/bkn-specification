@@ -210,6 +210,7 @@ class TestKweaverClient:
             account_id="test_account",
             account_type="test_type",
             business_domain="test_domain",
+            internal=True,
         )
 
     def test_dry_run_returns_empty_result(self, client, network):

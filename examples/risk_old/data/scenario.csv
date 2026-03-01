@@ -1,0 +1,105 @@
+scenario_id,name,category,primary_object,description
+ops-程序运行-2,程序运行-rm -rf 删除备份存储、重删目录、datastore、数,integrity,backup_system,直接销毁备份数据，无法恢复
+ops-程序运行-3,程序运行-mkfs.ext4 /mkfs.xfs/dd 格式化、覆盖磁,availability,backup_system,存储池损坏，所有备份不可用
+ops-程序运行-4,程序运行-kill -9 /pkill/killall 强杀产品核心进,operator,backup_system,备份链断裂、元数据损坏、任务异常
+ops-程序运行-5,程序运行-内置数据库 update /delete/drop /tru,operator,backup_system,元数据错乱，系统无法启动
+ops-程序运行-6,程序运行-docker rm / rmi / prune，kubect,operator,backup_system,容器 / 持久化数据销毁，系统不可恢复
+ops-程序运行-7,程序运行-手动修改产品 .conf/.xml/.properties ,availability,backup_system,服务启动失败、端口冲突、参数异常
+ops-程序运行-8,程序运行-随意 systemctl stop 产品服务,availability,backup_system,任务中断、副本异常、服务不稳定
+ops-程序运行-9,程序运行-chmod /chown 修改产品目录 / 文件权限,security,backup_system,进程无读写权限，任务大面积失败
+ops-程序运行-10,程序运行-手动 umount /mount 备份存储,availability,backup_system,存储离线，备份 / 恢复中断
+ops-程序运行-11,程序运行-手动修改 Windows 注册表（产品相关项）,security,backup_system,服务无法启动、参数错乱、授权异常
+ops-程序运行-12,程序运行-手动删除 / 导出 / 导入产品注册表项,operator,backup_system,客户端 / 服务端失联、备份任务丢失
+ops-程序运行-13,程序运行-iptables /firewall-cmd 手动修改防火墙,availability,backup_system,网络断连、客户端无法注册、任务失败
+ops-程序运行-14,程序运行-手动修改 sysctl.conf/limits.conf 内,performance,backup_system,并发、性能、连接异常
+ops-程序运行-15,程序运行-ps /top/free /df/netstat /tail,operator,backup_system,仅查看，不删不改
+ops-程序运行-16,程序运行-systemctl status 查看服务状态,operator,backup_system,仅查看状态
+ops-程序运行-17,程序运行-官方脚本启停服务（backupSrv /backupAgen,operator,backup_system,按标准流程操作
+ops-数据删除类-2,数据删除类-rm -rf 删除备份存储、重删目录、datastore、安,integrity,backup_system,直接破坏备份数据，无法恢复
+ops-数据删除类-3,数据删除类-手动删除日志目录 /var/log/AnyBackup 相关,operator,backup_system,审计丢失、故障无法排查
+ops-存储格式化-4,存储格式化-mkfs.ext4 mkfs.xfs dd 格式化 / 覆盖,availability,backup_system,存储池损坏，所有备份不可用
+ops-进程操作-5,进程操作-kill -9 pkill killall 强杀产品核心进程,operator,backup_system,备份链断裂、元数据损坏
+ops-数据库操作-6,数据库操作-内置数据库 update/delete/drop/trunc,availability,backup_system,元数据错乱，系统不可用
+ops-配置修改-7,配置修改-手动修改 .conf/.xml/.properties 配置,availability,backup_system,服务启动失败、端口 / 参数异常
+ops-服务启停-8,服务启停-随意 systemctl stop 产品相关服务,operator,backup_system,必须使用产品脚本规范启停
+ops-权限修改-9,权限修改-chmod chown 修改产品目录 / 文件权限,security,backup_system,进程无权限，任务失败
+ops-挂载卸载-10,挂载卸载-手动 umount/mount 备份存储介质,availability,backup_system,存储离线，备份 / 恢复中断
+ops-网络防火墙-11,网络防火墙-iptables firewall-cmd 手动修改规则,availability,backup_system,通信中断，客户端无法连接
+ops-系统参数-12,系统参数-手动修改 /etc/sysctl.conf limits.c,performance,backup_system,并发 / 性能异常，连接不稳定
+ops-容器操作-13,容器操作-docker rm/rmi/prune kubectl de,operator,backup_system,容器 / 数据销毁，服务不可恢复
+ops-查看查询类-14,查看查询类-ps top free df netstat tail le,operator,backup_system,仅查看，不修改 / 不删除
+ops-规范服务状态-15,规范服务状态-systemctl status 查看产品服务状态,operator,backup_system,仅查看，不停止
+ops-规范启停-16,规范启停-AB7：/etc/init.d/backupSrv 脚本启停,operator,backup_system,按官方标准操作
+ops-系统运维-17,系统运维-AB8：规范系统重启 / 关机,operator,backup_system,
+pfmea-hadoop-2,Hadoop: 业务系统正常时，数据恢复动作(包含自动恢复),operator,Hadoop,业务系统正常时，数据恢复动作(包含自动恢复)
+pfmea-公共-3,公共: 【非法操作】用户手动清理了虚拟机上AnyBackup备份保留的快照，会导致此虚拟,availability,公共,【非法操作】用户手动清理了虚拟机上AnyBackup备份保留的快照，会导致此虚拟机下次增量备份的时候转成完全备份。如果在备份过程中清理，则会导致虚拟机备份失败。
+pfmea-cas-4,CAS: CAS 定时备份cache限制为2GB，超过大小会自动kill掉进程,availability,CAS,CAS 定时备份cache限制为2GB，超过大小会自动kill掉进程
+pfmea-cas-5,CAS: CAS虚拟机漂移导致数据源紊乱,availability,CAS,CAS虚拟机漂移导致数据源紊乱
+pfmea-lanfree-6,LANFREE: lanfree挂载失败,availability,LANFREE,lanfree挂载失败
+pfmea-vm-7,VM: 虚拟机名称中存在@字符无法备份，但是用户的所有虚拟机命名中均存在@字符,operator,VM,虚拟机名称中存在@字符无法备份，但是用户的所有虚拟机命名中均存在@字符
+pfmea-cas-8,CAS: 集群下存在大量虚拟机（680台），CVM压力较大，在控制台创建任务查找数据源时超,operator,CAS,集群下存在大量虚拟机（680台），CVM压力较大，在控制台创建任务查找数据源时超时，无法创建任务
+pfmea-eoss-9,EOSS: EOSS性能存在瓶颈,performance,EOSS,EOSS性能存在瓶颈
+pfmea-openstack-10,OpenStack: OpenStack 常规备份场景下，需要在Cinder节点上部署AnyBacku,operator,OpenStack,OpenStack 常规备份场景下，需要在Cinder节点上部署AnyBackupCinderClient，会在Cinder配置文件中修改cinder-backup部分，会与导致其他备份软件有冲突。
+pfmea-openstack-11,OpenStack: OpenStack 备份使用的是云硬盘快照，当存在多个磁盘时，依次给每个云硬盘执,integrity,OpenStack,OpenStack 备份使用的是云硬盘快照，当存在多个磁盘时，依次给每个云硬盘执行快照，打快照时间有细微的差别，当存在一个应用程序同时往多个云硬盘中频繁写数据时，且数据之间是相互关联的，可能会导致少量的数据丢失。
+pfmea-vmware_-12,VMware : VMware 当虚拟机存在大量快照盘且两次连续备份期间数据量变化过大，备份完成删,availability,VMware ,VMware 当虚拟机存在大量快照盘且两次连续备份期间数据量变化过大，备份完成删除快照时，可能出现VMware快照删除缓慢，可能会导致生产机一小段时间不可用。
+pfmea-vmware_-13,VMware : VMware 备份大容量虚拟机时，未判断存储剩余空间，备份期间若生产机变化数据过,availability,VMware ,VMware 备份大容量虚拟机时，未判断存储剩余空间，备份期间若生产机变化数据过大，可能导致虚拟机所在存储空间不足，进而生产机不可用。
+pfmea-anyshare-14,AnyShare: AnyShare 备份过程中若AnyShare删除了部分数据，存在数据和一开始获,integrity,AnyShare,AnyShare 备份过程中若AnyShare删除了部分数据，存在数据和一开始获取的元数据不一致的情况，实际被删除的数据未备份，恢复的时候无法恢复。
+pfmea-d2c-2,D2C: 由于不支持断点续传，网络不稳定会导致任务备份失败，已备份数据需要重新发起备份,availability,D2C,由于不支持断点续传，网络不稳定会导致任务备份失败，已备份数据需要重新发起备份
+pfmea-d2d2c-3,D2D2C: 某bucket中某介质服务器下的D2D2C任务最多只能存在100个，多余无法显示,operator,D2D2C,某bucket中某介质服务器下的D2D2C任务最多只能存在100个，多余无法显示。
+pfmea-d2c-4,D2C: 某bucket中某介质服务器下的D2C任务最多只能存在200个，多余无法显示。,operator,D2C,某bucket中某介质服务器下的D2C任务最多只能存在200个，多余无法显示。
+pfmea-云上恢复-5,云上恢复: 不支持同时执行多个数据源来源于同一云备份任务--定时任务的云上恢复任务,operator,云上恢复,不支持同时执行多个数据源来源于同一云备份任务--定时任务的云上恢复任务
+pfmea-d2t-2,D2T: DB2备份至磁带未将root用户添加至db2iadm、dasadm用户组,operator,D2T,DB2备份至磁带未将root用户添加至db2iadm、dasadm用户组
+pfmea-d2d2t_d2t-3,D2D2T/D2T: 磁带序列号中有+号时无法识别磁带,operator,D2D2T/D2T,磁带序列号中有+号时无法识别磁带
+pfmea-d2d2t_d2t-4,D2D2T/D2T: ols.db占用过大时，会撑满系统盘,operator,D2D2T/D2T,ols.db占用过大时，会撑满系统盘
+pfmea-d2d2t_d2t-5,D2D2T/D2T: 自备份不对ols.db进行备份，自备份还原后数据无法恢复,integrity,D2D2T/D2T,自备份不对ols.db进行备份，自备份还原后数据无法恢复
+pfmea-d2t-6,D2T: 磁带恢复查找驱动器串行，性能慢,performance,D2T,磁带恢复查找驱动器串行，性能慢
+pfmea-d2d2t_d2t-7,D2D2T/D2T: 方案兼容性列表中缺少D2D2R2T的兼容性情况说明，造成实施不明确,operator,D2D2T/D2T,方案兼容性列表中缺少D2D2R2T的兼容性情况说明，造成实施不明确
+pfmea-d2d2t_d2t-8,D2D2T/D2T: 磁带类方案兼容性列表中写了未测试的磁带环境，造成实施不明确,operator,D2D2T/D2T,磁带类方案兼容性列表中写了未测试的磁带环境，造成实施不明确
+pfmea-客户端安装卸载-2,客户端安装卸载: 客户端安装卸载最佳实践中没有明确各种操作系统应该选择安装哪种类型的客户端包，造成,operator,客户端安装卸载,客户端安装卸载最佳实践中没有明确各种操作系统应该选择安装哪种类型的客户端包，造成实施不明确
+pfmea-自备份-3,自备份: 自备份最佳实践中没有明确对磁带归档、ols.db是否支持，导致技术人员误操作,operator,自备份,自备份最佳实践中没有明确对磁带归档、ols.db是否支持，导致技术人员误操作
+pfmea-生产指导-2,生产指导: 最新版本的infoworks系统引导镜像无法引导宝德设备安装,operator,生产指导,最新版本的infoworks系统引导镜像无法引导宝德设备安装
+pfmea-生产指导-3,生产指导: 没有专门基于华为的生产指导文档及硬件兼容性列表，造成实施不明确,operator,生产指导,没有专门基于华为的生产指导文档及硬件兼容性列表，造成实施不明确
+pfmea-生产指导-4,生产指导: linux+rh5/rh7软件包部署方案更换成Infoworks+redhat5,availability,生产指导,"linux+rh5/rh7软件包部署方案更换成Infoworks+redhat5
+在自备份和自备份还原过程中数据出现错误"
+pfmea-realtime-1,实时: 恢复覆盖风险,integrity,实时,将备份数据恢复到重名的文件或目录下会覆盖数据
+dfmea-数据备份-2,数据备份: 备份失败,availability,数据备份,导致客户数据没有保护
+dfmea-kvm数据备份评审-3,KVM数据备份评审: 漏备数据,operator,KVM数据备份评审,导致客户数据保护的不完整，有可能导致所保护的数据无效。
+dfmea-kvm数据备份评审-4,KVM数据备份评审: 资源占用过多,performance,KVM数据备份评审,导致业务系统响应卡顿
+dfmea-kvm数据备份评审-5,KVM数据备份评审: 容量统计不准确,security,KVM数据备份评审,导致授权的功能无法正常使用
+dfmea-kvm数据备份评审-6,KVM数据备份评审: 备份任务卡住,operator,KVM数据备份评审,导致客户的数据无法保护
+dfmea-kvm数据备份评审-7,KVM数据备份评审: 更改生产机配置,operator,KVM数据备份评审,KVM容灾后网卡异常禁用
+dfmea-kvm数据备份评审-8,KVM数据备份评审: 更改生产机配置,operator,KVM数据备份评审,导致kvm容灾任务无法正常运行
+dfmea-kvm数据备份评审-9,KVM数据备份评审: 备份速度慢,performance,KVM数据备份评审,指定时间内无法备份完成
+dfmea-kvm数据备份评审-10,KVM数据备份评审: 客户端大量eef进程残留,security,KVM数据备份评审,导致业务系统资源泄露
+dfmea-浏览恢复-2,浏览恢复: 恢复失败,availability,浏览恢复,导致客户无法快速恢复业务数据
+dfmea-数据恢复评审-3,数据恢复评审: 恢复后数据与备份时不一致,operator,数据恢复评审,数据无法使用
+dfmea-数据恢复评审-4,数据恢复评审: 恢复后数据与硬件不兼容,operator,数据恢复评审,恢复后机器出现蓝屏
+dfmea-挂载恢复-5,挂载恢复: 恢复出来的盘读写性能低,integrity,挂载恢复,规定时间点无法恢复完成
+dfmea-细粒度恢复-6,细粒度恢复: 千万级文件解析失败,availability,细粒度恢复,无法实现细粒度恢复
+dfmea-数据恢复评审-7,数据恢复评审: 恢复速度慢,integrity,数据恢复评审,规定时间点无法恢复完成
+dfmea-演练-2,演练: 演练失败,availability,演练,演练功能失效
+dfmea-容灾接管评审-3,容灾接管评审: RTO过长,operator,容灾接管评审,无法满足用户要求
+dfmea-容灾接管评审-4,容灾接管评审: RPO过大,operator,容灾接管评审,不能恢复到指定时间点
+dfmea-数据回切-5,数据回切: 回切失败,availability,数据回切,回切功能失效
+dfmea-容灾接管评审-6,容灾接管评审: 回切时间过长,operator,容灾接管评审,影响业务系统的恢复时间
+decl-vmware定时备份恢复-1,VMware定时备份恢复,availability,VMware定时备份恢复,当虚拟机存在大量快照盘且两次连续备份期间数据量变化过大，备份完成删除快照时，可能出现VMware快照删除缓慢，可能会导致生产机一小段时间不可用。（这是VMware删除快照接口处理速度慢导致的。此时可通过先将虚拟机关机，手动整合快照后再备份的方法解决。）
+decl-vmware定时备份恢复-2,VMware定时备份恢复,availability,VMware定时备份恢复,备份大容量虚拟机时，未判断存储剩余空间，备份期间若生产机变化数据过大，可能导致虚拟机所在存储空间不足，进而生产机不可用。
+decl-vmware定时备份恢复-3,VMware定时备份恢复,operator,VMware定时备份恢复,挂载恢复到虚拟平台上的虚拟机，不允许执行整合磁盘的操作，否则无法保证再次挂载恢复即细粒度恢复该虚拟机的备份数据。请勿对挂载恢复的虚拟机做磁盘整合操作。
+decl-vmware定时备份恢复-4,VMware定时备份恢复,operator,VMware定时备份恢复,高级备份及挂载恢复会将存储柜的NFS卷挂载到用户虚拟平台，执行完成会自动卸载，若用户误操作删除NFS存储中数据，可能导致部分虚拟机无法正常挂载恢复及高级恢复  请勿对挂载过去的NFS存储进行删除操作。
+decl-fusioncompute定时备份恢复-5,FusionCompute定时备份恢复,availability,FusionCompute定时备份恢复,虚拟机状态为非“运行中”或“已停止”状态时，备份失败。备份前，请先检查并确保要备份的虚拟机处于“运行中”或“已停止”状态。
+decl-fusioncompute定时备份恢复-6,FusionCompute定时备份恢复,availability,FusionCompute定时备份恢复,虚拟机未安装Tools时，备份失败。备份前，请先检查并确保要备份的虚拟机已安装Tools。
+decl-oracle定时备份恢复-7,Oracle定时备份恢复,security,Oracle定时备份恢复,Oracle数据库备份要求数据库必须开启归档模式且Oracle数据库的安装用户必须对归档路径有读写权限。
+decl-oracle定时备份恢复-8,Oracle定时备份恢复,operator,Oracle定时备份恢复,Oracle数据库原机恢复，会覆盖原生产机上的数据库。
+decl-oracle定时备份恢复-9,Oracle定时备份恢复,security,Oracle定时备份恢复,在进行浏览恢复时需要对客户机数据库状态做相应的更改：1）数据库恢复实例，需将恢复目的地的数据库状态更改为nomount或mount状态；2）恢复控制文件时，数据库需启动到nomount状态；3）恢复数据文件时，数据库需启动到mount状态；4）恢复日志时，数据库需启动到mount或open状态，需手工输入归档日志的序列号方可进行恢复，或者指定日志文件恢复的时间范围，默认恢复至原路径；如果指定日志文件的恢复路径，则必须在mount状态下恢复，并且该路径需要有oracle权限。
+decl-oracle定时备份恢复-10,Oracle定时备份恢复,integrity,Oracle定时备份恢复,完全备份、增量备份、归档日志备份请做好合理安排，以免数据丢失。
+decl-oracle定时备份恢复-11,Oracle定时备份恢复,operator,Oracle定时备份恢复,开启trace及日志有撑爆系统盘的风险。
+decl-oracle定时备份恢复-12,Oracle定时备份恢复,integrity,Oracle定时备份恢复,恢复过程中停止任务或恢复失败，未再次执行恢复，会导致数据库损坏或者数据丢失。
+decl-oracle定时备份恢复-13,Oracle定时备份恢复,operator,Oracle定时备份恢复,处理影响客户问题时，需取消副本保留策略，防止客户副本被误删除。
+decl-anyshare定时备份恢复-14,AnyShare定时备份恢复,integrity,AnyShare定时备份恢复,备份过程中若AnyShare删除了部分数据，存在数据和一开始获取的元数据不一致的情况，实际被删除的数据未备份，恢复的时候无法恢复。
+decl-anyshare定时备份恢复-15,AnyShare定时备份恢复,integrity,AnyShare定时备份恢复,AnyShare整机备份，不支持超过“4M*10000AnyShare服务器的存储最大支持块数量”的文件做备份恢复，存在备份成功但无法恢复的问题。
+decl-anyshare定时备份恢复-16,AnyShare定时备份恢复,operator,AnyShare定时备份恢复,当AnyShare备份任务运行时，对应AnyShare资源禁止做资源回收，回收后正在运行中的备份任务会直接被删除。
+decl-sql_server定时备份恢复-17,SQL Server定时备份恢复,operator,SQL Server定时备份恢复,SQL Serve恢复完全备份时间点、差异备份时间点恢复成功后数据库偶现正在还原；在数据库的备份数据量增加的情况下，恢复事务日志备份时间点恢复成功后数据库必现正在还原。后续提供补丁。
+decl-sql_server定时备份恢复-18,SQL Server定时备份恢复,operator,SQL Server定时备份恢复,当前版本一个客户端只允许新建一个SQL Server备份任务
+decl-hadoop定时备份恢复-19,Hadoop定时备份恢复,operator,Hadoop定时备份恢复,若当次备份任务运行中已产生了时间点，在任务运行未完成时，此时间点的备份数据不完整，禁止使用该时间点做数据恢复。
+decl-hadoop定时备份恢复-20,Hadoop定时备份恢复,integrity,Hadoop定时备份恢复,不支持两个或多个任务同时恢复同一文件到同一路径，可能会导致数据丢失。
+decl-cdm副本数据管理公共部分-21,CDM副本数据管理公共部分,availability,CDM副本数据管理公共部分,备份过程中控制台掉电，可能会导致当前及其他备份任务数据出错，致使数据不可用。为降低此风险，请保证控制台供电稳定。

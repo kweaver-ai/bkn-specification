@@ -87,3 +87,6 @@ venv/
 ~$*.xlsm
 ~$*.xlsb
 ~$*.xlsm
+
+# output files
+output/

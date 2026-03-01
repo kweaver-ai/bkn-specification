@@ -1,0 +1,111 @@
+rs_id,name,status,scenario_id,action_id,risk_id,likelihood_level,business_impact,data_impact,compliance_impact,notes,mitigation_pre,mitigation_pro
+ops-2,程序运行: rm -rf 删除备份存储、重删目录、datastore、数据库文件,active,ops-程序运行-2,ops-cmd-2,ops-risk-data_loss-2,,5,,,适用版本:AB7/AB8 允许/禁止:禁止,直接销毁备份数据，无法恢复,
+ops-3,程序运行: mkfs.ext4 /mkfs.xfs/dd 格式化、覆盖磁盘,active,ops-程序运行-3,ops-cmd-3,ops-risk-availability-3,,5,,,适用版本:AB7/AB8 允许/禁止:禁止,存储池损坏，所有备份不可用,
+ops-4,程序运行: kill -9 /pkill/killall 强杀产品核心进程,active,ops-程序运行-4,ops-cmd-4,ops-risk-availability-4,,5,,,适用版本:AB7/AB8 允许/禁止:禁止,备份链断裂、元数据损坏、任务异常,
+ops-5,程序运行: 内置数据库 update /delete/drop /truncate,active,ops-程序运行-5,ops-cmd-5,ops-risk-availability-5,,5,,,适用版本:AB7/AB8 允许/禁止:禁止,元数据错乱，系统无法启动,
+ops-6,程序运行: docker rm / rmi / prune，kubectl delete pod/pvc,active,ops-程序运行-6,ops-cmd-6,ops-risk-data_loss-6,,5,,,适用版本:AB8 允许/禁止:禁止,容器 / 持久化数据销毁，系统不可恢复,
+ops-7,程序运行: 手动修改产品 .conf/.xml/.properties 配置文件,active,ops-程序运行-7,ops-cmd-7,ops-risk-availability-7,,4,,,适用版本:AB7/AB8 允许/禁止:禁止,服务启动失败、端口冲突、参数异常,
+ops-8,程序运行: 随意 systemctl stop 产品服务,active,ops-程序运行-8,ops-cmd-8,ops-risk-availability-8,,4,,,适用版本:AB7/AB8 允许/禁止:禁止,任务中断、副本异常、服务不稳定,
+ops-9,程序运行: chmod /chown 修改产品目录 / 文件权限,active,ops-程序运行-9,ops-cmd-9,ops-risk-availability-9,,4,,,适用版本:AB7/AB8 允许/禁止:禁止,进程无读写权限，任务大面积失败,
+ops-10,程序运行: 手动 umount /mount 备份存储,active,ops-程序运行-10,ops-cmd-10,ops-risk-availability-10,,4,,,适用版本:AB7/AB8 允许/禁止:禁止,存储离线，备份 / 恢复中断,
+ops-11,程序运行: 手动修改 Windows 注册表（产品相关项）,active,ops-程序运行-11,ops-cmd-11,ops-risk-security-11,,4,,,适用版本:AB7/AB8 允许/禁止:禁止,服务无法启动、参数错乱、授权异常,
+ops-12,程序运行: 手动删除 / 导出 / 导入产品注册表项,active,ops-程序运行-12,ops-cmd-12,ops-risk-availability-12,,4,,,适用版本:AB7/AB8 允许/禁止:禁止,客户端 / 服务端失联、备份任务丢失,
+ops-13,程序运行: iptables /firewall-cmd 手动修改防火墙规则,active,ops-程序运行-13,ops-cmd-13,ops-risk-availability-13,,3,,,适用版本:AB7/AB8 允许/禁止:禁止,网络断连、客户端无法注册、任务失败,
+ops-14,程序运行: 手动修改 sysctl.conf/limits.conf 内核参数,active,ops-程序运行-14,ops-cmd-14,ops-risk-availability-14,,3,,,适用版本:AB7/AB8 允许/禁止:禁止,并发、性能、连接异常,
+ops-15,程序运行: ps /top/free /df/netstat /tail 等查看命令,active,ops-程序运行-15,ops-cmd-15,ops-risk-availability-15,,2,,,适用版本:AB7/AB8 允许/禁止:允许,仅查看，不删不改,
+ops-16,程序运行: systemctl status 查看服务状态,active,ops-程序运行-16,ops-cmd-16,ops-risk-availability-16,,2,,,适用版本:AB7/AB8 允许/禁止:允许,仅查看状态,
+ops-17,程序运行: 官方脚本启停服务（backupSrv /backupAgent）,active,ops-程序运行-17,ops-cmd-17,ops-risk-availability-17,,2,,,适用版本:AB7/AB8 允许/禁止:允许,按标准流程操作,
+ops-2-16,数据删除类: rm -rf 删除备份存储、重删目录、datastore、安装目录、数据库文件,active,ops-数据删除类-2,ops-cmd-2,ops-risk-data_loss-2,,5,,,适用版本:AB7/AB8 允许/禁止:禁止,直接破坏备份数据，无法恢复,
+ops-3-17,数据删除类: 手动删除日志目录 /var/log/AnyBackup 相关,active,ops-数据删除类-3,ops-cmd-3,ops-risk-availability-3,,5,,,适用版本:AB7/AB8 允许/禁止:禁止,审计丢失、故障无法排查,
+ops-4-18,存储格式化: mkfs.ext4 mkfs.xfs dd 格式化 / 覆盖磁盘,active,ops-存储格式化-4,ops-cmd-4,ops-risk-availability-4,,5,,,适用版本:AB7/AB8 允许/禁止:禁止,存储池损坏，所有备份不可用,
+ops-5-19,进程操作: kill -9 pkill killall 强杀产品核心进程,active,ops-进程操作-5,ops-cmd-5,ops-risk-availability-5,,5,,,适用版本:AB7/AB8 允许/禁止:禁止,备份链断裂、元数据损坏,
+ops-6-20,数据库操作: 内置数据库 update/delete/drop/truncate 操作,active,ops-数据库操作-6,ops-cmd-6,ops-risk-availability-6,,5,,,适用版本:AB7/AB8 允许/禁止:禁止,元数据错乱，系统不可用,
+ops-7-21,配置修改: 手动修改 .conf/.xml/.properties 配置文件,active,ops-配置修改-7,ops-cmd-7,ops-risk-availability-7,,4,,,适用版本:AB7/AB8 允许/禁止:禁止,服务启动失败、端口 / 参数异常,
+ops-8-22,服务启停: 随意 systemctl stop 产品相关服务,active,ops-服务启停-8,ops-cmd-8,ops-risk-availability-8,,4,,,适用版本:AB7/AB8 允许/禁止:禁止,必须使用产品脚本规范启停,
+ops-9-23,权限修改: chmod chown 修改产品目录 / 文件权限,active,ops-权限修改-9,ops-cmd-9,ops-risk-availability-9,,4,,,适用版本:AB7/AB8 允许/禁止:禁止,进程无权限，任务失败,
+ops-10-24,挂载卸载: 手动 umount/mount 备份存储介质,active,ops-挂载卸载-10,ops-cmd-10,ops-risk-availability-10,,4,,,适用版本:AB7/AB8 允许/禁止:禁止,存储离线，备份 / 恢复中断,
+ops-11-25,网络防火墙: iptables firewall-cmd 手动修改规则,active,ops-网络防火墙-11,ops-cmd-11,ops-risk-availability-11,,3,,,适用版本:AB7/AB8 允许/禁止:禁止,通信中断，客户端无法连接,
+ops-12-26,系统参数: 手动修改 /etc/sysctl.conf limits.conf,active,ops-系统参数-12,ops-cmd-12,ops-risk-availability-12,,3,,,适用版本:AB7/AB8 允许/禁止:禁止,并发 / 性能异常，连接不稳定,
+ops-13-27,容器操作: docker rm/rmi/prune kubectl delete pod/pvc,active,ops-容器操作-13,ops-cmd-13,ops-risk-data_loss-13,,5,,,适用版本:AB8 允许/禁止:禁止,容器 / 数据销毁，服务不可恢复,
+ops-14-28,查看查询类: ps top free df netstat tail less,active,ops-查看查询类-14,ops-cmd-14,ops-risk-data_loss-14,,2,,,适用版本:AB7/AB8 允许/禁止:允许,仅查看，不修改 / 不删除,
+ops-15-29,规范服务状态: systemctl status 查看产品服务状态,active,ops-规范服务状态-15,ops-cmd-15,ops-risk-availability-15,,2,,,适用版本:AB7/AB8 允许/禁止:允许,仅查看，不停止,
+ops-16-30,规范启停: AB7：/etc/init.d/backupSrv 脚本启停,active,ops-规范启停-16,ops-cmd-16,ops-risk-availability-16,,2,,,适用版本:AB7/AB8 允许/禁止:允许,按官方标准操作,
+ops-17-31,系统运维: AB8：规范系统重启 / 关机,active,ops-系统运维-17,ops-cmd-17,ops-risk-availability-17,,,,,适用版本: 允许/禁止:,,
+pfmea-hadoop-2,Hadoop: 对生产服务器的影响,active,pfmea-hadoop-2,pfmea-action-hadoop-2,pfmea-risk-对生产服务器的影响-2,5,5,5,,RPN; 现有控制:自动恢复最佳实践中增加说明自动恢复设置风险说明。,自动恢复最佳实践中增加说明自动恢复设置风险说明。,"
+恢复界面增加对于恢复风险提示说明。"
+pfmea-公共-3,公共: 备份失败,active,pfmea-公共-3,pfmea-action-公共-3,pfmea-risk-备份失败-3,4,3,3,,RPN; 现有控制:无,无,加入最佳实践
+pfmea-cas-4,CAS: 备份失败,active,pfmea-cas-4,pfmea-action-cas-4,pfmea-risk-备份失败-4,4,5,5,,RPN; 现有控制:无,无,优化当前处理措施，不能kill进程，确保任务正常执行
+pfmea-cas-5,CAS: 备份失败,active,pfmea-cas-5,pfmea-action-cas-5,pfmea-risk-备份失败-5,3,5,5,,RPN; 现有控制:无,无,对虚拟机漂移的场景进行处理，确保数据源不紊乱
+pfmea-lanfree-6,LANFREE: 备份失败,active,pfmea-lanfree-6,pfmea-action-lanfree-6,pfmea-risk-备份失败-6,4,5,5,,,,整体优化lanfree模块
+pfmea-vm-7,VM: 无法备份,active,pfmea-vm-7,pfmea-action-vm-7,pfmea-risk-无法备份-7,2,4,4,,RPN; 现有控制:针对用户进行特殊处理，通过vc克隆虚拟机，重命名的方式，去掉虚拟机名称和磁盘名称中的@字符。再进行备份恢复。,针对用户进行特殊处理，通过vc克隆虚拟机，重命名的方式，去掉虚拟机名称和磁盘名称中的@字符。再进行备份恢复。,支持@字符命名的虚拟机
+pfmea-cas-8,CAS: 无法创建任务,active,pfmea-cas-8,pfmea-action-cas-8,pfmea-risk-无法创建任务-8,2,5,5,,RPN; 现有控制:无,无,扩大虚拟机的支持数量
+pfmea-eoss-9,EOSS: 性能差,active,pfmea-eoss-9,pfmea-action-eoss-9,pfmea-risk-性能差-9,4,4,4,,RPN; 现有控制:无,无,对EOSS性能进行优化
+pfmea-openstack-10,OpenStack: 对生产服务器的影响,active,pfmea-openstack-10,pfmea-action-openstack-10,pfmea-risk-对生产服务器的影响-10,2,3,3,,RPN; 现有控制:加入风险声明文档,加入风险声明文档,
+pfmea-openstack-11,OpenStack: 对生产服务器的影响,active,pfmea-openstack-11,pfmea-action-openstack-11,pfmea-risk-对生产服务器的影响-11,2,4,4,,RPN; 现有控制:加入风险声明文档,加入风险声明文档,
+pfmea-vmware-12,VMware : 对生产服务器的影响,active,pfmea-vmware_-12,pfmea-action-vmware_-12,pfmea-risk-对生产服务器的影响-12,2,4,4,,RPN; 现有控制:加入风险声明文档,加入风险声明文档,
+pfmea-vmware-13,VMware : 对生产服务器的影响,active,pfmea-vmware_-13,pfmea-action-vmware_-13,pfmea-risk-对生产服务器的影响-13,3,4,4,,RPN; 现有控制:加入风险声明文档,加入风险声明文档,
+pfmea-anyshare-14,AnyShare: 无法恢复,active,pfmea-anyshare-14,pfmea-action-anyshare-14,pfmea-risk-无法恢复-14,2,4,4,,RPN; 现有控制:加入风险声明文档,加入风险声明文档,
+pfmea-d2c-2,D2C: 易用性差,active,pfmea-d2c-2,pfmea-action-d2c-2,pfmea-risk-易用性差-2,3,5,5,,RPN; 现有控制:最佳实践已更新（李明）添加内容：对于数据量较大、网络环境不稳定的情况下，建议使用D2D2C的方式进行备份,最佳实践已更新（李明）添加内容：对于数据量较大、网络环境不稳定的情况下，建议使用D2D2C的方式进行备份,"
+增加断点续传功能"
+pfmea-d2d2c-3,D2D2C: 易用性差,active,pfmea-d2d2c-3,pfmea-action-d2d2c-3,pfmea-risk-易用性差-3,2,4,4,,RPN; 现有控制:加入限制性文档,加入限制性文档,对任务数进行扩展支持
+pfmea-d2c-4,D2C: 易用性差,active,pfmea-d2c-4,pfmea-action-d2c-4,pfmea-risk-易用性差-4,2,4,4,,RPN; 现有控制:加入限制性文档,加入限制性文档,对任务数进行扩展支持
+pfmea-云上恢复-5,云上恢复: 易用性差,active,pfmea-云上恢复-5,pfmea-action-云上恢复-5,pfmea-risk-易用性差-5,2,4,4,,RPN; 现有控制:加入限制性文档,加入限制性文档,进行支持
+pfmea-d2t-2,D2T: 对生产服务器的影响,active,pfmea-d2t-2,pfmea-action-d2t-2,pfmea-risk-对生产服务器的影响-2,2,5,5,,RPN; 现有控制:加入最佳实践,加入最佳实践,"
+2.产品界面上进行提示说明。
+3.未将root用户添加至db2iadm、dasadm用户组，不允许备份"
+pfmea-d2d2t_d2t-3,D2D2T/D2T: 磁带无法识别,active,pfmea-d2d2t_d2t-3,pfmea-action-d2d2t_d2t-3,pfmea-risk-磁带无法识别-3,3,5,5,,RPN; 现有控制:无,无,代码改进：增加对磁带序列号中有+的磁带的识别
+pfmea-d2d2t_d2t-4,D2D2T/D2T: 系统盘空间满,active,pfmea-d2d2t_d2t-4,pfmea-action-d2d2t_d2t-4,pfmea-risk-系统盘空间满-4,4,5,5,,RPN; 现有控制:无,无,最佳实践中说明ols.db指定路径存放的方法
+pfmea-d2d2t_d2t-5,D2D2T/D2T: 数据无法恢复,active,pfmea-d2d2t_d2t-5,pfmea-action-d2d2t_d2t-5,pfmea-risk-数据无法恢复-5,4,5,5,,RPN; 现有控制:加入最佳实践,加入最佳实践,"2. 自备份不对ols.db进行备份的风险播报。---已完成
+3. AB6.0.28版本自备份功能增加对ols.db支持。---王瀚、周聪，1月份（AB6.0.28）完成
+4. 开发重建索引工具，以防后期客户需要，通过重建索引工具帮助客户进行原介质集1及2中的历史归档数据恢复。---秦睿东，Q1处理完
+"
+pfmea-d2t-6,D2T: 性能差,active,pfmea-d2t-6,pfmea-action-d2t-6,pfmea-risk-性能差-6,4,5,5,,RPN; 现有控制:无,无,改为并行查找
+pfmea-d2d2t_d2t-7,D2D2T/D2T: 实施不明确,active,pfmea-d2d2t_d2t-7,pfmea-action-d2d2t_d2t-7,pfmea-risk-实施不明确-7,3,3,3,,RPN; 现有控制:无,无,方案兼容性列表中补充说明
+pfmea-d2d2t_d2t-8,D2D2T/D2T: 实施不明确,active,pfmea-d2d2t_d2t-8,pfmea-action-d2d2t_d2t-8,pfmea-risk-实施不明确-8,4,4,4,,,,去掉理论上支持但未经过测试的环境描述
+pfmea-客户端安装卸载-2,客户端安装卸载: 实施不明确,active,pfmea-客户端安装卸载-2,pfmea-action-客户端安装卸载-2,pfmea-risk-实施不明确-2,5,3,3,,RPN; 现有控制:无,无,客户端安装卸载最佳实践中加上对各种操作系统应该选择安装哪种类型的客户端包的相关说明
+pfmea-自备份-3,自备份: 操作不规范,active,pfmea-自备份-3,pfmea-action-自备份-3,pfmea-risk-操作不规范-3,3,5,5,,RPN; 现有控制:无,无,自备份最佳实践中进行补充说明
+pfmea-生产指导-2,生产指导: 系统无法生产,active,pfmea-生产指导-2,pfmea-action-生产指导-2,pfmea-risk-系统无法生产-2,3,5,5,,RPN; 现有控制:无,无,针对宝德设备更新发布专门的引导镜像
+pfmea-生产指导-3,生产指导: 实施不明确,active,pfmea-生产指导-3,pfmea-action-生产指导-3,pfmea-risk-实施不明确-3,3,5,5,,RPN; 现有控制:无,无,对外提供专门针对华为的生产指导文档及硬件兼容性列表
+pfmea-生产指导-4,生产指导: 升级失败,active,pfmea-生产指导-4,pfmea-action-生产指导-4,pfmea-risk-升级失败-4,4,3,3,,RPN; 现有控制:无,无,对外提供规避方案
+pfmea-realtime-1,实时: 数据覆盖,active,pfmea-realtime-1,pfmea-realtime-action-1,pfmea-realtime-risk-1,2,5,5,,RPN 162; 产品设计,添加最佳实践,
+dfmea-数据备份-2,数据备份: 备份失败,active,dfmea-数据备份-2,dfmea-action-数据备份-2,dfmea-risk-备份失败-2,5,5,5,,起因:异常情况考虑不足 控制:梳理并模拟各种异常场景进行测试验证,梳理并模拟各种异常场景进行测试验证,810
+dfmea-kvm数据备份评审-3,KVM数据备份评审: 漏备数据,active,dfmea-kvm数据备份评审-3,dfmea-action-kvm数据备份评审-3,dfmea-risk-漏备数据-3,4,4,4,,起因:特殊的环境，不熟悉导致 控制:查看对应系统的说明文档，尽可能模拟对应的场景,查看对应系统的说明文档，尽可能模拟对应的场景,343
+dfmea-kvm数据备份评审-4,KVM数据备份评审: 资源占用过多,active,dfmea-kvm数据备份评审-4,dfmea-action-kvm数据备份评审-4,dfmea-risk-资源占用过多-4,4,4,4,,起因:未做资源占用控制 控制:所有资源都通过配置来设定,所有资源都通过配置来设定,320
+dfmea-kvm数据备份评审-5,KVM数据备份评审: 容量统计不准确,active,dfmea-kvm数据备份评审-5,dfmea-action-kvm数据备份评审-5,dfmea-risk-容量统计不准确-5,2,2,2,,起因:容量统计模式未设计好 控制:暂无,暂无,0
+dfmea-kvm数据备份评审-6,KVM数据备份评审: 备份任务卡住,active,dfmea-kvm数据备份评审-6,dfmea-action-kvm数据备份评审-6,dfmea-risk-备份任务卡住-6,4,4,4,,起因:共享资源没有处理好，导致死锁 控制:采用代码审核机制，来控制代码质量,采用代码审核机制，来控制代码质量,512
+dfmea-kvm数据备份评审-7,KVM数据备份评审: 更改生产机配置,active,dfmea-kvm数据备份评审-7,dfmea-action-kvm数据备份评审-7,dfmea-risk-更改生产机配置-7,2,2,2,,起因:KVM平台对某些硬件不兼容 控制:暂无,暂无,0
+dfmea-kvm数据备份评审-8,KVM数据备份评审: 更改生产机配置,active,dfmea-kvm数据备份评审-8,dfmea-action-kvm数据备份评审-8,dfmea-risk-更改生产机配置-8,3,4,4,,起因:生产机的硬件性能不满足任务的要求 控制:通过提供性能采集工具来判断是否满足任务的运行条件,通过提供性能采集工具来判断是否满足任务的运行条件,168
+dfmea-kvm数据备份评审-9,KVM数据备份评审: 备份速度慢,active,dfmea-kvm数据备份评审-9,dfmea-action-kvm数据备份评审-9,dfmea-risk-备份速度慢-9,3,3,3,,起因:网络带宽不足或者日志卷写性能差 控制:改变生产的硬件配置,改变生产的硬件配置,108
+dfmea-kvm数据备份评审-10,KVM数据备份评审: 客户端大量eef进程残留,active,dfmea-kvm数据备份评审-10,dfmea-action-kvm数据备份评审-10,dfmea-risk-客户端大量eef进程残留-10,3,3,3,,起因:任务的异常未处理好，导致执行进程残留 控制:加强异常测试，并检查是否有执行进程残留,加强异常测试，并检查是否有执行进程残留,100
+dfmea-浏览恢复-2,浏览恢复: 恢复失败,active,dfmea-浏览恢复-2,dfmea-action-浏览恢复-2,dfmea-risk-恢复失败-2,5,5,5,,起因:备份数据不一致 控制:多副本，多时间的机制，确保有可用的数据,多副本，多时间的机制，确保有可用的数据,800
+dfmea-数据恢复评审-3,数据恢复评审: 恢复后数据与备份时不一致,active,dfmea-数据恢复评审-3,dfmea-action-数据恢复评审-3,dfmea-risk-恢复后数据与备份时不一致-3,3,5,5,,起因:未做数据一致性校验 控制:对存储端进行数据一致性校验,对存储端进行数据一致性校验,480
+dfmea-数据恢复评审-4,数据恢复评审: 恢复后数据与硬件不兼容,active,dfmea-数据恢复评审-4,dfmea-action-数据恢复评审-4,dfmea-risk-恢复后数据与硬件不兼容-4,3,3,3,,起因:不同硬件的驱动不兼容 控制:根据特定硬件下载对应的驱动,根据特定硬件下载对应的驱动,180
+dfmea-挂载恢复-5,挂载恢复: 恢复出来的盘读写性能低,active,dfmea-挂载恢复-5,dfmea-action-挂载恢复-5,dfmea-risk-恢复出来的盘读写性能低-5,3,3,3,,起因:一体机的后端存储性能不行 控制:提升一体机的硬件配置,提升一体机的硬件配置,108
+dfmea-细粒度恢复-6,细粒度恢复: 千万级文件解析失败,active,dfmea-细粒度恢复-6,dfmea-action-细粒度恢复-6,dfmea-risk-千万级文件解析失败-6,2,3,3,,起因:方案不适合此场景 控制:暂无，或者换方案,暂无，或者换方案,30
+dfmea-数据恢复评审-7,数据恢复评审: 恢复速度慢,active,dfmea-数据恢复评审-7,dfmea-action-数据恢复评审-7,dfmea-risk-恢复速度慢-7,2,3,3,,起因:没有找到最优的解决方案 控制:暂无，或者换方案,暂无，或者换方案,30
+dfmea-演练-2,演练: 演练失败,active,dfmea-演练-2,dfmea-action-演练-2,dfmea-risk-演练失败-2,5,5,5,,起因:系统启动失败 控制:人为进行系统修复,人为进行系统修复,648
+dfmea-容灾接管评审-3,容灾接管评审: RTO过长,active,dfmea-容灾接管评审-3,dfmea-action-容灾接管评审-3,dfmea-risk-rto过长-3,3,,,,起因:数据量大 控制:测试验证,测试验证,0
+dfmea-容灾接管评审-4,容灾接管评审: RPO过大,active,dfmea-容灾接管评审-4,dfmea-action-容灾接管评审-4,dfmea-risk-rpo过大-4,3,3,3,,起因:速度慢 控制:设置时间点间隔,设置时间点间隔,252
+dfmea-数据回切-5,数据回切: 回切失败,active,dfmea-数据回切-5,dfmea-action-数据回切-5,dfmea-risk-回切失败-5,3,5,5,,起因:功能bug 控制:测试验证,测试验证,432
+dfmea-容灾接管评审-6,容灾接管评审: 回切时间过长,active,dfmea-容灾接管评审-6,dfmea-action-容灾接管评审-6,dfmea-risk-回切时间过长-6,2,2,2,,起因:速度慢 控制:测试验证,测试验证,36
+decl-vmware定时备份恢复-1,当虚拟机存在大量快照盘且两次连续备份期间数据量变化过大，备份完成删除快照时，可能出现VMware快照删除缓慢，可能会导致生产机一小段时间不可用。（这是VMwar,active,decl-vmware定时备份恢复-1,decl-action-1,decl-risk-data_loss-1,,,,,当虚拟机存在大量快照盘且两次连续备份期间数据量变化过大，备份完成删除快照时，可能出现VMware快照删除缓慢，可能会导致生产机一小段时间不可用。（这是VMware删除快照接口处理速度慢导致的。此时可通过先将虚拟机关机，手动整合快照后再备份的方法解决。）,当虚拟机存在大量快照盘且两次连续备份期间数据量变化过大，备份完成删除快照时，可能出现VMware快照删除缓慢，可能会导致生产机一小段时间不可用。（这是VMware删除快照接口处理速度慢导致的。此时可通过先将虚拟机关机，手动整合快照后再备份的方法解决。）,
+decl-vmware定时备份恢复-2,备份大容量虚拟机时，未判断存储剩余空间，备份期间若生产机变化数据过大，可能导致虚拟机所在存储空间不足，进而生产机不可用。,active,decl-vmware定时备份恢复-2,decl-action-2,decl-risk-availability-2,,,,,备份大容量虚拟机时，未判断存储剩余空间，备份期间若生产机变化数据过大，可能导致虚拟机所在存储空间不足，进而生产机不可用。,备份大容量虚拟机时，未判断存储剩余空间，备份期间若生产机变化数据过大，可能导致虚拟机所在存储空间不足，进而生产机不可用。,
+decl-vmware定时备份恢复-3,挂载恢复到虚拟平台上的虚拟机，不允许执行整合磁盘的操作，否则无法保证再次挂载恢复即细粒度恢复该虚拟机的备份数据。请勿对挂载恢复的虚拟机做磁盘整合操作。,active,decl-vmware定时备份恢复-3,decl-action-3,decl-risk-availability-3,,,,,挂载恢复到虚拟平台上的虚拟机，不允许执行整合磁盘的操作，否则无法保证再次挂载恢复即细粒度恢复该虚拟机的备份数据。请勿对挂载恢复的虚拟机做磁盘整合操作。,挂载恢复到虚拟平台上的虚拟机，不允许执行整合磁盘的操作，否则无法保证再次挂载恢复即细粒度恢复该虚拟机的备份数据。请勿对挂载恢复的虚拟机做磁盘整合操作。,
+decl-vmware定时备份恢复-4,高级备份及挂载恢复会将存储柜的NFS卷挂载到用户虚拟平台，执行完成会自动卸载，若用户误操作删除NFS存储中数据，可能导致部分虚拟机无法正常挂载恢复及高级恢复  ,active,decl-vmware定时备份恢复-4,decl-action-4,decl-risk-data_loss-4,,,,,高级备份及挂载恢复会将存储柜的NFS卷挂载到用户虚拟平台，执行完成会自动卸载，若用户误操作删除NFS存储中数据，可能导致部分虚拟机无法正常挂载恢复及高级恢复  请勿对挂载过去的NFS存储进行删除操作。,高级备份及挂载恢复会将存储柜的NFS卷挂载到用户虚拟平台，执行完成会自动卸载，若用户误操作删除NFS存储中数据，可能导致部分虚拟机无法正常挂载恢复及高级恢复  请勿对挂载过去的NFS存储进行删除操作。,
+decl-fusioncompute定时备份恢复-5,虚拟机状态为非“运行中”或“已停止”状态时，备份失败。备份前，请先检查并确保要备份的虚拟机处于“运行中”或“已停止”状态。,active,decl-fusioncompute定时备份恢复-5,decl-action-5,decl-risk-availability-5,,,,,虚拟机状态为非“运行中”或“已停止”状态时，备份失败。备份前，请先检查并确保要备份的虚拟机处于“运行中”或“已停止”状态。,虚拟机状态为非“运行中”或“已停止”状态时，备份失败。备份前，请先检查并确保要备份的虚拟机处于“运行中”或“已停止”状态。,
+decl-fusioncompute定时备份恢复-6,虚拟机未安装Tools时，备份失败。备份前，请先检查并确保要备份的虚拟机已安装Tools。,active,decl-fusioncompute定时备份恢复-6,decl-action-6,decl-risk-availability-6,,,,,虚拟机未安装Tools时，备份失败。备份前，请先检查并确保要备份的虚拟机已安装Tools。,虚拟机未安装Tools时，备份失败。备份前，请先检查并确保要备份的虚拟机已安装Tools。,
+decl-oracle定时备份恢复-7,Oracle数据库备份要求数据库必须开启归档模式且Oracle数据库的安装用户必须对归档路径有读写权限。,active,decl-oracle定时备份恢复-7,decl-action-7,decl-risk-availability-7,,,,,Oracle数据库备份要求数据库必须开启归档模式且Oracle数据库的安装用户必须对归档路径有读写权限。,Oracle数据库备份要求数据库必须开启归档模式且Oracle数据库的安装用户必须对归档路径有读写权限。,
+decl-oracle定时备份恢复-8,Oracle数据库原机恢复，会覆盖原生产机上的数据库。,active,decl-oracle定时备份恢复-8,decl-action-8,decl-risk-inconsistency-8,,,,,Oracle数据库原机恢复，会覆盖原生产机上的数据库。,Oracle数据库原机恢复，会覆盖原生产机上的数据库。,
+decl-oracle定时备份恢复-9,在进行浏览恢复时需要对客户机数据库状态做相应的更改：1）数据库恢复实例，需将恢复目的地的数据库状态更改为nomount或mount状态；2）恢复控制文件时，数据,active,decl-oracle定时备份恢复-9,decl-action-9,decl-risk-availability-9,,,,,在进行浏览恢复时需要对客户机数据库状态做相应的更改：1）数据库恢复实例，需将恢复目的地的数据库状态更改为nomount或mount状态；2）恢复控制文件时，数据库需启动到nomount状态；3）恢复数据文件时，数据库需启动到mount状态；4）恢复日志时，数据库需启动到mount或open状态，需手工输入归档日志的序列号方可进行恢复，或者指定日志文件恢复的时间范围，默认恢复至原路径；如果指定日志文件的恢复路径，则必须在mount状态下恢复，并且该路径需要有oracle权限。,在进行浏览恢复时需要对客户机数据库状态做相应的更改：1）数据库恢复实例，需将恢复目的地的数据库状态更改为nomount或mount状态；2）恢复控制文件时，数据库需启动到nomount状态；3）恢复数据文件时，数据库需启动到mount状态；4）恢复日志时，数据库需启动到mount或open状态，需手工输入归档日志的序列号方可进行恢复，或者指定日志文件恢复的时间范围，默认恢复至原路径；如果指定日志文件的恢复路径，则必须在mount状态下恢复，并且该路径需要有oracle权限。,
+decl-oracle定时备份恢复-10,完全备份、增量备份、归档日志备份请做好合理安排，以免数据丢失。,active,decl-oracle定时备份恢复-10,decl-action-10,decl-risk-data_loss-10,,,,,完全备份、增量备份、归档日志备份请做好合理安排，以免数据丢失。,完全备份、增量备份、归档日志备份请做好合理安排，以免数据丢失。,
+decl-oracle定时备份恢复-11,开启trace及日志有撑爆系统盘的风险。,active,decl-oracle定时备份恢复-11,decl-action-11,decl-risk-availability-11,,,,,开启trace及日志有撑爆系统盘的风险。,开启trace及日志有撑爆系统盘的风险。,
+decl-oracle定时备份恢复-12,恢复过程中停止任务或恢复失败，未再次执行恢复，会导致数据库损坏或者数据丢失。,active,decl-oracle定时备份恢复-12,decl-action-12,decl-risk-data_loss-12,,,,,恢复过程中停止任务或恢复失败，未再次执行恢复，会导致数据库损坏或者数据丢失。,恢复过程中停止任务或恢复失败，未再次执行恢复，会导致数据库损坏或者数据丢失。,
+decl-oracle定时备份恢复-13,处理影响客户问题时，需取消副本保留策略，防止客户副本被误删除。,active,decl-oracle定时备份恢复-13,decl-action-13,decl-risk-data_loss-13,,,,,处理影响客户问题时，需取消副本保留策略，防止客户副本被误删除。,处理影响客户问题时，需取消副本保留策略，防止客户副本被误删除。,
+decl-anyshare定时备份恢复-14,备份过程中若AnyShare删除了部分数据，存在数据和一开始获取的元数据不一致的情况，实际被删除的数据未备份，恢复的时候无法恢复。,active,decl-anyshare定时备份恢复-14,decl-action-14,decl-risk-data_loss-14,,,,,备份过程中若AnyShare删除了部分数据，存在数据和一开始获取的元数据不一致的情况，实际被删除的数据未备份，恢复的时候无法恢复。,备份过程中若AnyShare删除了部分数据，存在数据和一开始获取的元数据不一致的情况，实际被删除的数据未备份，恢复的时候无法恢复。,
+decl-anyshare定时备份恢复-15,AnyShare整机备份，不支持超过“4M*10000AnyShare服务器的存储最大支持块数量”的文件做备份恢复，存在备份成功但无法恢复的问题。,active,decl-anyshare定时备份恢复-15,decl-action-15,decl-risk-data_loss-15,,,,,AnyShare整机备份，不支持超过“4M*10000AnyShare服务器的存储最大支持块数量”的文件做备份恢复，存在备份成功但无法恢复的问题。,AnyShare整机备份，不支持超过“4M*10000AnyShare服务器的存储最大支持块数量”的文件做备份恢复，存在备份成功但无法恢复的问题。,
+decl-anyshare定时备份恢复-16,当AnyShare备份任务运行时，对应AnyShare资源禁止做资源回收，回收后正在运行中的备份任务会直接被删除。,active,decl-anyshare定时备份恢复-16,decl-action-16,decl-risk-data_loss-16,,,,,当AnyShare备份任务运行时，对应AnyShare资源禁止做资源回收，回收后正在运行中的备份任务会直接被删除。,当AnyShare备份任务运行时，对应AnyShare资源禁止做资源回收，回收后正在运行中的备份任务会直接被删除。,
+decl-sql_server定时备份恢复-17,SQL Serve恢复完全备份时间点、差异备份时间点恢复成功后数据库偶现正在还原；在数据库的备份数据量增加的情况下，恢复事务日志备份时间点恢复成功后数据库必现正,active,decl-sql_server定时备份恢复-17,decl-action-17,decl-risk-availability-17,,,,,SQL Serve恢复完全备份时间点、差异备份时间点恢复成功后数据库偶现正在还原；在数据库的备份数据量增加的情况下，恢复事务日志备份时间点恢复成功后数据库必现正在还原。后续提供补丁。,SQL Serve恢复完全备份时间点、差异备份时间点恢复成功后数据库偶现正在还原；在数据库的备份数据量增加的情况下，恢复事务日志备份时间点恢复成功后数据库必现正在还原。后续提供补丁。,
+decl-sql_server定时备份恢复-18,当前版本一个客户端只允许新建一个SQL Server备份任务,active,decl-sql_server定时备份恢复-18,decl-action-18,decl-risk-availability-18,,,,,当前版本一个客户端只允许新建一个SQL Server备份任务,当前版本一个客户端只允许新建一个SQL Server备份任务,
+decl-hadoop定时备份恢复-19,若当次备份任务运行中已产生了时间点，在任务运行未完成时，此时间点的备份数据不完整，禁止使用该时间点做数据恢复。,active,decl-hadoop定时备份恢复-19,decl-action-19,decl-risk-availability-19,,,,,若当次备份任务运行中已产生了时间点，在任务运行未完成时，此时间点的备份数据不完整，禁止使用该时间点做数据恢复。,若当次备份任务运行中已产生了时间点，在任务运行未完成时，此时间点的备份数据不完整，禁止使用该时间点做数据恢复。,
+decl-hadoop定时备份恢复-20,不支持两个或多个任务同时恢复同一文件到同一路径，可能会导致数据丢失。,active,decl-hadoop定时备份恢复-20,decl-action-20,decl-risk-data_loss-20,,,,,不支持两个或多个任务同时恢复同一文件到同一路径，可能会导致数据丢失。,不支持两个或多个任务同时恢复同一文件到同一路径，可能会导致数据丢失。,
+decl-cdm副本数据管理公共部分-21,备份过程中控制台掉电，可能会导致当前及其他备份任务数据出错，致使数据不可用。为降低此风险，请保证控制台供电稳定。,active,decl-cdm副本数据管理公共部分-21,decl-action-21,decl-risk-availability-21,,,,,备份过程中控制台掉电，可能会导致当前及其他备份任务数据出错，致使数据不可用。为降低此风险，请保证控制台供电稳定。,备份过程中控制台掉电，可能会导致当前及其他备份任务数据出错，致使数据不可用。为降低此风险，请保证控制台供电稳定。,

@@ -20,6 +20,7 @@ from bkn.models import (
 )
 from bkn.parser import parse, parse_frontmatter, parse_body
 from bkn.loader import load, load_network
+from bkn.risk import evaluate_risk
 
 __version__ = "0.1.0"
 
@@ -45,4 +46,5 @@ __all__ = [
     "parse_body",
     "load",
     "load_network",
+    "evaluate_risk",
 ]

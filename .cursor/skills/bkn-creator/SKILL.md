@@ -1,6 +1,6 @@
 ---
 name: bkn-creator
-description: Generate BKN (Business Knowledge Network) files for modeling entities, relations, and actions. Optionally import to kweaver via API. Use when the user asks to create a BKN file, define a knowledge network, model entities/relations, generate .bkn files, or import to kweaver.
+description: Generate BKN (Business Knowledge Network) files for modeling entities, relations, and actions. Optionally import to kweaver via API. Use when the user asks to create a BKN file, define a knowledge network, model entities/relations, generate .bkn files, import to kweaver, or run BKN/SDK scripts.
 ---
 
 # BKN Creator
@@ -14,6 +14,37 @@ Generate `.bkn` files conforming to the BKN specification, and optionally import
 3. **Pick a template**: see [templates/](templates/) for each type (entity, relation, action, network)
 4. **Generate `.bkn` files**: follow the output rules below
 5. **(Optional) Import to kweaver**: use the Python SDK
+6. **(Optional) Run scripts**: validate, transform, or import via built-in scripts
+
+## Scripts
+
+Scripts live in [scripts/](scripts/). Run from repo root. Install first: `pip install -e sdk/python` or `pip install -e "sdk/python[api]"` for import.
+
+**validate.py** — Check BKN loads:
+```bash
+python .cursor/skills/bkn-creator/scripts/validate.py <path>
+# e.g. python .cursor/skills/bkn-creator/scripts/validate.py examples/k8s-modular/index.bkn
+```
+
+**transform.py** — Export to kweaver JSON (no API):
+```bash
+python .cursor/skills/bkn-creator/scripts/transform.py <path> -o <output_dir> [--id-prefix PREFIX]
+# e.g. python .cursor/skills/bkn-creator/scripts/transform.py examples/k8s-modular/index.bkn -o output
+```
+
+**import_to_kweaver.py** — Import via API:
+```bash
+# Internal mode (default, account headers)
+python .cursor/skills/bkn-creator/scripts/import_to_kweaver.py <path> --account-id X --account-type Y [--base-url URL] [--id-prefix PREFIX]
+
+# External mode (Bearer token from KWEAVER_TOKEN or --token)
+python .cursor/skills/bkn-creator/scripts/import_to_kweaver.py <path> --external [--base-url URL] [--id-prefix PREFIX]
+
+# Dry-run (transform only)
+python .cursor/skills/bkn-creator/scripts/import_to_kweaver.py <path> --dry-run --account-id X --account-type Y
+```
+
+When the user asks to validate, convert, or import, run the corresponding script directly.
 
 ## File Organization
 
@@ -72,28 +103,38 @@ Fill in `{placeholders}`, remove unused optional sections, and remove template c
 
 ## Kweaver Import
 
-To import the generated BKN network to kweaver via API, use the Python SDK (`pip install -e "sdk/python[api]"`):
+To import the generated BKN network to kweaver via API, use the Python SDK (`pip install -e "sdk/python[api]"`).
 
+Two API modes: **internal** (default, no token, uses account headers) and **external** (Bearer token).
+
+**Internal API** (inside cluster, no auth token):
 ```python
 from bkn import load_network
 from bkn.transformers import KweaverClient, KweaverTransformer
 
 network = load_network("path/to/index.bkn")
-
 client = KweaverClient(
-    base_url="http://ontology-manager-svc:13014",
+    base_url="http://ontology-manager-svc:13014",  # or KWEAVER_BASE_URL
     account_id="your_account_id",
     account_type="your_account_type",
     business_domain="your_domain_id",
+    internal=True,  # default
 )
-
 transformer = KweaverTransformer(id_prefix="my_prefix_")
 result = client.import_network(network, transformer)
-# result.knowledge_network_id
-# result.object_types_created
-# result.relation_types_created
-# result.errors
-# result.success
+```
+
+**External API** (Bearer token):
+```python
+client = KweaverClient(
+    base_url="https://your-gateway/api",
+    token="your_bearer_token",  # or KWEAVER_TOKEN
+    account_id="your_account_id",
+    account_type="your_account_type",
+    business_domain="your_domain_id",
+    internal=False,
+)
+result = client.import_network(network, transformer)
 ```
 
 Dry-run (transform only, no API calls):

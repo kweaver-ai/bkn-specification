@@ -220,10 +220,12 @@ network: string                  # Network ID (recommended required for import d
 namespace: string                # Optional, namespace/package
 owner: string                    # Optional, owner/team
 enabled: boolean                 # Optional, whether enabled (default false recommended)
-risk_level: low | medium | high  # Optional, risk level
+risk_level: low | medium | high  # Optional, static risk level
 requires_approval: boolean       # Optional, whether approval required
 ---
 ```
+
+> **Dynamic risk property**: The Action runtime property `risk` (values `allow` | `not_allow`) is computed by the SDK risk assessment module from the current scenario and knowledge tagged with `risk`; it is not declared in this frontmatter.
 
 ### Mixed Fragment (type: fragment)
 
@@ -335,6 +337,14 @@ In the header of a `## Entity:` or `## Relation:` definition (before `### Data S
 - **Owner**: Owner or team, for approval routing and audit
 
 In fragment or network files, multiple entities or relations may each have different tags and owner.
+
+### Risk-Related Definitions
+
+The tag **`risk`** marks entities and relations as "risk-related" for AI applications and for **risk assessment** of Actions:
+
+- Add `- **Tags**: risk` (or a tag list containing `risk`) in the definition header of entities and relations that participate in risk evaluation.
+- AI applications may filter definitions by tags to obtain all risk-related definitions for policy or decision-making.
+- Actions have a **runtime/computed property** `risk` (see Action definition section), with values `allow` | `not_allow`, computed by the risk assessment module from the current scenario and entity/relation data tagged with `risk`; it is **not written in BKN files**.
 
 ### Field Reference
 
@@ -642,6 +652,7 @@ Action definitions connect to execution surface (tool/mcp). For stability and se
 | Tool Configuration | YES | Tool or MCP to execute |
 | Parameter Binding | YES | Parameter source configuration |
 | Schedule Configuration | NO | Scheduled execution configuration |
+| risk (computed) | - | Runtime property: `allow` \| `not_allow`, computed by risk assessment from scenario and entity/relation data tagged with `risk`; not written in BKN |
 
 ### Trigger Condition Operators
 

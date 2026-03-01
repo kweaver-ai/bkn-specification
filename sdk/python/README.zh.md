@@ -78,22 +78,37 @@ transformer.to_files(network, "output/")
 
 ### 4. 通过 API 导入到 kweaver
 
-将 BKN 网络直接导入到 kweaver ontology-manager。需要 `pip install -e ".[api]"`：
+将 BKN 网络直接导入到 kweaver ontology-manager。需要 `pip install -e ".[api]"`。
 
+两种 API 模式：**内部**（默认，无 token）和**外部**（Bearer token）。
+
+**内部 API**（集群内，仅 account headers）：
 ```python
 from bkn import load_network
 from bkn.transformers import KweaverClient, KweaverTransformer
 
 network = load_network("examples/supplychain-hd/supplychain.bkn")
-
 client = KweaverClient(
-    base_url="http://ontology-manager-svc:13014",
+    base_url="http://ontology-manager-svc:13014",  # 或 KWEAVER_BASE_URL
     account_id="your_account_id",
     account_type="your_account_type",
     business_domain="your_domain_id",
+    internal=True,  # 默认
 )
-
 transformer = KweaverTransformer(id_prefix="supplychain_")
+result = client.import_network(network, transformer)
+```
+
+**外部 API**（Bearer token）：
+```python
+client = KweaverClient(
+    base_url="https://your-gateway/api",
+    token="your_bearer_token",  # 或 KWEAVER_TOKEN
+    account_id="your_account_id",
+    account_type="your_account_type",
+    business_domain="your_domain_id",
+    internal=False,
+)
 result = client.import_network(network, transformer)
 # result.knowledge_network_id   -> 创建的知识网络 ID
 # result.object_types_created   -> 创建的对象类数量
@@ -154,6 +169,30 @@ for mr in relation.mapping_rules:
     print(mr.source_property, "->", mr.target_property)
 ```
 
+### 7. 风险评估
+
+在 BKN 中带 **`risk`** 标签的实体与关系参与风险计算。Action 模型拥有运行时/计算属性 **`risk`**（取值 `allow` | `not_allow`），由风险评估模块根据当前场景与带 risk 标签的知识计算得出。
+
+```python
+from bkn import load_network, evaluate_risk
+
+network = load_network("examples/risk/risk-fragment.bkn")
+# 无规则数据时默认返回 allow（宽松）
+result = evaluate_risk(network, "restore_from_backup", {"scenario_id": "prod_db"})
+# result == "allow"
+
+# 有实例数据（如图库或 API）时传入 risk_rules
+rules = [
+    {"scenario_id": "prod_db", "action_id": "restore_from_backup", "allowed": False},
+]
+result = evaluate_risk(network, "restore_from_backup", {"scenario_id": "prod_db"}, risk_rules=rules)
+# result == "not_allow"
+```
+
+- **标签**：在 BKN 中为风险相关的实体/关系定义增加 `- **Tags**: risk`，AI 应用可按该标签筛选。
+- **Action.risk**：`Action` 数据类有 `risk` 字段（默认空）；需要计算值时调用 `evaluate_risk()` 并赋给该字段。
+- **完整评估**：SDK 无实例数据时 `evaluate_risk` 默认返回 `"allow"`；可传入 `risk_rules`（含 `scenario_id`、`action_id`、`allowed` 的字典列表）以根据数据源得到 allow/not_allow。
+
 ## 模块说明
 
 | 模块 | 说明 |
@@ -161,6 +200,7 @@ for mr in relation.mapping_rules:
 | `bkn.models` | 数据模型：BknDocument、Entity、Relation、Action、DataProperty、PropertyOverride 等 |
 | `bkn.parser` | 解析：parse()、parse_frontmatter()、parse_body()，支持中英文表头 |
 | `bkn.loader` | 加载：load(path)、load_network(root_path)，自动解析 includes |
+| `bkn.risk` | 风险评估：evaluate_risk(network, action_id, context, risk_rules?) -> "allow" \| "not_allow" |
 | `bkn.transformers.base` | 抽象基类 `Transformer`，定义 `to_json()` 和 `to_files()` 接口 |
 | `bkn.transformers.kweaver` | KweaverTransformer、KweaverClient；输出 kweaver 导入 JSON |
 

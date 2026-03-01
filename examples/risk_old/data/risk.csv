@@ -1,0 +1,92 @@
+risk_id,name,risk_type,description
+ops-risk-data_loss-2,直接销毁备份数据，无法恢复,data_loss,直接销毁备份数据，无法恢复
+ops-risk-availability-3,存储池损坏，所有备份不可用,availability,存储池损坏，所有备份不可用
+ops-risk-availability-4,备份链断裂、元数据损坏、任务异常,availability,备份链断裂、元数据损坏、任务异常
+ops-risk-availability-5,元数据错乱，系统无法启动,availability,元数据错乱，系统无法启动
+ops-risk-data_loss-6,容器 / 持久化数据销毁，系统不可恢复,data_loss,容器 / 持久化数据销毁，系统不可恢复
+ops-risk-availability-7,服务启动失败、端口冲突、参数异常,availability,服务启动失败、端口冲突、参数异常
+ops-risk-availability-8,任务中断、副本异常、服务不稳定,availability,任务中断、副本异常、服务不稳定
+ops-risk-availability-9,进程无读写权限，任务大面积失败,availability,进程无读写权限，任务大面积失败
+ops-risk-availability-10,存储离线，备份 / 恢复中断,availability,存储离线，备份 / 恢复中断
+ops-risk-security-11,服务无法启动、参数错乱、授权异常,security,服务无法启动、参数错乱、授权异常
+ops-risk-availability-12,客户端 / 服务端失联、备份任务丢失,availability,客户端 / 服务端失联、备份任务丢失
+ops-risk-availability-13,网络断连、客户端无法注册、任务失败,availability,网络断连、客户端无法注册、任务失败
+ops-risk-availability-14,并发、性能、连接异常,availability,并发、性能、连接异常
+ops-risk-availability-15,仅查看，不删不改,availability,仅查看，不删不改
+ops-risk-availability-16,仅查看状态,availability,仅查看状态
+ops-risk-availability-17,按标准流程操作,availability,按标准流程操作
+ops-risk-availability-6,元数据错乱，系统不可用,availability,元数据错乱，系统不可用
+ops-risk-availability-11,通信中断，客户端无法连接,availability,通信中断，客户端无法连接
+ops-risk-data_loss-13,容器 / 数据销毁，服务不可恢复,data_loss,容器 / 数据销毁，服务不可恢复
+ops-risk-data_loss-14,仅查看，不修改 / 不删除,data_loss,仅查看，不修改 / 不删除
+pfmea-risk-对生产服务器的影响-2,对生产服务器的影响,availability,业务系统正常时，数据恢复动作(包含自动恢复)
+pfmea-risk-备份失败-3,备份失败,availability,【非法操作】用户手动清理了虚拟机上AnyBackup备份保留的快照，会导致此虚拟机下次增量备份的时候转成完全备份。如果在备份过程中清理，则会导致虚拟机备份失败。
+pfmea-risk-备份失败-4,备份失败,availability,CAS 定时备份cache限制为2GB，超过大小会自动kill掉进程
+pfmea-risk-备份失败-5,备份失败,availability,CAS虚拟机漂移导致数据源紊乱
+pfmea-risk-备份失败-6,备份失败,availability,lanfree挂载失败
+pfmea-risk-无法备份-7,无法备份,availability,虚拟机名称中存在@字符无法备份，但是用户的所有虚拟机命名中均存在@字符
+pfmea-risk-无法创建任务-8,无法创建任务,availability,集群下存在大量虚拟机（680台），CVM压力较大，在控制台创建任务查找数据源时超时，无法创建任务
+pfmea-risk-性能差-9,性能差,availability,EOSS性能存在瓶颈
+pfmea-risk-对生产服务器的影响-10,对生产服务器的影响,availability,OpenStack 常规备份场景下，需要在Cinder节点上部署AnyBackupCinderClient，会在Cinder配置文件中修改cinder-backup部分，会与导致其他备份软件有冲突。
+pfmea-risk-对生产服务器的影响-11,对生产服务器的影响,data_loss,OpenStack 备份使用的是云硬盘快照，当存在多个磁盘时，依次给每个云硬盘执行快照，打快照时间有细微的差别，当存在一个应用程序同时往多个云硬盘中频繁写数据时，且数据之间是相互关联的，可能会导致少量的数据丢失。
+pfmea-risk-对生产服务器的影响-12,对生产服务器的影响,data_loss,VMware 当虚拟机存在大量快照盘且两次连续备份期间数据量变化过大，备份完成删除快照时，可能出现VMware快照删除缓慢，可能会导致生产机一小段时间不可用。
+pfmea-risk-对生产服务器的影响-13,对生产服务器的影响,availability,VMware 备份大容量虚拟机时，未判断存储剩余空间，备份期间若生产机变化数据过大，可能导致虚拟机所在存储空间不足，进而生产机不可用。
+pfmea-risk-无法恢复-14,无法恢复,data_loss,AnyShare 备份过程中若AnyShare删除了部分数据，存在数据和一开始获取的元数据不一致的情况，实际被删除的数据未备份，恢复的时候无法恢复。
+pfmea-risk-易用性差-2,易用性差,availability,由于不支持断点续传，网络不稳定会导致任务备份失败，已备份数据需要重新发起备份
+pfmea-risk-易用性差-3,易用性差,availability,某bucket中某介质服务器下的D2D2C任务最多只能存在100个，多余无法显示。
+pfmea-risk-易用性差-4,易用性差,availability,某bucket中某介质服务器下的D2C任务最多只能存在200个，多余无法显示。
+pfmea-risk-易用性差-5,易用性差,availability,不支持同时执行多个数据源来源于同一云备份任务--定时任务的云上恢复任务
+pfmea-risk-磁带无法识别-3,磁带无法识别,availability,磁带序列号中有+号时无法识别磁带
+pfmea-risk-系统盘空间满-4,系统盘空间满,availability,ols.db占用过大时，会撑满系统盘
+pfmea-risk-数据无法恢复-5,数据无法恢复,data_loss,自备份不对ols.db进行备份，自备份还原后数据无法恢复
+pfmea-risk-性能差-6,性能差,availability,磁带恢复查找驱动器串行，性能慢
+pfmea-risk-实施不明确-7,实施不明确,availability,方案兼容性列表中缺少D2D2R2T的兼容性情况说明，造成实施不明确
+pfmea-risk-实施不明确-8,实施不明确,availability,磁带类方案兼容性列表中写了未测试的磁带环境，造成实施不明确
+pfmea-risk-实施不明确-2,实施不明确,availability,客户端安装卸载最佳实践中没有明确各种操作系统应该选择安装哪种类型的客户端包，造成实施不明确
+pfmea-risk-操作不规范-3,操作不规范,availability,自备份最佳实践中没有明确对磁带归档、ols.db是否支持，导致技术人员误操作
+pfmea-risk-系统无法生产-2,系统无法生产,availability,最新版本的infoworks系统引导镜像无法引导宝德设备安装
+pfmea-risk-实施不明确-3,实施不明确,availability,没有专门基于华为的生产指导文档及硬件兼容性列表，造成实施不明确
+pfmea-risk-升级失败-4,升级失败,availability,"linux+rh5/rh7软件包部署方案更换成Infoworks+redhat5
+在自备份和自备份还原过程中数据出现错误"
+pfmea-realtime-risk-1,数据覆盖,inconsistency,恢复时覆盖现有数据
+dfmea-risk-备份失败-2,备份失败,availability,导致客户数据没有保护
+dfmea-risk-漏备数据-3,漏备数据,availability,导致客户数据保护的不完整，有可能导致所保护的数据无效。
+dfmea-risk-资源占用过多-4,资源占用过多,availability,导致业务系统响应卡顿
+dfmea-risk-容量统计不准确-5,容量统计不准确,security,导致授权的功能无法正常使用
+dfmea-risk-备份任务卡住-6,备份任务卡住,availability,导致客户的数据无法保护
+dfmea-risk-更改生产机配置-7,更改生产机配置,availability,KVM容灾后网卡异常禁用
+dfmea-risk-更改生产机配置-8,更改生产机配置,availability,导致kvm容灾任务无法正常运行
+dfmea-risk-备份速度慢-9,备份速度慢,availability,指定时间内无法备份完成
+dfmea-risk-客户端大量eef进程残留-10,客户端大量eef进程残留,security,导致业务系统资源泄露
+dfmea-risk-恢复失败-2,恢复失败,availability,导致客户无法快速恢复业务数据
+dfmea-risk-恢复后数据与备份时不一致-3,恢复后数据与备份时不一致,inconsistency,数据无法使用
+dfmea-risk-恢复后数据与硬件不兼容-4,恢复后数据与硬件不兼容,availability,恢复后机器出现蓝屏
+dfmea-risk-恢复出来的盘读写性能低-5,恢复出来的盘读写性能低,data_loss,规定时间点无法恢复完成
+dfmea-risk-千万级文件解析失败-6,千万级文件解析失败,availability,无法实现细粒度恢复
+dfmea-risk-恢复速度慢-7,恢复速度慢,data_loss,规定时间点无法恢复完成
+dfmea-risk-演练失败-2,演练失败,availability,演练功能失效
+dfmea-risk-rto过长-3,RTO过长,availability,无法满足用户要求
+dfmea-risk-rpo过大-4,RPO过大,availability,不能恢复到指定时间点
+dfmea-risk-回切失败-5,回切失败,availability,回切功能失效
+dfmea-risk-回切时间过长-6,回切时间过长,availability,影响业务系统的恢复时间
+decl-risk-data_loss-1,当虚拟机存在大量快照盘且两次连续备份期间数据量变化过大，备份完成删除快照时，可能出现VMware快照删除缓慢，可能会导致生产机一小段时间不可用。（这是VMwar,data_loss,当虚拟机存在大量快照盘且两次连续备份期间数据量变化过大，备份完成删除快照时，可能出现VMware快照删除缓慢，可能会导致生产机一小段时间不可用。（这是VMware删除快照接口处理速度慢导致的。此时可通过先将虚拟机关机，手动整合快照后再备份的方法解决。）
+decl-risk-availability-2,备份大容量虚拟机时，未判断存储剩余空间，备份期间若生产机变化数据过大，可能导致虚拟机所在存储空间不足，进而生产机不可用。,availability,备份大容量虚拟机时，未判断存储剩余空间，备份期间若生产机变化数据过大，可能导致虚拟机所在存储空间不足，进而生产机不可用。
+decl-risk-availability-3,挂载恢复到虚拟平台上的虚拟机，不允许执行整合磁盘的操作，否则无法保证再次挂载恢复即细粒度恢复该虚拟机的备份数据。请勿对挂载恢复的虚拟机做磁盘整合操作。,availability,挂载恢复到虚拟平台上的虚拟机，不允许执行整合磁盘的操作，否则无法保证再次挂载恢复即细粒度恢复该虚拟机的备份数据。请勿对挂载恢复的虚拟机做磁盘整合操作。
+decl-risk-data_loss-4,高级备份及挂载恢复会将存储柜的NFS卷挂载到用户虚拟平台，执行完成会自动卸载，若用户误操作删除NFS存储中数据，可能导致部分虚拟机无法正常挂载恢复及高级恢复  ,data_loss,高级备份及挂载恢复会将存储柜的NFS卷挂载到用户虚拟平台，执行完成会自动卸载，若用户误操作删除NFS存储中数据，可能导致部分虚拟机无法正常挂载恢复及高级恢复  请勿对挂载过去的NFS存储进行删除操作。
+decl-risk-availability-5,虚拟机状态为非“运行中”或“已停止”状态时，备份失败。备份前，请先检查并确保要备份的虚拟机处于“运行中”或“已停止”状态。,availability,虚拟机状态为非“运行中”或“已停止”状态时，备份失败。备份前，请先检查并确保要备份的虚拟机处于“运行中”或“已停止”状态。
+decl-risk-availability-6,虚拟机未安装Tools时，备份失败。备份前，请先检查并确保要备份的虚拟机已安装Tools。,availability,虚拟机未安装Tools时，备份失败。备份前，请先检查并确保要备份的虚拟机已安装Tools。
+decl-risk-availability-7,Oracle数据库备份要求数据库必须开启归档模式且Oracle数据库的安装用户必须对归档路径有读写权限。,availability,Oracle数据库备份要求数据库必须开启归档模式且Oracle数据库的安装用户必须对归档路径有读写权限。
+decl-risk-inconsistency-8,Oracle数据库原机恢复，会覆盖原生产机上的数据库。,inconsistency,Oracle数据库原机恢复，会覆盖原生产机上的数据库。
+decl-risk-availability-9,在进行浏览恢复时需要对客户机数据库状态做相应的更改：1）数据库恢复实例，需将恢复目的地的数据库状态更改为nomount或mount状态；2）恢复控制文件时，数据,availability,在进行浏览恢复时需要对客户机数据库状态做相应的更改：1）数据库恢复实例，需将恢复目的地的数据库状态更改为nomount或mount状态；2）恢复控制文件时，数据库需启动到nomount状态；3）恢复数据文件时，数据库需启动到mount状态；4）恢复日志时，数据库需启动到mount或open状态，需手工输入归档日志的序列号方可进行恢复，或者指定日志文件恢复的时间范围，默认恢复至原路径；如果指定日志文件的恢复路径，则必须在mount状态下恢复，并且该路径需要有oracle权限。
+decl-risk-data_loss-10,完全备份、增量备份、归档日志备份请做好合理安排，以免数据丢失。,data_loss,完全备份、增量备份、归档日志备份请做好合理安排，以免数据丢失。
+decl-risk-availability-11,开启trace及日志有撑爆系统盘的风险。,availability,开启trace及日志有撑爆系统盘的风险。
+decl-risk-data_loss-12,恢复过程中停止任务或恢复失败，未再次执行恢复，会导致数据库损坏或者数据丢失。,data_loss,恢复过程中停止任务或恢复失败，未再次执行恢复，会导致数据库损坏或者数据丢失。
+decl-risk-data_loss-13,处理影响客户问题时，需取消副本保留策略，防止客户副本被误删除。,data_loss,处理影响客户问题时，需取消副本保留策略，防止客户副本被误删除。
+decl-risk-data_loss-14,备份过程中若AnyShare删除了部分数据，存在数据和一开始获取的元数据不一致的情况，实际被删除的数据未备份，恢复的时候无法恢复。,data_loss,备份过程中若AnyShare删除了部分数据，存在数据和一开始获取的元数据不一致的情况，实际被删除的数据未备份，恢复的时候无法恢复。
+decl-risk-data_loss-15,AnyShare整机备份，不支持超过“4M*10000AnyShare服务器的存储最大支持块数量”的文件做备份恢复，存在备份成功但无法恢复的问题。,data_loss,AnyShare整机备份，不支持超过“4M*10000AnyShare服务器的存储最大支持块数量”的文件做备份恢复，存在备份成功但无法恢复的问题。
+decl-risk-data_loss-16,当AnyShare备份任务运行时，对应AnyShare资源禁止做资源回收，回收后正在运行中的备份任务会直接被删除。,data_loss,当AnyShare备份任务运行时，对应AnyShare资源禁止做资源回收，回收后正在运行中的备份任务会直接被删除。
+decl-risk-availability-17,SQL Serve恢复完全备份时间点、差异备份时间点恢复成功后数据库偶现正在还原；在数据库的备份数据量增加的情况下，恢复事务日志备份时间点恢复成功后数据库必现正,availability,SQL Serve恢复完全备份时间点、差异备份时间点恢复成功后数据库偶现正在还原；在数据库的备份数据量增加的情况下，恢复事务日志备份时间点恢复成功后数据库必现正在还原。后续提供补丁。
+decl-risk-availability-18,当前版本一个客户端只允许新建一个SQL Server备份任务,availability,当前版本一个客户端只允许新建一个SQL Server备份任务
+decl-risk-availability-19,若当次备份任务运行中已产生了时间点，在任务运行未完成时，此时间点的备份数据不完整，禁止使用该时间点做数据恢复。,availability,若当次备份任务运行中已产生了时间点，在任务运行未完成时，此时间点的备份数据不完整，禁止使用该时间点做数据恢复。
+decl-risk-data_loss-20,不支持两个或多个任务同时恢复同一文件到同一路径，可能会导致数据丢失。,data_loss,不支持两个或多个任务同时恢复同一文件到同一路径，可能会导致数据丢失。
+decl-risk-availability-21,备份过程中控制台掉电，可能会导致当前及其他备份任务数据出错，致使数据不可用。为降低此风险，请保证控制台供电稳定。,availability,备份过程中控制台掉电，可能会导致当前及其他备份任务数据出错，致使数据不可用。为降低此风险，请保证控制台供电稳定。

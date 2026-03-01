@@ -1,0 +1,178 @@
+---
+type: fragment
+id: dr-static-risk
+name: DR Static Risk Knowledge
+version: 1.0.0
+spec_version: 1.0.0
+network: recoverable-network
+namespace: resilience.dr
+owner: sre-team
+---
+
+# Recoverable Risk Knowledge
+
+本片段用于沉淀「风险知识」：
+- 不描述 incident / risk event，不记录风险事件，只为风险操作提供参考
+- 不绑定 trigger_condition / schedule，不强制绑定 Action，行动的执行由 Agent 判定
+- 风险以 “动作 × 场景 × 风险类型（可选）” 的断言形式存在
+
+# Entities
+
+## Entity: scenario
+
+**Scenario** - 风险发生的场景
+
+### Data Properties
+
+| Property | Display Name | Type | Constraint | Description | Primary Key | Display Key | Index |
+|----------|--------------|------|------------|-------------|:-----------:|:-----------:|:-----:|
+| scenario_id | Scenario ID | VARCHAR | not_null; regex:^[a-z0-9_\\-]+$ | 场景唯一标识 | YES |  | YES |
+| name | Name | VARCHAR | not_null | 场景名称 |  | YES | YES |
+| category | Category | VARCHAR | not_null; in(availability,integrity,security,performance,dependency,operator) | 场景分类 |  |  | YES |
+| primary_object | Primary Object | VARCHAR | not_null | 主要影响对象（system/resource/data_domain） |  |  | YES |
+| description | Description | TEXT |  | 场景说明（静态定义） |  |  | fulltext |
+
+### Business Semantics
+
+- Scenario 是“情况类型”，可被多个 RiskStatement 复用。
+- Scenario 不包含阈值、触发器与执行策略。
+
+---
+
+## Entity: action_option
+
+**Action Option** - 风险发生后我们可以做什么。
+
+### Data Properties
+
+| Property | Display Name | Type | Constraint | Description | Primary Key | Display Key | Index |
+|----------|--------------|------|------------|-------------|:-----------:|:-----------:|:-----:|
+| action_id | Action ID | VARCHAR | not_null; regex:^[a-z0-9_\\-]+$ | 动作唯一标识 | YES |  | YES |
+| name | Name | VARCHAR | not_null | 动作名称（如 failover / wait / restore） |  | YES | YES |
+| action_type | Action Type | VARCHAR | not_null; in(failover,wait,restore,rollback,degrade,isolate,rebuild) | 动作类型 |  |  | YES |
+| reversibility | Reversibility | VARCHAR | not_null; in(reversible,partially_reversible,irreversible) | 可逆性（静态属性） |  |  | YES |
+| runbook_ref | Runbook Ref | VARCHAR |  | 可选：Runbook/流程引用（不等于执行记录） |  |  | keyword |
+| description | Description | TEXT |  | 动作说明（静态定义） |  |  | fulltext |
+
+### Business Semantics
+
+- action_option 是“策略选项/手段词条”，不是一次具体执行事件。
+- action_option 不包含“是否应该执行”的判断；判断由 RiskStatement/Policy 等上层对象承担。
+
+---
+
+## Entity: risk
+
+**Risk (Hazard)** - 静态风险类型定义。
+
+### Data Properties
+
+| Property | Display Name | Type | Constraint | Description | Primary Key | Display Key | Index |
+|----------|--------------|------|------------|-------------|:-----------:|:-----------:|:-----:|
+| risk_id | Risk ID | VARCHAR | not_null; regex:^[a-z0-9_\\-]+$ | 风险唯一标识 | YES |  | YES |
+| name | Name | VARCHAR | not_null | 风险名称（如 数据回滚、数据不一致） |  | YES | YES |
+| risk_type | Risk Type | VARCHAR | not_null; in(data_loss,inconsistency,availability,security,compliance,financial,reputation) | 风险类型 |  |  | YES |
+| description | Description | TEXT |  | 风险定义/边界（静态） |  |  | fulltext |
+
+### Business Semantics
+
+- risk 只定义“风险是什么”，不定义“在什么条件下发生”。
+- “在某场景执行某动作会引入某风险”由 RiskStatement 表达。
+
+---
+
+## Entity: risk_statement
+
+**Risk Statement** - 静态风险断言（组合对象）：在某场景下执行某动作会引入某类风险。
+
+### Data Properties
+
+| Property | Display Name | Type | Constraint | Description | Primary Key | Display Key | Index |
+|----------|--------------|------|------------|-------------|:-----------:|:-----------:|:-----:|
+| rs_id | Statement ID | VARCHAR | not_null; regex:^[a-z0-9_\\-]+$ | 风险断言唯一标识 | YES |  | YES |
+| name | Name | VARCHAR | not_null | 断言名称 |  | YES | YES |
+| status | Status | VARCHAR | not_null; in(active,retired,draft) | 生命周期状态 |  |  | YES |
+| scenario_id | Scenario ID | VARCHAR | not_null | 关联场景（外键语义） |  |  | YES |
+| action_id | Action ID | VARCHAR | not_null | 关联动作（外键语义） |  |  | YES |
+| risk_id | Risk ID | VARCHAR | not_null | 关联风险类型（外键语义） |  |  | YES |
+| likelihood_level | Likelihood | int32 | range(1,5) | 经验发生倾向（非统计概率） |  |  |  |
+| business_impact | Business Impact | int32 | range(1,5) | 业务影响等级 |  |  |  |
+| data_impact | Data Impact | int32 | range(1,5) | 数据影响等级 |  |  |  |
+| compliance_impact | Compliance Impact | int32 | range(1,5) | 合规影响等级 |  |  |  |
+| notes | Notes | TEXT |  | 解释/证据/经验（静态） |  |  | fulltext |
+| mitigation_pre | Pre-mitigation | TEXT |  | 事前缓解措施建议 |  |  |  |
+| mitigation_pro | Post-mitigation | TEXT |  | 事后缓解措施建议 |  |  |  |
+
+### Business Semantics
+
+- RiskStatement 是表达“某个 action 的风险”的最小主语对象：
+  - action_option 给出“做什么”
+  - scenario 给出“在什么情况下”
+  - risk 给出“风险是什么”
+- 风险断言是可版本化、可评审、可退役的静态知识，不代表风险已发生。
+
+# Relations
+
+## Relation: rs_under_scenario
+
+**RiskStatement under Scenario** - 风险断言绑定场景。
+
+### Endpoints
+
+| Source | Target | Type | Required | Min | Max |
+|--------|--------|------|----------|-----|-----|
+| risk_statement | scenario | direct | YES | 1 | 1 |
+
+### Mapping Rules
+
+| Source Property | Target Property |
+|----------------|-----------------|
+| scenario_id | scenario_id |
+
+### Business Semantics
+
+每个 risk_statement 必须关联且仅关联一个 scenario。
+
+---
+
+## Relation: rs_about_action
+
+**RiskStatement about ActionOption** - 风险断言绑定动作选项。
+
+### Endpoints
+
+| Source | Target | Type | Required | Min | Max |
+|--------|--------|------|----------|-----|-----|
+| risk_statement | action_option | direct | YES | 1 | 1 |
+
+### Mapping Rules
+
+| Source Property | Target Property |
+|----------------|-----------------|
+| action_id | action_id |
+
+### Business Semantics
+
+每个 risk_statement 必须关联且仅关联一个 action_option。
+
+---
+
+## Relation: rs_asserts_risk
+
+**RiskStatement asserts Risk** - 风险断言指向风险类型。
+
+### Endpoints
+
+| Source | Target | Type | Required | Min | Max |
+|--------|--------|------|----------|-----|-----|
+| risk_statement | risk | direct | YES | 1 | 1 |
+
+### Mapping Rules
+
+| Source Property | Target Property |
+|----------------|-----------------|
+| risk_id | risk_id |
+
+### Business Semantics
+
+每个 risk_statement 必须关联且仅关联一个 risk（风险类型词条）。

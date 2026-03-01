@@ -222,10 +222,12 @@ network: string                  # 所属网络ID（建议必填，保证导入�
 namespace: string                # 可选，命名空间/包名
 owner: string                    # 可选，负责人/团队
 enabled: boolean                 # 可选，是否启用（建议默认 false）
-risk_level: low | medium | high  # 可选，风险等级
+risk_level: low | medium | high  # 可选，静态风险等级
 requires_approval: boolean       # 可选，是否需要审批
 ---
 ```
+
+> **动态 risk 属性**：Action 的运行时属性 `risk`（取值 `allow` | `not_allow`）由 SDK 风险评估模块根据当前场景与带 `risk` tag 的知识计算，不在此 frontmatter 中声明。
 
 ### 混合片段 (type: fragment)
 
@@ -337,6 +339,14 @@ targets:                         # 要删除的定义列表
 - **Owner**：负责人或团队，用于审批路由和审计
 
 在 fragment / network 文件中，多个实体或关系可各自拥有不同的 tags 和 owner。
+
+### 风险相关定义
+
+使用标签 **`risk`** 可标记“与风险相关的”实体与关系，供 AI 应用识别与筛选，并参与 Action 的**风险评估计算**：
+
+- 在需要参与风险评估的实体、关系定义头部增加 `- **Tags**: risk`（或包含 `risk` 的标签列表）。
+- AI 应用可通过 tags 筛选出所有 risk 相关定义，用于策略或决策。
+- Action 拥有一个**运行时/计算属性** `risk`（见「行动定义规范」），取值 `allow` | `not_allow`，由风险评估模块根据当前场景与带 `risk` tag 的实体/关系数据计算得出，**不写入 BKN 文件**。
 
 ### 字段说明
 
@@ -644,6 +654,7 @@ or
 | Tool Configuration | YES | 执行的工具或 MCP |
 | Parameter Binding | YES | 参数来源配置 |
 | Schedule | NO | 定时执行配置 |
+| risk（计算属性） | - | 运行时属性，取值 `allow` \| `not_allow`，由风险评估模块根据场景与带 `risk` tag 的实体/关系计算，不写入 BKN |
 
 ### 触发条件操作符
 

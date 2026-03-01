@@ -78,22 +78,37 @@ transformer.to_files(network, "output/")
 
 ### 4. Import to kweaver via API
 
-Import a BKN network directly to kweaver ontology-manager. Requires `pip install -e ".[api]"`:
+Import a BKN network directly to kweaver ontology-manager. Requires `pip install -e ".[api]"`.
 
+Two API modes: **internal** (default, no token) and **external** (Bearer token).
+
+**Internal API** (inside cluster, account headers only):
 ```python
 from bkn import load_network
 from bkn.transformers import KweaverClient, KweaverTransformer
 
 network = load_network("examples/supplychain-hd/supplychain.bkn")
-
 client = KweaverClient(
-    base_url="http://ontology-manager-svc:13014",
+    base_url="http://ontology-manager-svc:13014",  # or KWEAVER_BASE_URL
     account_id="your_account_id",
     account_type="your_account_type",
     business_domain="your_domain_id",
+    internal=True,  # default
 )
-
 transformer = KweaverTransformer(id_prefix="supplychain_")
+result = client.import_network(network, transformer)
+```
+
+**External API** (Bearer token):
+```python
+client = KweaverClient(
+    base_url="https://your-gateway/api",
+    token="your_bearer_token",  # or KWEAVER_TOKEN
+    account_id="your_account_id",
+    account_type="your_account_type",
+    business_domain="your_domain_id",
+    internal=False,
+)
 result = client.import_network(network, transformer)
 # result.knowledge_network_id   -> created knowledge network ID
 # result.object_types_created   -> number of object types created
@@ -154,6 +169,30 @@ for mr in relation.mapping_rules:
     print(mr.source_property, "->", mr.target_property)
 ```
 
+### 7. Risk assessment
+
+Entities and relations tagged with **`risk`** in BKN participate in risk evaluation. The Action model has a runtime/computed property **`risk`** (values `allow` | `not_allow`), filled by the risk assessment module based on the current scenario and risk-tagged knowledge.
+
+```python
+from bkn import load_network, evaluate_risk
+
+network = load_network("examples/risk/risk-fragment.bkn")
+# With no rule data, result is allow (permissive default)
+result = evaluate_risk(network, "restore_from_backup", {"scenario_id": "prod_db"})
+# result == "allow"
+
+# Pass risk_rules when you have instance data (e.g. from a graph or API)
+rules = [
+    {"scenario_id": "prod_db", "action_id": "restore_from_backup", "allowed": False},
+]
+result = evaluate_risk(network, "restore_from_backup", {"scenario_id": "prod_db"}, risk_rules=rules)
+# result == "not_allow"
+```
+
+- **Tagging**: In BKN, add `- **Tags**: risk` to entity/relation definitions that are risk-related; AI applications can filter by this tag.
+- **Action.risk**: The `Action` dataclass has a `risk` field (empty by default); call `evaluate_risk()` and assign the result when you need the computed value.
+- **Full evaluation**: When the SDK has no instance data, `evaluate_risk` returns `"allow"` by default; pass `risk_rules` (list of dicts with `scenario_id`, `action_id`, `allowed`) to get allow/not_allow from your data source.
+
 ## Modules
 
 | Module | Description |
@@ -161,6 +200,7 @@ for mr in relation.mapping_rules:
 | `bkn.models` | Dataclass models: BknDocument, Entity, Relation, Action, DataProperty, PropertyOverride, etc. |
 | `bkn.parser` | Parsing: parse(), parse_frontmatter(), parse_body(); supports EN/CN table headers |
 | `bkn.loader` | Loading: load(path), load_network(root_path); auto-resolves includes |
+| `bkn.risk` | Risk assessment: evaluate_risk(network, action_id, context, risk_rules?) -> "allow" \| "not_allow" |
 | `bkn.transformers.base` | Abstract `Transformer` base class with `to_json()` and `to_files()` interface |
 | `bkn.transformers.kweaver` | KweaverTransformer, KweaverClient; outputs kweaver import JSON |
 
