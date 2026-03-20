@@ -505,12 +505,6 @@ func ParseActionTypeFile(text string, sourcePath string) (*BknActionType, error)
 	if s, ok := sections["Trigger Condition"]; ok {
 		act.TriggerCondition = parseTriggerCondition(s)
 	}
-	if s, ok := sections["Pre-conditions"]; ok {
-		act.PreConditions = parsePreConditions(s)
-	}
-	if s, ok := sections["Scope of Impact"]; ok {
-		act.ScopeOfImpact = parseScopeOfImpact(s)
-	}
 	if s, ok := sections["Action Source"]; ok {
 		act.ActionSource = parseActionSource(s)
 	}
@@ -535,13 +529,17 @@ func parseBoundObject(sectionText string) (boundObject string) {
 }
 
 // parseAffectObject parses the affect object section.
-func parseAffectObject(sectionText string) (affectObject string) {
+func parseAffectObject(sectionText string) (affectObject *ActionAffect) {
 	rows := parseTable(strings.Split(sectionText, "\n"))
 	if len(rows) == 0 {
-		return ""
+		return nil
 	}
 	r := rows[0]
-	return r["Affect Object"]
+	affectObject = &ActionAffect{
+		ObjectType:  r["Affect Object"],
+		Description: r["Affect Description"],
+	}
+	return affectObject
 }
 
 // parseTriggerCondition parses the trigger condition from YAML code block.
@@ -561,34 +559,6 @@ func parseTriggerCondition(sectionText string) *CondCfg {
 		return nil
 	}
 	return cond.Condition
-}
-
-// parsePreConditions parses the pre-conditions table.
-func parsePreConditions(sectionText string) []*PreCondition {
-	rows := parseTable(strings.Split(sectionText, "\n"))
-	var conditions []*PreCondition
-	for _, row := range rows {
-		conditions = append(conditions, &PreCondition{
-			Object:    row["Object"],
-			Check:     row["Check"],
-			Condition: row["Condition"],
-			Message:   row["Message"],
-		})
-	}
-	return conditions
-}
-
-// parseScopeOfImpact parses the scope of impact table.
-func parseScopeOfImpact(sectionText string) []*ImpactEntry {
-	rows := parseTable(strings.Split(sectionText, "\n"))
-	var entries []*ImpactEntry
-	for _, row := range rows {
-		entries = append(entries, &ImpactEntry{
-			Object:      row["Object"],
-			Description: row["Impact Description"],
-		})
-	}
-	return entries
 }
 
 // parseParameterBinding parses the parameter binding table.
@@ -623,11 +593,11 @@ func parseActionSource(sectionText string) *ActionSource {
 	}
 	switch actSrc.Type {
 	case "tool":
-		actSrc.BoxID = r["Toolbox ID"]
-		actSrc.ToolID = r["Tool ID"]
+		actSrc.BoxID = r["BoxID"]
+		actSrc.ToolID = r["ToolID"]
 	case "mcp":
-		actSrc.McpID = r["MCP ID"]
-		actSrc.ToolName = r["Tool Name"]
+		actSrc.McpID = r["McpID"]
+		actSrc.ToolName = r["ToolName"]
 	}
 
 	return actSrc

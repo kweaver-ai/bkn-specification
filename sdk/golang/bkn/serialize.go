@@ -246,11 +246,15 @@ func SerializeActionType(at *BknActionType) string {
 
 	// Affect Object
 	sb.WriteString("### Affect Object\n\n")
-	sb.WriteString("| Affect Object |\n")
-	sb.WriteString("|---------------|\n")
-	if at.AffectObject != "" {
-		sb.WriteString(fmt.Sprintf("| %s |\n", at.AffectObject))
+	sb.WriteString("| Affect Object | Affect Description |\n")
+	sb.WriteString("|---------------|--------------------|\n")
+	if at.AffectObject != nil {
+		sb.WriteString(fmt.Sprintf("| %s | %s |\n", at.AffectObject.ObjectType, at.AffectObject.Description))
 	}
+	sb.WriteString("\n")
+
+	// Trigger Condition
+	sb.WriteString("### Trigger Condition\n\n")
 	sb.WriteString("\n")
 
 	// Action Source

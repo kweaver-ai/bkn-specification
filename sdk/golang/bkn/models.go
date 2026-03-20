@@ -159,18 +159,13 @@ type BknActionType struct {
 	RawContent string
 
 	// Bound Object
-	BoundObject  string
-	AffectObject string
+	BoundObject string
+
+	// Affect Object
+	AffectObject *ActionAffect
 
 	// Trigger Condition
 	TriggerCondition *CondCfg
-	Condition        *CondCfg
-
-	// Pre-conditions
-	PreConditions []*PreCondition
-
-	// Scope of Impact
-	ScopeOfImpact []*ImpactEntry
 
 	// Tool Configuration
 	ActionSource *ActionSource
@@ -200,9 +195,8 @@ type PreCondition struct {
 	Message   string
 }
 
-// ImpactEntry represents a scope of impact entry.
-type ImpactEntry struct {
-	Object      string
+type ActionAffect struct {
+	ObjectType  string
 	Description string
 }
 
