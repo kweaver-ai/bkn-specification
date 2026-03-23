@@ -8,6 +8,8 @@ package bkn
 import (
 	"fmt"
 	"strings"
+
+	"gopkg.in/yaml.v3"
 )
 
 // SerializeBknNetwork Serializes BknNetwork to BKN format
@@ -255,6 +257,12 @@ func SerializeActionType(at *BknActionType) string {
 
 	// Trigger Condition
 	sb.WriteString("### Trigger Condition\n\n")
+	sb.WriteString("```yaml\n")
+	if at.TriggerCondition != nil {
+		yamlContent, _ := yaml.Marshal(at.TriggerCondition)
+		sb.WriteString(string(yamlContent))
+	}
+	sb.WriteString("```\n")
 	sb.WriteString("\n")
 
 	// Action Source
