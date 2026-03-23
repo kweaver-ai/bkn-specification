@@ -257,12 +257,12 @@ func SerializeActionType(at *BknActionType) string {
 
 	// Trigger Condition
 	sb.WriteString("### Trigger Condition\n\n")
-	sb.WriteString("```yaml\n")
 	if at.TriggerCondition != nil {
+		sb.WriteString("```yaml\n")
 		yamlContent, _ := yaml.Marshal(at.TriggerCondition)
-		sb.WriteString(string(yamlContent))
+		sb.Write(yamlContent)
+		sb.WriteString("```\n")
 	}
-	sb.WriteString("```\n")
 	sb.WriteString("\n")
 
 	// Action Source
