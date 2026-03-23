@@ -1,0 +1,53 @@
+---
+type: action_type
+id: xxx
+name: xxx
+tags: []
+action_type: add
+---
+
+## ActionType: xxx
+
+xxx
+
+### Bound Object
+
+| Bound Object |
+|--------------|
+| department |
+
+### Affect Object
+
+| Affect Object | Affect Description |
+|---------------|--------------------|
+| department |  |
+
+### Trigger Condition
+
+```yaml
+object_type_id: department
+field: name
+operation: ==
+sub_conds: []
+value_from: ""
+value: aa
+```
+
+### Action Source
+
+| Type | BoxID | ToolID | McpID | ToolName |
+|------|-------|--------|-------|----------|
+| tool | 26299643-33b3-4148-a7fc-b14ec705d834 | ab6cb7d0-9d12-4b08-86df-ab5b35779b49 |  |  |
+
+### Parameter Binding
+
+| Name | Type | Source | Operation | ValueFrom | Value | Description |
+|------|------|--------|-----------|-----------|-------|-------------|
+| employee_id | string | Query |  | input |  |  |
+
+### Schedule
+
+| Type | Expression |
+|------|------------|
+| FIX_RATE | 1m |
+

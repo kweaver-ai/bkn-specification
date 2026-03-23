@@ -1,0 +1,32 @@
+---
+type: object_type
+id: 44444
+name: 4444
+tags: []
+---
+
+## ObjectType: 4444
+
+### Data Source
+
+| Type | ID | Name |
+|------|-----|------|
+| data_view | 14aae085-d635-4623-8d15-93cb2dfbe388 | person_likes_comment |
+
+### Data Properties
+
+| Name | Display Name | Type | Description | Mapped Field |
+|------|--------------|------|-------------|--------------|
+| c_commentid | c_commentid | integer |  | c_commentid |
+| p_personid | p_personid | integer |  | p_personid |
+| plc_creationdate | plc_creationdate | datetime |  | plc_creationdate |
+
+### Logic Properties
+
+
+### Keys
+
+Primary Key: c_commentid
+Display Key: c_commentid
+Incremental Key: 
+

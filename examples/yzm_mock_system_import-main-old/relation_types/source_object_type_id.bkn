@@ -1,0 +1,21 @@
+---
+type: relation_type
+id: source_object_type_id
+name: source_object_type_id
+tags: []
+---
+
+## RelationType: source_object_type_id
+
+### Endpoint
+
+| Source | Target | Type |
+|--------|--------|------|
+| employee | department | direct |
+
+### Mapping Rules
+
+| Source Property | Target Property |
+|-----------------|------------------|
+| employee_id | department_id |
+

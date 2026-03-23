@@ -1,0 +1,48 @@
+---
+type: action_type
+id: 1111
+name: 1111
+tags: [1111]
+action_type: add
+---
+
+## ActionType: 1111
+
+### Bound Object
+
+| Bound Object |
+|--------------|
+| department |
+
+### Affect Object
+
+| Affect Object | Affect Description |
+|---------------|--------------------|
+| department | 1 |
+
+### Trigger Condition
+
+```yaml
+object_type_id: department
+field: description
+operation: ==
+sub_conds: []
+value_from: ""
+value: "1"
+```
+
+### Action Source
+
+| Type | BoxID | ToolID | McpID | ToolName |
+|------|-------|--------|-------|----------|
+
+### Parameter Binding
+
+| Name | Type | Source | Operation | ValueFrom | Value | Description |
+|------|------|--------|-----------|-----------|-------|-------------|
+
+### Schedule
+
+| Type | Expression |
+|------|------------|
+

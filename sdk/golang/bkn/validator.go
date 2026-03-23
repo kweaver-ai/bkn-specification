@@ -24,9 +24,9 @@ func (r *ValidationResult) OK() bool {
 	return len(r.Errors) == 0
 }
 
-// ValidateDocument performs basic validation on a BknDocument.
+// ValidateNetwork performs basic validation on a BknNetwork.
 // This is a placeholder for future validation logic.
-func ValidateNwtwork(doc *BknNetwork) *ValidationResult {
+func ValidateNetwork(doc *BknNetwork) *ValidationResult {
 	result := &ValidationResult{}
 
 	// Validate frontmatter

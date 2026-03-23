@@ -1,0 +1,36 @@
+---
+type: object_type
+id: employee
+name: 员工
+tags: []
+---
+
+## ObjectType: 员工
+
+### Data Source
+
+| Type | ID | Name |
+|------|-----|------|
+| data_view | 714be23a-5c0f-40be-ae52-0d78e065213f | 员工表 |
+
+### Data Properties
+
+| Name | Display Name | Type | Description | Mapped Field |
+|------|--------------|------|-------------|--------------|
+| vvv | vvv | vector |  |  |
+| hire_date | 入职日期 | date | 入职日期 | hire_date |
+| status | 入职状态0待入职1已入职 | integer | 入职状态(0:待入职, 1:已入职) | status |
+| employee_id | 员工ID | string | 员工ID | employee_id |
+| create_time | 创建时间 | timestamp | 创建时间 | create_time |
+| name | 姓名 | string | 姓名 | name |
+| update_time | 更新时间 | timestamp | 更新时间 | update_time |
+
+### Logic Properties
+
+
+### Keys
+
+Primary Key: employee_id
+Display Key: name
+Incremental Key: 
+

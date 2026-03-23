@@ -1,0 +1,41 @@
+---
+type: action_type
+id: d6p330u1v4b3l62f0l00
+name: del
+tags: []
+action_type: delete
+---
+
+## ActionType: del
+
+### Bound Object
+
+| Bound Object |
+|--------------|
+| department |
+
+### Affect Object
+
+| Affect Object | Affect Description |
+|---------------|--------------------|
+
+### Trigger Condition
+
+
+### Action Source
+
+| Type | BoxID | ToolID | McpID | ToolName |
+|------|-------|--------|-------|----------|
+| tool | 26299643-33b3-4148-a7fc-b14ec705d834 | ab6cb7d0-9d12-4b08-86df-ab5b35779b49 |  |  |
+
+### Parameter Binding
+
+| Name | Type | Source | Operation | ValueFrom | Value | Description |
+|------|------|--------|-----------|-----------|-------|-------------|
+| employee_id | string | Query |  | input |  |  |
+
+### Schedule
+
+| Type | Expression |
+|------|------------|
+

@@ -1,0 +1,16 @@
+# BKN Directory Checksum
+# generated: 2026-03-23T07:11:57Z
+SKILL.md  sha256:667c70446723dc83
+action_type:d62pdl8jijbh3srg26qg  sha256:49b749fe24b3f598
+action_type:d62qc80jijbh3srg26rg  sha256:aec6c27217ea15b4
+action_type:d6p330u1v4b3l62f0l00  sha256:b9146eb1ad730642
+action_type:new_job  sha256:b642dd36ff9a8f10
+action_type:new_job2  sha256:511997a6251c059b
+action_type:no  sha256:180479f84c7cbadc
+action_type:xxx  sha256:c2d01c6dc9222f1e
+object_type:d6scnjmrp5plcj8ejjk0  sha256:fd61e395f998c3cd
+object_type:dddd  sha256:428a4fb40644f2cb
+object_type:department  sha256:ac2e3ded1c4006f3
+object_type:employee  sha256:2253bb6fc0f1cfc5
+object_type:relation  sha256:d00d5b86504edf21
+relation_type:source_object_type_id  sha256:4a97ad07860d22a0

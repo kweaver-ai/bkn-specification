@@ -230,7 +230,7 @@ Container runs on Pod
 
 | Source | Target | Type |
 |--------|--------|------|
-| container | pod | indirect |
+| container | pod | direct |
 
 ### Mapping Rules
 
@@ -242,9 +242,9 @@ Container runs on Pod
 	require.NoError(t, err)
 	assert.Equal(t, "container", rt.Endpoint.Source)
 	assert.Equal(t, "pod", rt.Endpoint.Target)
-	assert.Equal(t, "indirect", rt.Endpoint.Type)
-	rules, ok := rt.MappingRules.([]MappingRule)
-	require.True(t, ok, "MappingRules should be []MappingRule for indirect")
+	assert.Equal(t, "direct", rt.Endpoint.Type)
+	rules, ok := rt.MappingRules.(DirectMappingRule)
+	require.True(t, ok, "MappingRules should be DirectMappingRule")
 	require.Len(t, rules, 1)
 }
 
@@ -255,6 +255,7 @@ func TestParseActionType_Basic(t *testing.T) {
 type: action_type
 id: restart
 name: Restart Pod
+action_type: modify
 risk_level: high
 requires_approval: true
 ---
@@ -265,16 +266,16 @@ Restart a pod gracefully
 
 ### Bound Object
 
-| Bound Object | Action Type |
-|--------------|-------------|
-| pod | modify |
+| Bound Object |
+|--------------|
+| pod |
 
 ### Parameter Binding
 
-| Parameter | Type | Source | Binding | Description |
-|-----------|------|--------|---------|-------------|
-| graceful | boolean | const | true | Graceful restart |
-| timeout | number | property | spec.timeout | Timeout seconds |
+| Name | Type | Source | Operation | ValueFrom | Value | Description |
+|------|------|--------|-----------|-----------|-------|-------------|
+| graceful | boolean | const | | | true | Graceful restart |
+| timeout | number | property | | spec.timeout | | Timeout seconds |
 `
 	at, err := ParseActionTypeFile(text, "/test/restart.bkn")
 	require.NoError(t, err)
@@ -366,12 +367,10 @@ id: test
 ---
 
 Content`
-	// ParseObjectTypeFile doesn't validate type, it just parses
-	// The validation happens elsewhere
-	_, err := ParseObjectTypeFile(text, "/test/invalid.bkn")
-	// Currently parser doesn't validate type field strictly
-	// This test documents current behavior
-	_ = err
+	// Parser does not validate the type field — that happens at a higher level.
+	ot, err := ParseObjectTypeFile(text, "/test/invalid.bkn")
+	require.NoError(t, err)
+	assert.Equal(t, "test", ot.ID)
 }
 
 func TestParse_MalformedYAML(t *testing.T) {
@@ -547,16 +546,16 @@ id: test_action
 
 ### Parameter Binding
 
-| Parameter | Type | Source | Binding | Description |
-|-----------|------|--------|---------|-------------|
-| fixed_val | string | const | hello | Fixed value |
-| from_prop | string | property | metadata.name | From property |
+| Name | Type | Source | Operation | ValueFrom | Value | Description |
+|------|------|--------|-----------|-----------|-------|-------------|
+| fixed_val | string | const | | | hello | Fixed value |
+| from_prop | string | property | | metadata.name | | From property |
 `
 	at, err := ParseActionTypeFile(text, "/test/test_action.bkn")
 	require.NoError(t, err)
 	require.Len(t, at.Parameters, 2)
 	assert.Equal(t, "const", at.Parameters[0].Source)
-	assert.Equal(t, "hello", at.Parameters[0].ValueFrom)
+	assert.Equal(t, "hello", at.Parameters[0].Value)
 	assert.Equal(t, "property", at.Parameters[1].Source)
 	assert.Equal(t, "metadata.name", at.Parameters[1].ValueFrom)
 }
@@ -703,10 +702,10 @@ Test object
 }
 
 func TestParse_InvalidFilePath(t *testing.T) {
-	// Empty file path is handled gracefully
-	_, err := ParseObjectTypeFile("---\ntype: object_type\nid: test\n---\n", "")
-	// The parser may or may not error on empty path - document current behavior
-	_ = err
+	// Empty file path should not prevent parsing — path is only used for error context.
+	ot, err := ParseObjectTypeFile("---\ntype: object_type\nid: test\n---\n", "")
+	require.NoError(t, err)
+	assert.Equal(t, "test", ot.ID)
 }
 
 func TestParse_NonExistentType(t *testing.T) {
@@ -722,3 +721,287 @@ Content`
 	// The type validation happens at higher level
 	require.NoError(t, err)
 }
+
+// === TriggerCondition Tests ===
+
+func TestParseTriggerCondition_Basic(t *testing.T) {
+	text := `---
+type: action_type
+id: tc_basic
+name: TC Basic
+action_type: add
+---
+
+## ActionType: TC Basic
+
+### Trigger Condition
+
+` + "```yaml" + `
+object_type_id: relation
+field: position
+operation: ==
+sub_conds: []
+value_from: ""
+value: "1"
+` + "```" + `
+`
+	at, err := ParseActionTypeFile(text, "/test/tc_basic.bkn")
+	require.NoError(t, err)
+	require.NotNil(t, at.TriggerCondition)
+	assert.Equal(t, "relation", at.TriggerCondition.ObjectTypeID)
+	assert.Equal(t, "position", at.TriggerCondition.Field)
+	assert.Equal(t, "==", at.TriggerCondition.Operation)
+	assert.Equal(t, "1", at.TriggerCondition.Value)
+	assert.Empty(t, at.TriggerCondition.SubConds)
+}
+
+func TestParseTriggerCondition_WithSubConds(t *testing.T) {
+	text := `---
+type: action_type
+id: tc_nested
+name: TC Nested
+action_type: modify
+---
+
+## ActionType: TC Nested
+
+### Trigger Condition
+
+` + "```yaml" + `
+object_type_id: pod
+field: ""
+operation: and
+sub_conds:
+  - object_type_id: pod
+    field: status
+    operation: "=="
+    sub_conds: []
+    value_from: ""
+    value: running
+  - object_type_id: pod
+    field: replicas
+    operation: ">"
+    sub_conds: []
+    value_from: ""
+    value: "0"
+value_from: ""
+value: ""
+` + "```" + `
+`
+	at, err := ParseActionTypeFile(text, "/test/tc_nested.bkn")
+	require.NoError(t, err)
+	require.NotNil(t, at.TriggerCondition)
+	assert.Equal(t, "and", at.TriggerCondition.Operation)
+	require.Len(t, at.TriggerCondition.SubConds, 2)
+	assert.Equal(t, "status", at.TriggerCondition.SubConds[0].Field)
+	assert.Equal(t, "replicas", at.TriggerCondition.SubConds[1].Field)
+}
+
+func TestParseTriggerCondition_NoBlock(t *testing.T) {
+	text := `---
+type: action_type
+id: tc_empty
+name: TC Empty
+action_type: add
+---
+
+## ActionType: TC Empty
+
+### Trigger Condition
+
+`
+	at, err := ParseActionTypeFile(text, "/test/tc_empty.bkn")
+	require.NoError(t, err)
+	assert.Nil(t, at.TriggerCondition)
+}
+
+func TestParseActionType_RoundTrip(t *testing.T) {
+	text := `---
+type: action_type
+id: 222
+name: 222
+tags: []
+action_type: add
+---
+
+## ActionType: 222
+
+### Bound Object
+
+| Bound Object |
+|--------------|
+| relation |
+
+### Affect Object
+
+| Affect Object | Affect Description |
+|---------------|---------------------|
+
+### Trigger Condition
+
+` + "```yaml" + `
+object_type_id: relation
+field: position
+operation: ==
+sub_conds: []
+value_from: ""
+value: "1"
+` + "```" + `
+
+### Action Source
+
+| Type | BoxID | ToolID | McpID | ToolName |
+|------|-------|--------|-------|----------|
+
+### Parameter Binding
+
+| Name | Type | Source | Operation | ValueFrom | Value | Description |
+|------|------|--------|-----------|-----------|-------|-------------|
+
+### Schedule
+
+| Type | Expression |
+|------|------------|
+
+`
+	// First parse
+	at1, err := ParseActionTypeFile(text, "/test/222.bkn")
+	require.NoError(t, err)
+	require.NotNil(t, at1.TriggerCondition)
+
+	// Serialize back to text
+	serialized := SerializeActionType(at1)
+
+	// Second parse from serialized output
+	at2, err := ParseActionTypeFile(serialized, "/test/222.bkn")
+	require.NoError(t, err)
+
+	// TriggerCondition must survive the round-trip
+	require.NotNil(t, at2.TriggerCondition)
+	assert.Equal(t, at1.TriggerCondition.ObjectTypeID, at2.TriggerCondition.ObjectTypeID)
+	assert.Equal(t, at1.TriggerCondition.Field, at2.TriggerCondition.Field)
+	assert.Equal(t, at1.TriggerCondition.Operation, at2.TriggerCondition.Operation)
+	assert.Equal(t, at1.TriggerCondition.Value, at2.TriggerCondition.Value)
+	assert.Equal(t, at1.BoundObject, at2.BoundObject)
+	assert.Equal(t, at1.ActionType, at2.ActionType)
+}
+
+// === ActionType Additional Scenarios ===
+
+func TestParseActionType_WithAffectObject(t *testing.T) {
+	text := `---
+type: action_type
+id: scale
+name: Scale
+action_type: modify
+---
+
+## ActionType: Scale
+
+### Bound Object
+
+| Bound Object |
+|--------------|
+| deployment |
+
+### Affect Object
+
+| Affect Object | Affect Description |
+|---------------|---------------------|
+| pod | Pods are recreated |
+
+### Parameter Binding
+
+| Name | Type | Source | Operation | ValueFrom | Value | Description |
+|------|------|--------|-----------|-----------|-------|-------------|
+`
+	at, err := ParseActionTypeFile(text, "/test/scale.bkn")
+	require.NoError(t, err)
+	require.NotNil(t, at.AffectObject)
+	assert.Equal(t, "pod", at.AffectObject.ObjectType)
+	assert.Equal(t, "Pods are recreated", at.AffectObject.Description)
+}
+
+func TestParseActionType_WithActionSource(t *testing.T) {
+	text := `---
+type: action_type
+id: restart
+name: Restart
+action_type: modify
+---
+
+## ActionType: Restart
+
+### Action Source
+
+| Type | BoxID | ToolID | McpID | ToolName |
+|------|-------|--------|-------|----------|
+| tool | box-001 | tool-abc | | |
+
+### Parameter Binding
+
+| Name | Type | Source | Operation | ValueFrom | Value | Description |
+|------|------|--------|-----------|-----------|-------|-------------|
+`
+	at, err := ParseActionTypeFile(text, "/test/restart.bkn")
+	require.NoError(t, err)
+	require.NotNil(t, at.ActionSource)
+	assert.Equal(t, "tool", at.ActionSource.Type)
+	assert.Equal(t, "box-001", at.ActionSource.BoxID)
+	assert.Equal(t, "tool-abc", at.ActionSource.ToolID)
+}
+
+// === RelationType data_view Tests ===
+
+func TestParseRelationType_DataView(t *testing.T) {
+	text := `---
+type: relation_type
+id: pod_node
+name: Pod Node
+---
+
+## RelationType: Pod Node
+
+Pod runs on Node via data view
+
+### Endpoint
+
+| Source | Target | Type |
+|--------|--------|------|
+| pod | node | data_view |
+
+### Mapping View
+
+| Type | ID |
+|------|-----|
+| data_view | view_pod_node |
+
+### Source Mapping
+
+| Source Property | View Property |
+|-----------------|---------------|
+| node_name | view_node_name |
+
+### Target Mapping
+
+| View Property | Target Property |
+|---------------|-----------------|
+| view_node_name | name |
+`
+	rt, err := ParseRelationTypeFile(text, "/test/pod_node.bkn")
+	require.NoError(t, err)
+	assert.Equal(t, "data_view", rt.Endpoint.Type)
+
+	rules, ok := rt.MappingRules.(InDirectMappingRule)
+	require.True(t, ok, "MappingRules should be InDirectMappingRule for data_view")
+	require.NotNil(t, rules.BackingDataSource)
+	assert.Equal(t, "data_view", rules.BackingDataSource.Type)
+	assert.Equal(t, "view_pod_node", rules.BackingDataSource.ID)
+	require.Len(t, rules.SourceMappingRules, 1)
+	assert.Equal(t, "node_name", rules.SourceMappingRules[0].SourceProperty)
+	assert.Equal(t, "view_node_name", rules.SourceMappingRules[0].TargetProperty)
+	require.Len(t, rules.TargetMappingRules, 1)
+	assert.Equal(t, "view_node_name", rules.TargetMappingRules[0].SourceProperty)
+	assert.Equal(t, "name", rules.TargetMappingRules[0].TargetProperty)
+}
+

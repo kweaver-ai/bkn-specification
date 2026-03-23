@@ -1,0 +1,18 @@
+---
+type: knowledge_network
+id: yzm_mock_system_import
+name: 员工入职系统_import
+tags: []
+branch: main
+business_domain: bd_public
+---
+
+# 员工入职系统_import
+
+
+## Network Overview
+
+- **ObjectTypes** (object_types/): 44444, d6scnjmrp5plcj8ejjk0, dddd, department, employee, relation
+- **RelationTypes** (relation_types/): source_object_type_id
+- **ActionTypes** (action_types/): 1111, 222, 2223, 44, d62pdl8jijbh3srg26qg, d62qc80jijbh3srg26rg, d6p330u1v4b3l62f0l00, new_job, new_job2, no, xxx
+- **ConceptGroups** (concept_groups/): 1111, 333333333

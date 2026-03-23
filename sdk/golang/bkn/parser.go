@@ -552,13 +552,11 @@ func parseTriggerCondition(sectionText string) *CondCfg {
 
 	yamlContent := matches[1]
 
-	var cond struct {
-		Condition *CondCfg `yaml:"condition"`
-	}
+	var cond CondCfg
 	if err := yaml.Unmarshal([]byte(yamlContent), &cond); err != nil {
 		return nil
 	}
-	return cond.Condition
+	return &cond
 }
 
 // parseParameterBinding parses the parameter binding table.

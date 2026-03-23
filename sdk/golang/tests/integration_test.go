@@ -21,7 +21,7 @@ import (
 )
 
 // allExampleDirs returns all example directories with network.bkn files.
-// Test runs from sdk/golang/test/, examples are at ../../../examples
+// Test runs from sdk/golang/tests/, examples are at ../../../examples
 func allExampleDirs(t *testing.T) []string {
 	t.Helper()
 
@@ -509,6 +509,15 @@ func verifyActionTypes(t *testing.T, original, result []*bkn.BknActionType) {
 			require.NotNil(t, orig.Schedule, "action %s: original Schedule should not be nil", at.ID)
 			assert.Equal(t, orig.Schedule.Type, at.Schedule.Type, "action %s: Schedule.Type mismatch", at.ID)
 			assert.Equal(t, orig.Schedule.Expression, at.Schedule.Expression, "action %s: Schedule.Expression mismatch", at.ID)
+		}
+
+		// Compare TriggerCondition
+		if orig.TriggerCondition != nil {
+			require.NotNil(t, at.TriggerCondition, "action %s: TriggerCondition should not be nil after round-trip", at.ID)
+			assert.Equal(t, orig.TriggerCondition.ObjectTypeID, at.TriggerCondition.ObjectTypeID, "action %s: TriggerCondition.ObjectTypeID mismatch", at.ID)
+			assert.Equal(t, orig.TriggerCondition.Field, at.TriggerCondition.Field, "action %s: TriggerCondition.Field mismatch", at.ID)
+			assert.Equal(t, orig.TriggerCondition.Operation, at.TriggerCondition.Operation, "action %s: TriggerCondition.Operation mismatch", at.ID)
+			assert.Equal(t, orig.TriggerCondition.Value, at.TriggerCondition.Value, "action %s: TriggerCondition.Value mismatch", at.ID)
 		}
 	}
 }

@@ -1,0 +1,46 @@
+---
+type: object_type
+id: d6scnjmrp5plcj8ejjk0
+name: 1
+tags: []
+---
+
+## ObjectType: 1
+
+### Data Source
+
+| Type | ID | Name |
+|------|-----|------|
+| data_view | 1976463364573859842 | pods |
+
+### Data Properties
+
+| Name | Display Name | Type | Description | Mapped Field |
+|------|--------------|------|-------------|--------------|
+| component | component | string |  | component |
+| id | id | integer |  | id |
+| node_id | node_id | string |  | node_id |
+| pod_cluster_id | pod_cluster_id | string |  | pod_cluster_id |
+| pod_create_time | pod_create_time | string |  | pod_create_time |
+| pod_delete_time | pod_delete_time | string |  | pod_delete_time |
+| pod_ip | pod_ip | string |  | pod_ip |
+| pod_name | pod_name | string |  | pod_name |
+| pod_namespace | pod_namespace | string |  | pod_namespace |
+| pod_node_name | pod_node_name | string |  | pod_node_name |
+| pod_port | pod_port | string |  | pod_port |
+| pod_status | pod_status | string |  | pod_status |
+| s_create_time | s_create_time | timestamp |  | s_create_time |
+| s_update_time | s_update_time | timestamp |  | s_update_time |
+| service_ip | service_ip | string |  | service_ip |
+| service_name | service_name | string |  | service_name |
+| timestamp | timestamp | timestamp |  | timestamp |
+
+### Logic Properties
+
+
+### Keys
+
+Primary Key: component
+Display Key: component
+Incremental Key: 
+

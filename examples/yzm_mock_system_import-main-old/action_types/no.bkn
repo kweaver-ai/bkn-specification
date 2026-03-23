@@ -1,0 +1,38 @@
+---
+type: action_type
+id: no
+name: no
+tags: []
+action_type: add
+---
+
+## ActionType: no
+
+### Bound Object
+
+| Bound Object |
+|--------------|
+
+### Affect Object
+
+| Affect Object | Affect Description |
+|---------------|--------------------|
+
+### Trigger Condition
+
+
+### Action Source
+
+| Type | BoxID | ToolID | McpID | ToolName |
+|------|-------|--------|-------|----------|
+
+### Parameter Binding
+
+| Name | Type | Source | Operation | ValueFrom | Value | Description |
+|------|------|--------|-----------|-----------|-------|-------------|
+
+### Schedule
+
+| Type | Expression |
+|------|------------|
+

@@ -1,0 +1,47 @@
+---
+type: action_type
+id: 2223
+name: 2223
+tags: []
+action_type: add
+---
+
+## ActionType: 2223
+
+### Bound Object
+
+| Bound Object |
+|--------------|
+| employee |
+
+### Affect Object
+
+| Affect Object | Affect Description |
+|---------------|--------------------|
+
+### Trigger Condition
+
+```yaml
+object_type_id: employee
+field: status
+operation: ==
+sub_conds: []
+value_from: ""
+value: 1
+```
+
+### Action Source
+
+| Type | BoxID | ToolID | McpID | ToolName |
+|------|-------|--------|-------|----------|
+
+### Parameter Binding
+
+| Name | Type | Source | Operation | ValueFrom | Value | Description |
+|------|------|--------|-----------|-----------|-------|-------------|
+
+### Schedule
+
+| Type | Expression |
+|------|------------|
+

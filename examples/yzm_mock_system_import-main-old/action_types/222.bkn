@@ -1,0 +1,47 @@
+---
+type: action_type
+id: 222
+name: 222
+tags: []
+action_type: add
+---
+
+## ActionType: 222
+
+### Bound Object
+
+| Bound Object |
+|--------------|
+| relation |
+
+### Affect Object
+
+| Affect Object | Affect Description |
+|---------------|--------------------|
+
+### Trigger Condition
+
+```yaml
+object_type_id: relation
+field: position
+operation: ==
+sub_conds: []
+value_from: ""
+value: "1"
+```
+
+### Action Source
+
+| Type | BoxID | ToolID | McpID | ToolName |
+|------|-------|--------|-------|----------|
+
+### Parameter Binding
+
+| Name | Type | Source | Operation | ValueFrom | Value | Description |
+|------|------|--------|-----------|-----------|-------|-------------|
+
+### Schedule
+
+| Type | Expression |
+|------|------------|
+

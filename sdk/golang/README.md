@@ -1,27 +1,10 @@
 # BKN Golang SDK
 
-Go SDK for parsing, validating, and transforming BKN files. Provides feature parity with the [Python SDK](../python/README.md) for core functionality.
+Go SDK for parsing, serializing, loading, and diffing BKN networks.
 
 ## Requirements
 
 - **Go 1.24+**
-
-## Status
-
-Implemented. The Go SDK supports:
-
-- Parse `.bkn`, `.bknd`, and `.md` files (YAML frontmatter + Markdown body). `.md` is a compatible carrier; content must satisfy BKN frontmatter/type/structure. Recommended: schema `.bkn`, data `.bknd`.
-- Structured models for `BknObject`, `Relation`, `Action`, `Risk`, `Connection`, and `DataTable`
-- Network loading: directory or file input; root discovery (network.bkn > network.md > index.bkn > index.md); `includes` resolution (cycle detection); implicit same-dir when no includes
-- Network reference validation for shared `connection` data sources
-- Data validation against object schema (not_null, regex, in, range, type checks, PK uniqueness)
-- `.bknd` writability guard for object schemas backed by `data_view` or `connection`
-- Serialization to `.bknd` format
-- Risk evaluation (`EvaluateRisk`)
-
-- SKILL.md compatibility: `SKILL.md` is included in checksum computation; `LoadNetwork(dir)` ignores `SKILL.md` and auto-discovers the BKN root
-
-Transformers (e.g., kweaver) are not yet implemented.
 
 ## Structure
 
@@ -29,27 +12,31 @@ Transformers (e.g., kweaver) are not yet implemented.
 golang/
 ├── go.mod
 ├── bkn/
-│   ├── models.go      # Data structures
-│   ├── parser.go      # Parse .bkn/.bknd/.md
-│   ├── loader.go      # Load, LoadNetwork
-│   ├── validator.go   # ValidateDataTable, ValidateNetworkData
-│   ├── serializer.go  # ToBknd, ToBkndFromTable
-│   ├── risk.go        # EvaluateRisk
-│   └── bkn_test.go    # Tests
-└── README.md
+│   ├── models.go        # Data structures
+│   ├── parser.go        # Parse .bkn files (per type)
+│   ├── loader.go        # LoadNetwork, LoadNetworkWithFS
+│   ├── serialize.go     # Serialize* functions
+│   ├── validator.go     # ValidateNetwork
+│   ├── checksum.go      # GenerateChecksumFile, VerifyChecksumFile
+│   ├── differ.go        # DiffNetworks, ComputeNetworkChecksums
+│   ├── fs.go            # FileSystem interface, OSFileSystem, MemoryFileSystem
+│   ├── pack_tar.go      # PackDirToTar
+│   ├── tar_loader.go    # LoadNetworkFromTar, ExtractTarToMemory
+│   ├── tar_writer.go    # WriteNetworkToTar
+│   ├── tar_checksum.go  # ComputeChecksumFromTar, VerifyChecksumFromTar, DiffNetworksFromTar
+│   └── parser_test.go
+└── tests/
+    ├── integration_test.go
+    └── testdata/        # Real BKN networks used by integration tests
 ```
 
 ## 如何引入（How to Use）
 
 ### 方式一：作为依赖引入
 
-在您的 Go 项目中执行：
-
 ```bash
 go get github.com/kweaver-ai/bkn-specification/sdk/golang
 ```
-
-然后导入包：
 
 ```go
 import "github.com/kweaver-ai/bkn-specification/sdk/golang/bkn"
@@ -57,7 +44,7 @@ import "github.com/kweaver-ai/bkn-specification/sdk/golang/bkn"
 
 ### 方式二：本地开发 / 私有仓库
 
-若仓库未发布或需使用本地路径，在您的 `go.mod` 中添加：
+在 `go.mod` 中添加：
 
 ```go
 replace github.com/kweaver-ai/bkn-specification/sdk/golang => /path/to/bkn-specification/sdk/golang
@@ -65,95 +52,155 @@ replace github.com/kweaver-ai/bkn-specification/sdk/golang => /path/to/bkn-speci
 
 ### 方式三：复制到项目中
 
-将 `sdk/golang/bkn/` 目录复制到您的项目内，修改 import 路径即可。
+将 `sdk/golang/bkn/` 目录复制到项目内，修改 import 路径即可。
 
 ---
 
 ## Usage
 
+### 加载网络
+
 ```go
-package main
+// 从目录加载（自动发现 network.bkn）
+net, err := bkn.LoadNetwork("path/to/network-dir")
 
-import (
-    "fmt"
-    "github.com/kweaver-ai/bkn-specification/sdk/golang/bkn"
-)
+// 从 tar 加载
+f, _ := os.Open("network.tar")
+net, err := bkn.LoadNetworkFromTar(f)
+```
 
-func main() {
-    // Load a network (resolves includes). Path can be a file or directory; for dir, root is auto-discovered.
-    net, err := bkn.LoadNetwork("examples/risk/index.bkn")
-    // Or: net, err := bkn.LoadNetwork("examples/k8s-network")
-    if err != nil {
-        panic(err)
+### 解析单个文件
+
+```go
+content, _ := os.ReadFile("action_types/restart.bkn")
+
+at, err := bkn.ParseActionTypeFile(string(content), "restart.bkn")
+if err != nil {
+    panic(err)
+}
+fmt.Println(at.ID)                          // "restart"
+fmt.Println(at.TriggerCondition.Operation)  // "=="
+```
+
+### 序列化
+
+```go
+// 模型 → BKN 文本
+text := bkn.SerializeActionType(at)
+
+// 网络 → tar
+var buf bytes.Buffer
+err := bkn.WriteNetworkToTar(net, &buf)
+
+// 目录 → tar 文件
+err := bkn.PackDirToTar("path/to/dir", "output.tar", false)
+```
+
+### 校验和 & Diff
+
+```go
+// 生成 CHECKSUM 文件
+checksum, err := bkn.GenerateChecksumFile("path/to/dir")
+
+// 验证 CHECKSUM 文件
+ok, errs := bkn.VerifyChecksumFile("path/to/dir")
+
+// 从 tar 验证
+ok, errs := bkn.VerifyChecksumFromTar(tarReader)
+
+// 比较两个 tar 的差异
+result, err := bkn.DiffNetworksFromTar(oldTar, newTar)
+for _, e := range result.Creates() { fmt.Println("create:", e.Key) }
+for _, e := range result.Updates() { fmt.Println("update:", e.Key) }
+for _, e := range result.Deletes() { fmt.Println("delete:", e.Key) }
+```
+
+### 验证
+
+```go
+result := bkn.ValidateNetwork(net)
+if !result.OK() {
+    for _, e := range result.Errors {
+        fmt.Println(e)
     }
-
-    // Access objects, relations, actions, data tables
-    objects := net.AllObjects()
-    tables := net.AllDataTables()
-
-    // Validate data against schema
-    result := bkn.ValidateNetworkData(net)
-    if !result.OK() {
-        for _, e := range result.Errors {
-            fmt.Println(e)
-        }
-    }
-
-    // Risk evaluation
-    rules := []map[string]any{
-        {"scenario_id": "sec_t_01", "action_id": "restart_erp", "allowed": false, "risk_level": 5, "reason": "月末封网"},
-    }
-    result := bkn.EvaluateRisk(net, "restart_erp", map[string]any{"scenario_id": "sec_t_01"}, rules)
-    fmt.Println(result.Decision)  // "not_allow"
-    if result.RiskLevel != nil {
-        fmt.Println(*result.RiskLevel) // 5
-    }
-    fmt.Println(result.Reason) // "月末封网"
-
-    // Custom evaluator
-    myEvaluator := func(network *bkn.BknNetwork, actionID string, context map[string]any, riskRules []map[string]any) bkn.RiskResult {
-        if actionID == "grant_root_admin" {
-            lv := 5
-            return bkn.RiskResult{Decision: bkn.NotAllow, RiskLevel: &lv, Reason: "全局禁止提权"}
-        }
-        return bkn.RiskResult{Decision: bkn.Unknown}
-    }
-    result2 := bkn.EvaluateRiskWith(myEvaluator, net, "grant_root_admin", map[string]any{}, nil)
-    fmt.Println(result2.Decision) // "not_allow"
 }
 ```
 
-### Update model (no-patch)
-
-- **Add/modify**: Import `.bkn` files; each definition is upserted by `(network, type, id)`.
-- **Delete**: Use `PlanDelete(...)` / `NetworkWithout(...)` for planning and in-memory simulation; deletion is not expressed in BKN files, and persistence is handled by the consumer.
+---
 
 ## API
 
-| Function | Description |
-|----------|-------------|
-| `Parse(text, sourcePath)` | Parse .bkn/.bknd/.md content into BknDocument |
-| `ParseFrontmatter(text)` | Parse YAML frontmatter only |
-| `ParseBody(text)` | Parse Markdown body into Object/Relation/Action/Risk/Connection lists |
-| `ParseDataTables(text, fm, sourcePath)` | Parse .bknd data tables |
-| `Load(path)` | Load single file from disk (.bkn/.bknd/.md) |
-| `LoadNetwork(rootPath)` | Load network with includes resolution (.bkn/.bknd/.md) |
-| `ValidateDataTable(table, schema, network)` | Validate DataTable against object schema |
-| `ValidateNetworkData(network)` | Validate all DataTables in network |
-| `ToBknd(opts)` | Serialize rows to .bknd format |
-| `ToBkndFromTable(table, network, source)` | Serialize DataTable to .bknd |
-| `EvaluateRisk(network, actionID, context, riskRules)` | Return RiskResult (Decision, RiskLevel, Reason) |
-| `EvaluateRiskWith(evaluator, network, actionID, context, riskRules)` | Invoke custom evaluator, return RiskResult |
-| `PlanDelete(network, targets, dryRun)` | Validate delete targets, return DeletePlan |
-| `NetworkWithout(network, targets)` | Return new network with targets removed (in-memory) |
-| `GenerateChecksumFile(root)` | Validate BKN inputs, then generate CHECKSUM in directory |
-| `VerifyChecksumFile(root)` | Verify CHECKSUM, return (ok, errors) |
-| `PackDirToTar(sourceDir, outputPath, gzip)` | Pack BKN directory to tar using system tar. On macOS sets COPYFILE_DISABLE=1 to avoid AppleDouble files |
+### Parser
+
+| 函数 | 说明 |
+|------|------|
+| `ParseFrontmatter(text)` | 解析 YAML frontmatter，返回 `map[string]any` |
+| `ParseNetworkFile(text, sourcePath)` | 解析 network 文件 |
+| `ParseObjectTypeFile(text, sourcePath)` | 解析 object_type 文件 |
+| `ParseRelationTypeFile(text, sourcePath)` | 解析 relation_type 文件 |
+| `ParseActionTypeFile(text, sourcePath)` | 解析 action_type 文件（含 TriggerCondition） |
+| `ParseRiskTypeFile(text, sourcePath)` | 解析 risk_type 文件 |
+| `ParseConceptGroupFile(text, sourcePath)` | 解析 concept_group 文件 |
+
+### Loader
+
+| 函数 | 说明 |
+|------|------|
+| `LoadNetwork(rootPath)` | 从目录加载完整网络（自动发现 network.bkn） |
+| `LoadNetworkWithFS(fsys, rootPath)` | 使用自定义 FileSystem 加载网络 |
+| `LoadNetworkFromTar(r)` | 从 tar 流加载网络 |
+| `ExtractTarToMemory(r)` | 将 tar 解压到内存文件系统 |
+
+### Serializer
+
+| 函数 | 说明 |
+|------|------|
+| `SerializeBknNetwork(doc)` | 序列化 network frontmatter |
+| `SerializeObjectType(ot)` | 序列化 object_type |
+| `SerializeRelationType(rt)` | 序列化 relation_type |
+| `SerializeActionType(at)` | 序列化 action_type |
+| `SerializeRiskType(rt)` | 序列化 risk_type |
+| `SerializeConceptGroup(cg)` | 序列化 concept_group |
+| `WriteNetworkToTar(doc, w)` | 将完整网络写入 tar 流 |
+| `PackDirToTar(sourceDir, outputPath, gzip)` | 将目录打包为 tar 文件（macOS 自动设置 `COPYFILE_DISABLE=1`） |
+
+### Checksum & Diff
+
+| 函数 | 说明 |
+|------|------|
+| `GenerateChecksumFile(root)` | 生成并写入 CHECKSUM 文件 |
+| `VerifyChecksumFile(root)` | 验证目录 CHECKSUM，返回 `(ok, errors)` |
+| `ComputeChecksumFromTar(r)` | 从 tar 计算各条目 checksum |
+| `GenerateChecksumFromTar(r)` | 从 tar 生成 CHECKSUM 内容字符串 |
+| `VerifyChecksumFromTar(r)` | 验证 tar 中的 CHECKSUM，返回 `(ok, errors)` |
+| `DiffNetworks(old, new)` | 比较两个 checksum map，返回 `*DiffResult` |
+| `DiffNetworksFromTar(oldTar, newTar)` | 比较两个 tar 的差异，返回 `*DiffResult` |
+| `ComputeNetworkChecksums(fsys, root)` | 计算网络目录的 checksum map |
+
+### Validator
+
+| 函数 | 说明 |
+|------|------|
+| `ValidateNetwork(doc)` | 验证网络结构，返回 `*ValidationResult` |
+
+### FileSystem
+
+| 函数 | 说明 |
+|------|------|
+| `NewOSFileSystem()` | 基于 OS 的文件系统实现 |
+| `NewMemoryFileSystem()` | 内存文件系统，用于测试或 tar 解压 |
+
+---
 
 ## Tests
 
-Run from `sdk/golang`:
-
 ```bash
+# 单元测试
 go test ./bkn/... -v
+
+# 集成测试（使用 tests/testdata/ 中的真实网络）
+go test ./tests/... -v
+
+# 全部
+go test ./... -v
 ```
