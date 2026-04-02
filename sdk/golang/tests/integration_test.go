@@ -4,13 +4,12 @@
 // See the LICENSE file in the project root for details.
 
 // Package test contains integration tests for the BKN SDK.
-// These tests verify end-to-end workflows including file I/O,
-// network loading, serialization, and tar operations.
 package test
 
 import (
 	"archive/tar"
 	"bytes"
+	"io"
 	"os"
 	"path/filepath"
 	"testing"
@@ -20,8 +19,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// allExampleDirs returns all example directories with network.bkn files.
-// Test runs from sdk/golang/tests/, examples are at ../../../examples
+// allExampleDirs returns all example directories that contain a network.bkn file.
+// Tests run from sdk/golang/tests/; examples are at ../../../examples.
 func allExampleDirs(t *testing.T) []string {
 	t.Helper()
 
@@ -31,11 +30,12 @@ func allExampleDirs(t *testing.T) []string {
 
 	var dirs []string
 	for _, e := range entries {
-		if e.IsDir() {
-			d := filepath.Join(examplesDir, e.Name())
-			if _, err := os.Stat(filepath.Join(d, "network.bkn")); err == nil {
-				dirs = append(dirs, d)
-			}
+		if !e.IsDir() {
+			continue
+		}
+		d := filepath.Join(examplesDir, e.Name())
+		if _, err := os.Stat(filepath.Join(d, "network.bkn")); err == nil {
+			dirs = append(dirs, d)
 		}
 	}
 
@@ -45,7 +45,7 @@ func allExampleDirs(t *testing.T) []string {
 	return dirs
 }
 
-// tempDir creates a temporary directory for test files.
+// tempDir creates a temporary directory that is removed when the test ends.
 func tempDir(t *testing.T) string {
 	t.Helper()
 	dir, err := os.MkdirTemp("", "bkn-test-*")
@@ -54,7 +54,8 @@ func tempDir(t *testing.T) string {
 	return dir
 }
 
-// buildTarFromDir packs all files in dir into a tar buffer.
+// buildTarFromDir packs all files in dir into an in-memory tar buffer using Go's
+// archive/tar (distinct from the system tar used by PackDirToTar).
 func buildTarFromDir(t *testing.T, dir string) *bytes.Buffer {
 	t.Helper()
 	var buf bytes.Buffer
@@ -76,187 +77,150 @@ func buildTarFromDir(t *testing.T, dir string) *bytes.Buffer {
 	return &buf
 }
 
+// extractTarToDir extracts a tar stream into destDir, preserving relative paths.
+func extractTarToDir(r io.Reader, destDir string) error {
+	tr := tar.NewReader(r)
+	for {
+		hdr, err := tr.Next()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		if hdr.Typeflag == tar.TypeDir {
+			continue
+		}
+
+		// filepath.Join normalises leading "./" correctly.
+		dest := filepath.Join(destDir, filepath.FromSlash(hdr.Name))
+		if err := os.MkdirAll(filepath.Dir(dest), 0755); err != nil {
+			return err
+		}
+		data, err := io.ReadAll(tr)
+		if err != nil {
+			return err
+		}
+		if err := os.WriteFile(dest, data, 0644); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// compareDirs compares a fixed set of paths between srcDir and dstDir:
+// network.bkn, SKILL.md, and the subdirectories action_types, concept_groups,
+// object_types, relation_types. Every file found in srcDir under these paths
+// must exist in dstDir with identical byte content.
+func compareDirs(t *testing.T, srcDir, dstDir string) {
+	t.Helper()
+
+	targets := []string{
+		"network.bkn",
+		"SKILL.md",
+		"action_types",
+		"concept_groups",
+		"object_types",
+		"relation_types",
+	}
+
+	for _, target := range targets {
+		srcPath := filepath.Join(srcDir, target)
+		if _, err := os.Stat(srcPath); os.IsNotExist(err) {
+			continue // target not present in this example, skip
+		}
+
+		err := filepath.Walk(srcPath, func(path string, info os.FileInfo, err error) error {
+			if err != nil || info.IsDir() {
+				return err
+			}
+			rel, _ := filepath.Rel(srcDir, path)
+			rel = filepath.ToSlash(rel)
+
+			srcData, err := os.ReadFile(path)
+			require.NoError(t, err, "read source file: %s", rel)
+
+			dstData, err := os.ReadFile(filepath.Join(dstDir, rel))
+			require.NoError(t, err, "file missing in exported tar: %s", rel)
+
+			assert.Equal(t, srcData, dstData, "file content mismatch: %s", rel)
+			return nil
+		})
+		require.NoError(t, err, "walk %s", target)
+	}
+}
+
 // === Core Workflow Tests ===
 
-// TestLoadFromFile: 文件 → Model
+// TestLoadFromFile: dir → Model
+// Sanity check that each example directory parses into a valid BknNetwork.
 func TestLoadFromFile(t *testing.T) {
 	for _, dir := range allExampleDirs(t) {
-		name := filepath.Base(dir)
-		t.Run(name, func(t *testing.T) {
+		t.Run(filepath.Base(dir), func(t *testing.T) {
 			doc, err := bkn.LoadNetwork(dir)
-			require.NoError(t, err, "load network")
+			require.NoError(t, err, "LoadNetwork failed")
 
-			// Verify basic structure
-			assert.NotEmpty(t, doc.BknNetworkFrontmatter.ID, "network id should not be empty")
-			assert.NotEmpty(t, doc.BknNetworkFrontmatter.Name, "network name should not be empty")
+			assert.NotEmpty(t, doc.BknNetworkFrontmatter.ID, "network id must not be empty")
+			assert.NotEmpty(t, doc.BknNetworkFrontmatter.Name, "network name must not be empty")
 
-			// Verify at least some content was loaded (objects, relations, or actions)
-			totalEntities := len(doc.ObjectTypes) + len(doc.RelationTypes) + len(doc.ActionTypes)
-			assert.Greater(t, totalEntities, 0, "expected at least some entities (objects, relations, or actions)")
+			total := len(doc.ObjectTypes) + len(doc.RelationTypes) + len(doc.ActionTypes)
+			assert.Greater(t, total, 0, "expected at least one entity")
 		})
 	}
 }
 
-// TestPackDirToTar: Directory → Tar file (uses system tar, COPYFILE_DISABLE on darwin)
-func TestPackDirToTar(t *testing.T) {
-	for _, dir := range allExampleDirs(t) {
-		name := filepath.Base(dir)
-		t.Run(name, func(t *testing.T) {
-			tmp := tempDir(t)
-			outPath := filepath.Join(tmp, name+".tar")
-
-			err := bkn.PackDirToTar(dir, outPath, false)
-			require.NoError(t, err, "pack to tar")
-
-			info, err := os.Stat(outPath)
-			require.NoError(t, err)
-			assert.Greater(t, info.Size(), int64(0))
-
-			f, err := os.Open(outPath)
-			require.NoError(t, err)
-			defer f.Close()
-
-			doc, err := bkn.LoadNetworkFromTar(f)
-			require.NoError(t, err, "load from packed tar")
-			assert.NotEmpty(t, doc.BknNetworkFrontmatter.ID)
-		})
-	}
-}
-
-// TestLoadFromTar: Tar → Model
+// TestLoadFromTar: Go-built tar → Model == dir → Model
+// Verifies that loading via an in-memory Go tar produces the same model as
+// loading directly from the filesystem (tests LoadNetworkFromTar code path).
 func TestLoadFromTar(t *testing.T) {
 	for _, dir := range allExampleDirs(t) {
-		name := filepath.Base(dir)
-		t.Run(name, func(t *testing.T) {
-			// Build tar from directory
-			buf := buildTarFromDir(t, dir)
-
-			// Load from tar
-			doc, err := bkn.LoadNetworkFromTar(buf)
+		t.Run(filepath.Base(dir), func(t *testing.T) {
+			tarDoc, err := bkn.LoadNetworkFromTar(buildTarFromDir(t, dir))
 			require.NoError(t, err, "load from tar")
 
-			// Compare with file load
 			fileDoc, err := bkn.LoadNetwork(dir)
 			require.NoError(t, err, "load from file")
 
-			// Verify counts match
-			assert.Equal(t, len(fileDoc.ObjectTypes), len(doc.ObjectTypes), "objects count should match")
-			assert.Equal(t, fileDoc.BknNetworkFrontmatter.ID, doc.BknNetworkFrontmatter.ID, "root ID should match")
+			assert.Equal(t, fileDoc.BknNetworkFrontmatter.ID, tarDoc.BknNetworkFrontmatter.ID, "root ID mismatch")
+			assert.Equal(t, len(fileDoc.ObjectTypes), len(tarDoc.ObjectTypes), "object count mismatch")
+			assert.Equal(t, len(fileDoc.RelationTypes), len(tarDoc.RelationTypes), "relation count mismatch")
+			assert.Equal(t, len(fileDoc.ActionTypes), len(tarDoc.ActionTypes), "action count mismatch")
 		})
 	}
 }
 
-// TestWriteToTar: Model → Tar
-func TestWriteToTar(t *testing.T) {
+// TestRoundTrip_FileContent is the primary round-trip integration test.
+//
+// Flow: PackDirToTar → LoadNetworkFromTar → WriteNetworkToTar → extractTarToDir
+// → compareDirs. Every file in the original directory must have identical byte
+// content in the exported directory.
+func TestRoundTrip_FileContent(t *testing.T) {
 	for _, dir := range allExampleDirs(t) {
-		name := filepath.Base(dir)
-		t.Run(name, func(t *testing.T) {
-			doc, err := bkn.LoadNetwork(dir)
-			require.NoError(t, err, "load network")
+		t.Run(filepath.Base(dir), func(t *testing.T) {
+			tmp := tempDir(t)
+			tarPath := filepath.Join(tmp, filepath.Base(dir)+".tar")
 
-			// Write to tar
+			// Step 1: pack the example directory using system tar.
+			require.NoError(t, bkn.PackDirToTar(dir, tarPath, false), "PackDirToTar failed")
+
+			// Step 2: load the model from the packed tar.
+			f, err := os.Open(tarPath)
+			require.NoError(t, err, "open tar file")
+			doc, err := bkn.LoadNetworkFromTar(f)
+			f.Close()
+			require.NoError(t, err, "LoadNetworkFromTar failed")
+
+			// Step 3: export the model back to a tar.
 			var buf bytes.Buffer
-			err = bkn.WriteNetworkToTar(doc, &buf)
-			require.NoError(t, err, "write to tar")
+			require.NoError(t, bkn.WriteNetworkToTar(doc, &buf), "WriteNetworkToTar failed")
 
-			// Reload from tar and compare
-			reloaded, err := bkn.LoadNetworkFromTar(&buf)
-			require.NoError(t, err, "reload from tar")
+			// Step 4: extract the exported tar to a temp directory.
+			extractDir := filepath.Join(tmp, filepath.Base(dir)+"-extracted")
+			require.NoError(t, os.MkdirAll(extractDir, 0755))
+			require.NoError(t, extractTarToDir(&buf, extractDir), "extractTarToDir failed")
 
-			// Verify root frontmatter
-			assert.Equal(t, doc.BknNetworkFrontmatter.ID, reloaded.BknNetworkFrontmatter.ID, "root ID should match")
-			assert.Equal(t, len(doc.ObjectTypes), len(reloaded.ObjectTypes), "objects count should match")
-		})
-	}
-}
-
-// TestRoundTrip_FileToTar: 文件→Model→Tar→Model
-func TestRoundTrip_FileToTar(t *testing.T) {
-	for _, dir := range allExampleDirs(t) {
-		name := filepath.Base(dir)
-		t.Run(name, func(t *testing.T) {
-			// Step 1: Load from file
-			original, err := bkn.LoadNetwork(dir)
-			require.NoError(t, err, "load from file")
-
-			// Step 2: Write to tar
-			var buf bytes.Buffer
-			err = bkn.WriteNetworkToTar(original, &buf)
-			require.NoError(t, err, "write to tar")
-
-			// Step 3: Load from tar
-			result, err := bkn.LoadNetworkFromTar(&buf)
-			require.NoError(t, err, "load from tar")
-
-			// Step 4: Strict comparison (original vs result)
-			assert.Equal(t, original.BknNetworkFrontmatter.ID, result.BknNetworkFrontmatter.ID, "root ID should match")
-			assert.Equal(t, original.BknNetworkFrontmatter.Name, result.BknNetworkFrontmatter.Name, "root name should match")
-			assert.Equal(t, len(original.ObjectTypes), len(result.ObjectTypes), "objects count should match")
-			assert.Equal(t, len(original.RelationTypes), len(result.RelationTypes), "relations count should match")
-			assert.Equal(t, len(original.ActionTypes), len(result.ActionTypes), "actions count should match")
-
-			// Step 5: Deep content comparison
-			verifyObjectTypes(t, original.ObjectTypes, result.ObjectTypes)
-			verifyRelationTypes(t, original.RelationTypes, result.RelationTypes)
-			verifyActionTypes(t, original.ActionTypes, result.ActionTypes)
-		})
-	}
-}
-
-// TestRoundTrip_TarToTar: Tar→Model→Tar→Model
-func TestRoundTrip_TarToTar(t *testing.T) {
-	for _, dir := range allExampleDirs(t) {
-		name := filepath.Base(dir)
-		t.Run(name, func(t *testing.T) {
-			// Step 1: Build initial tar
-			buf1 := buildTarFromDir(t, dir)
-
-			// Step 2: Load from tar
-			original, err := bkn.LoadNetworkFromTar(buf1)
-			require.NoError(t, err, "load from tar")
-
-			// Step 3: Write to new tar
-			var buf2 bytes.Buffer
-			err = bkn.WriteNetworkToTar(original, &buf2)
-			require.NoError(t, err, "write to tar")
-
-			// Step 4: Load from new tar
-			result, err := bkn.LoadNetworkFromTar(&buf2)
-			require.NoError(t, err, "load from new tar")
-
-			// Step 5: Verify consistency
-			assert.Equal(t, original.BknNetworkFrontmatter.ID, result.BknNetworkFrontmatter.ID, "root ID should match")
-			assert.Equal(t, len(original.ObjectTypes), len(result.ObjectTypes), "objects count should match")
-			assert.Equal(t, len(original.RelationTypes), len(result.RelationTypes), "relations count should match")
-			assert.Equal(t, len(original.ActionTypes), len(result.ActionTypes), "actions count should match")
-
-			// Step 6: Deep content comparison
-			verifyObjectTypes(t, original.ObjectTypes, result.ObjectTypes)
-			verifyRelationTypes(t, original.RelationTypes, result.RelationTypes)
-			verifyActionTypes(t, original.ActionTypes, result.ActionTypes)
-		})
-	}
-}
-
-// TestChecksumConsistency: 校验和一致性
-func TestChecksumConsistency(t *testing.T) {
-	for _, dir := range allExampleDirs(t) {
-		name := filepath.Base(dir)
-		t.Run(name, func(t *testing.T) {
-			// Load and write to tar
-			doc, err := bkn.LoadNetwork(dir)
-			require.NoError(t, err, "load network")
-
-			var buf bytes.Buffer
-			err = bkn.WriteNetworkToTar(doc, &buf)
-			require.NoError(t, err, "write to tar")
-
-			// Load from tar
-			result, err := bkn.LoadNetworkFromTar(&buf)
-			require.NoError(t, err, "load from tar")
-
-			// Verify basic consistency
-			assert.Equal(t, doc.BknNetworkFrontmatter.ID, result.BknNetworkFrontmatter.ID, "root ID should match")
+			// Step 5: every source file must exist in the export with identical content.
+			compareDirs(t, dir, extractDir)
 		})
 	}
 }
@@ -267,8 +231,7 @@ func TestChecksumConsistency(t *testing.T) {
 func TestEmptyNetwork(t *testing.T) {
 	dir := tempDir(t)
 
-	// Create minimal network.bkn
-	networkContent := `---
+	err := os.WriteFile(filepath.Join(dir, "network.bkn"), []byte(`---
 type: network
 id: test-empty
 name: Test Empty Network
@@ -276,25 +239,22 @@ version: "1.0"
 ---
 
 # Test Empty Network
-`
-	err := os.WriteFile(filepath.Join(dir, "network.bkn"), []byte(networkContent), 0644)
-	require.NoError(t, err, "write network.bkn")
+`), 0644)
+	require.NoError(t, err)
 
-	// Load should succeed
 	doc, err := bkn.LoadNetwork(dir)
 	require.NoError(t, err, "load empty network")
-	assert.Equal(t, "test-empty", doc.BknNetworkFrontmatter.ID, "root ID should match")
-	assert.Empty(t, doc.ObjectTypes, "should have no objects")
-	assert.Empty(t, doc.RelationTypes, "should have no relations")
-	assert.Empty(t, doc.ActionTypes, "should have no actions")
+	assert.Equal(t, "test-empty", doc.BknNetworkFrontmatter.ID)
+	assert.Empty(t, doc.ObjectTypes)
+	assert.Empty(t, doc.RelationTypes)
+	assert.Empty(t, doc.ActionTypes)
 }
 
 // TestCircularInclude: 循环include检测
 func TestCircularInclude(t *testing.T) {
 	dir := tempDir(t)
 
-	// Create network.bkn with circular include
-	networkContent := `---
+	err := os.WriteFile(filepath.Join(dir, "network.bkn"), []byte(`---
 type: network
 id: test-circular
 name: Test Circular
@@ -302,16 +262,12 @@ version: "1.0"
 ---
 
 # Test Circular
-`
-	err := os.WriteFile(filepath.Join(dir, "network.bkn"), []byte(networkContent), 0644)
-	require.NoError(t, err, "write network.bkn")
+`), 0644)
+	require.NoError(t, err)
 
-	// Create object_types directory with a file
 	objDir := filepath.Join(dir, "object_types")
-	err = os.MkdirAll(objDir, 0755)
-	require.NoError(t, err, "create object_types dir")
-
-	objContent := `---
+	require.NoError(t, os.MkdirAll(objDir, 0755))
+	err = os.WriteFile(filepath.Join(objDir, "test.bkn"), []byte(`---
 type: object_type
 id: test-obj
 name: Test Object
@@ -320,22 +276,19 @@ name: Test Object
 ## ObjectType: test-obj
 
 Test object description.
-`
-	err = os.WriteFile(filepath.Join(objDir, "test.bkn"), []byte(objContent), 0644)
-	require.NoError(t, err, "write test.bkn")
+`), 0644)
+	require.NoError(t, err)
 
-	// Load should succeed
 	doc, err := bkn.LoadNetwork(dir)
 	require.NoError(t, err, "load network with objects")
-	assert.Equal(t, 1, len(doc.ObjectTypes), "should have 1 object")
+	assert.Equal(t, 1, len(doc.ObjectTypes))
 }
 
 // TestMissingInclude: 缺失include文件
 func TestMissingInclude(t *testing.T) {
 	dir := tempDir(t)
 
-	// Create network.bkn
-	networkContent := `---
+	err := os.WriteFile(filepath.Join(dir, "network.bkn"), []byte(`---
 type: network
 id: test-missing
 name: Test Missing
@@ -343,22 +296,19 @@ version: "1.0"
 ---
 
 # Test Missing
-`
-	err := os.WriteFile(filepath.Join(dir, "network.bkn"), []byte(networkContent), 0644)
-	require.NoError(t, err, "write network.bkn")
+`), 0644)
+	require.NoError(t, err)
 
-	// Load should succeed even with missing subdirectories
 	doc, err := bkn.LoadNetwork(dir)
-	require.NoError(t, err, "load network with missing includes")
-	assert.Equal(t, "test-missing", doc.BknNetworkFrontmatter.ID, "root ID should match")
+	require.NoError(t, err, "load network with missing subdirectories")
+	assert.Equal(t, "test-missing", doc.BknNetworkFrontmatter.ID)
 }
 
 // TestLargeNetwork: 大规模网络性能
 func TestLargeNetwork(t *testing.T) {
 	dir := tempDir(t)
 
-	// Create network.bkn
-	networkContent := `---
+	err := os.WriteFile(filepath.Join(dir, "network.bkn"), []byte(`---
 type: network
 id: test-large
 name: Test Large Network
@@ -366,158 +316,34 @@ version: "1.0"
 ---
 
 # Test Large Network
-`
-	err := os.WriteFile(filepath.Join(dir, "network.bkn"), []byte(networkContent), 0644)
-	require.NoError(t, err, "write network.bkn")
+`), 0644)
+	require.NoError(t, err)
 
-	// Create object_types directory with multiple files
 	objDir := filepath.Join(dir, "object_types")
-	err = os.MkdirAll(objDir, 0755)
-	require.NoError(t, err, "create object_types dir")
+	require.NoError(t, os.MkdirAll(objDir, 0755))
 
-	// Create 10 object files
 	for i := 0; i < 10; i++ {
-		objContent := `---
-type: object_type
-id: test-obj-` + string(rune('0'+i)) + `
-name: Test Object ` + string(rune('0'+i)) + `
----
-
-## ObjectType: test-obj-` + string(rune('0'+i)) + `
-
-Test object description.
-`
-		err = os.WriteFile(filepath.Join(objDir, "test"+string(rune('0'+i))+".bkn"), []byte(objContent), 0644)
-		require.NoError(t, err, "write test object")
+		idx := string(rune('0' + i))
+		content := "---\ntype: object_type\nid: test-obj-" + idx + "\nname: Test Object " + idx + "\n---\n\n## ObjectType: test-obj-" + idx + "\n\nTest object description.\n"
+		err = os.WriteFile(filepath.Join(objDir, "test"+idx+".bkn"), []byte(content), 0644)
+		require.NoError(t, err)
 	}
 
-	// Load should succeed
 	doc, err := bkn.LoadNetwork(dir)
 	require.NoError(t, err, "load large network")
-	assert.Equal(t, 10, len(doc.ObjectTypes), "should have 10 objects")
+	assert.Equal(t, 10, len(doc.ObjectTypes))
 }
 
 // TestInvalidBKNFile: 无效BKN文件处理
 func TestInvalidBKNFile(t *testing.T) {
 	dir := tempDir(t)
 
-	// Create invalid network.bkn (missing frontmatter)
-	invalidContent := `# Invalid Network
+	err := os.WriteFile(filepath.Join(dir, "network.bkn"), []byte(`# Invalid Network
 
 This file has no frontmatter.
-`
-	err := os.WriteFile(filepath.Join(dir, "network.bkn"), []byte(invalidContent), 0644)
-	require.NoError(t, err, "write invalid network.bkn")
+`), 0644)
+	require.NoError(t, err)
 
-	// Load should fail
 	_, err = bkn.LoadNetwork(dir)
 	assert.Error(t, err, "should fail to load invalid network")
-}
-
-// === Deep Verification Helpers ===
-
-// verifyObjectTypes deeply compares two slices of ObjectTypes
-func verifyObjectTypes(t *testing.T, original, result []*bkn.BknObjectType) {
-	// Build maps for easier lookup
-	origMap := make(map[string]*bkn.BknObjectType)
-	for _, ot := range original {
-		origMap[ot.ID] = ot
-	}
-
-	for _, rt := range result {
-		orig, ok := origMap[rt.ID]
-		require.True(t, ok, "object type %s not found in original", rt.ID)
-
-		// Compare frontmatter
-		assert.Equal(t, orig.ID, rt.ID, "object %s: ID mismatch", rt.ID)
-		assert.Equal(t, orig.Name, rt.Name, "object %s: Name mismatch", rt.ID)
-		assert.Equal(t, orig.Description, rt.Description, "object %s: Description mismatch", rt.ID)
-		assert.ElementsMatch(t, orig.Tags, rt.Tags, "object %s: Tags mismatch", rt.ID)
-
-		// Compare DataSource
-		if orig.DataSource != nil || rt.DataSource != nil {
-			require.NotNil(t, rt.DataSource, "object %s: DataSource should not be nil", rt.ID)
-			require.NotNil(t, orig.DataSource, "object %s: original DataSource should not be nil", rt.ID)
-			assert.Equal(t, orig.DataSource.Type, rt.DataSource.Type, "object %s: DataSource.Type mismatch", rt.ID)
-			assert.Equal(t, orig.DataSource.ID, rt.DataSource.ID, "object %s: DataSource.ID mismatch", rt.ID)
-			assert.Equal(t, orig.DataSource.Name, rt.DataSource.Name, "object %s: DataSource.Name mismatch", rt.ID)
-		}
-
-		// Compare DataProperties count
-		assert.Equal(t, len(orig.DataProperties), len(rt.DataProperties), "object %s: DataProperties count mismatch", rt.ID)
-
-		// Note: LogicProperties serialization format differs from parser expectation
-		// This is a known limitation - LogicProperties use subsection format in examples
-		// but the parser expects table format. Skipping deep LogicProperties validation.
-
-		// Compare Keys
-		assert.ElementsMatch(t, orig.PrimaryKeys, rt.PrimaryKeys, "object %s: PrimaryKeys mismatch", rt.ID)
-		assert.Equal(t, orig.DisplayKey, rt.DisplayKey, "object %s: DisplayKey mismatch", rt.ID)
-		assert.Equal(t, orig.IncrementalKey, rt.IncrementalKey, "object %s: IncrementalKey mismatch", rt.ID)
-	}
-}
-
-// verifyRelationTypes deeply compares two slices of RelationTypes
-func verifyRelationTypes(t *testing.T, original, result []*bkn.BknRelationType) {
-	origMap := make(map[string]*bkn.BknRelationType)
-	for _, rt := range original {
-		origMap[rt.ID] = rt
-	}
-
-	for _, rt := range result {
-		orig, ok := origMap[rt.ID]
-		require.True(t, ok, "relation type %s not found in original", rt.ID)
-
-		// Compare frontmatter
-		assert.Equal(t, orig.ID, rt.ID, "relation %s: ID mismatch", rt.ID)
-		assert.Equal(t, orig.Name, rt.Name, "relation %s: Name mismatch", rt.ID)
-		assert.Equal(t, orig.Description, rt.Description, "relation %s: Description mismatch", rt.ID)
-		assert.ElementsMatch(t, orig.Tags, rt.Tags, "relation %s: Tags mismatch", rt.ID)
-		assert.Equal(t, orig.Endpoint.Source, rt.Endpoint.Source, "relation %s: Endpoint.Source mismatch", rt.ID)
-		assert.Equal(t, orig.Endpoint.Target, rt.Endpoint.Target, "relation %s: Endpoint.Target mismatch", rt.ID)
-		assert.Equal(t, orig.Endpoint.Type, rt.Endpoint.Type, "relation %s: Endpoint.Type mismatch", rt.ID)
-	}
-}
-
-// verifyActionTypes deeply compares two slices of ActionTypes
-func verifyActionTypes(t *testing.T, original, result []*bkn.BknActionType) {
-	origMap := make(map[string]*bkn.BknActionType)
-	for _, at := range original {
-		origMap[at.ID] = at
-	}
-
-	for _, at := range result {
-		orig, ok := origMap[at.ID]
-		require.True(t, ok, "action type %s not found in original", at.ID)
-
-		// Compare frontmatter
-		assert.Equal(t, orig.ID, at.ID, "action %s: ID mismatch", at.ID)
-		assert.Equal(t, orig.Name, at.Name, "action %s: Name mismatch", at.ID)
-		assert.Equal(t, orig.Description, at.Description, "action %s: Description mismatch", at.ID)
-		assert.ElementsMatch(t, orig.Tags, at.Tags, "action %s: Tags mismatch", at.ID)
-
-		// Compare Bound Object
-		assert.Equal(t, orig.BoundObject, at.BoundObject, "action %s: BoundObject mismatch", at.ID)
-		assert.Equal(t, orig.ActionType, at.ActionType, "action %s: ActionType mismatch", at.ID)
-
-		// Compare Parameters count
-		assert.Equal(t, len(orig.Parameters), len(at.Parameters), "action %s: Parameters count mismatch", at.ID)
-
-		// Compare Schedule
-		if orig.Schedule != nil || at.Schedule != nil {
-			require.NotNil(t, at.Schedule, "action %s: Schedule should not be nil", at.ID)
-			require.NotNil(t, orig.Schedule, "action %s: original Schedule should not be nil", at.ID)
-			assert.Equal(t, orig.Schedule.Type, at.Schedule.Type, "action %s: Schedule.Type mismatch", at.ID)
-			assert.Equal(t, orig.Schedule.Expression, at.Schedule.Expression, "action %s: Schedule.Expression mismatch", at.ID)
-		}
-
-		// Compare TriggerCondition
-		if orig.TriggerCondition != nil {
-			require.NotNil(t, at.TriggerCondition, "action %s: TriggerCondition should not be nil after round-trip", at.ID)
-			assert.Equal(t, orig.TriggerCondition.ObjectTypeID, at.TriggerCondition.ObjectTypeID, "action %s: TriggerCondition.ObjectTypeID mismatch", at.ID)
-			assert.Equal(t, orig.TriggerCondition.Field, at.TriggerCondition.Field, "action %s: TriggerCondition.Field mismatch", at.ID)
-			assert.Equal(t, orig.TriggerCondition.Operation, at.TriggerCondition.Operation, "action %s: TriggerCondition.Operation mismatch", at.ID)
-			assert.Equal(t, orig.TriggerCondition.Value, at.TriggerCondition.Value, "action %s: TriggerCondition.Value mismatch", at.ID)
-		}
-	}
 }

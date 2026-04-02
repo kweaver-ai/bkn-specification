@@ -1,0 +1,104 @@
+---
+type: action_type
+id: list_exchange_servers
+name: 列出Exchange服务器列表
+tags: [灾备, 数据查询, 服务器管理]
+action_type: add
+enabled: true
+risk_level: low
+requires_approval: false
+---
+
+## ActionType: 列出Exchange服务器列表
+
+从指定的数据域中列出所有Exchange服务器，供用户选择。
+
+### Bound Object
+
+| Bound Object |
+|--------------|
+| data_domain |
+
+### Affect Object
+
+| Affect Object |
+|---------------|
+| exchange_server |
+
+### Trigger Condition
+
+```yaml
+  object_type_id: data_domain
+  field: status
+  operation: ==
+  value: Online
+```
+
+> 当数据域状态为在线时触发
+
+### Pre-conditions
+
+| Object | Check | Condition | Message |
+|--------|-------|-----------|---------|
+| data_domain | property:id | != null | 数据域必须存在 |
+| data_domain | property:status | == Online | 数据域必须在线 |
+
+### Scope of Impact
+
+| Object | Impact Description |
+|--------|---------------------|
+| data_domain | 查询数据域中的Exchange服务器列表 |
+| exchange_server | 列出Exchange服务器信息（ID、名称、IP、状态等） |
+
+### Tool Configuration
+
+| Type | Toolbox ID | Tool ID |
+|------|------------|---------|
+| tool | recovery_toolbox | list_exchange_servers |
+
+### Parameter Binding
+
+| Name | Type | Source | Binding | Description |
+|-----------|------|--------|---------|-------------|
+| data_domain_id | string | property | id | 数据域ID |
+| data_domain_ip | string | property | domain_ip | 数据域IP地址 |
+
+### Schedule
+
+| Type | Expression |
+|------|------------|
+| ON_DEMAND | 按需执行 |
+
+### Execution Description
+
+1. 连接到指定的数据域（备份服务器）
+2. 查询该数据域中的所有Exchange服务器
+3. 获取每个Exchange服务器的详细信息：
+   - 服务器ID
+   - 服务器名称
+   - 服务器IP地址
+   - 服务器状态（Online/Offline/DataLost）
+   - 服务器容量
+   - 服务器版本
+4. 按服务器名称排序
+5. 输出Exchange服务器列表
+6. 如果数据域离线或连接失败，记录错误信息并提示用户
+
+### Output Format
+
+```json
+{
+  "data_domain_id": "数据域ID",
+  "data_domain_name": "数据域名称",
+  "exchange_servers": [
+    {
+      "id": "服务器ID",
+      "name": "服务器名称",
+      "ip": "服务器IP地址",
+      "status": "服务器状态",
+      "capacity": "服务器容量",
+      "version": "服务器版本"
+    }
+  ]
+}
+```

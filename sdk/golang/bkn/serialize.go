@@ -7,6 +7,7 @@ package bkn
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -46,6 +47,7 @@ func SerializeBknNetwork(doc *BknNetwork) string {
 		for _, ot := range doc.ObjectTypes {
 			names = append(names, ot.ID)
 		}
+		sort.Strings(names)
 		sb.WriteString(fmt.Sprintf("- **ObjectTypes** (object_types/): %s\n", strings.Join(names, ", ")))
 	}
 	if len(doc.RelationTypes) > 0 {
@@ -53,6 +55,7 @@ func SerializeBknNetwork(doc *BknNetwork) string {
 		for _, rt := range doc.RelationTypes {
 			names = append(names, rt.ID)
 		}
+		sort.Strings(names)
 		sb.WriteString(fmt.Sprintf("- **RelationTypes** (relation_types/): %s\n", strings.Join(names, ", ")))
 	}
 	if len(doc.ActionTypes) > 0 {
@@ -60,6 +63,7 @@ func SerializeBknNetwork(doc *BknNetwork) string {
 		for _, at := range doc.ActionTypes {
 			names = append(names, at.ID)
 		}
+		sort.Strings(names)
 		sb.WriteString(fmt.Sprintf("- **ActionTypes** (action_types/): %s\n", strings.Join(names, ", ")))
 	}
 	if len(doc.RiskTypes) > 0 {
@@ -67,6 +71,7 @@ func SerializeBknNetwork(doc *BknNetwork) string {
 		for _, rt := range doc.RiskTypes {
 			names = append(names, rt.ID)
 		}
+		sort.Strings(names)
 		sb.WriteString(fmt.Sprintf("- **RiskTypes** (risk_types/): %s\n", strings.Join(names, ", ")))
 	}
 	if len(doc.ConceptGroups) > 0 {
@@ -74,6 +79,7 @@ func SerializeBknNetwork(doc *BknNetwork) string {
 		for _, cg := range doc.ConceptGroups {
 			names = append(names, cg.ID)
 		}
+		sort.Strings(names)
 		sb.WriteString(fmt.Sprintf("- **ConceptGroups** (concept_groups/): %s\n", strings.Join(names, ", ")))
 	}
 
@@ -143,7 +149,7 @@ func SerializeObjectType(ot *BknObjectType) string {
 
 	// Keys section
 	sb.WriteString("### Keys\n\n")
-	sb.WriteString(fmt.Sprintf("Primary Key: %s\n", strings.Join(ot.PrimaryKeys, ", ")))
+	sb.WriteString(fmt.Sprintf("Primary Keys: %s\n", strings.Join(ot.PrimaryKeys, ", ")))
 	sb.WriteString(fmt.Sprintf("Display Key: %s\n", ot.DisplayKey))
 	sb.WriteString(fmt.Sprintf("Incremental Key: %s\n", ot.IncrementalKey))
 	sb.WriteString("\n")

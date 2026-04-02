@@ -252,15 +252,7 @@ func parseInlineSource(val string) *ResourceInfo {
 func parseKeys(sectionText string) (pks []string, dk string, ik string) {
 	for _, line := range strings.Split(sectionText, "\n") {
 		trimmed := strings.TrimSpace(line)
-		if after, ok := strings.CutPrefix(trimmed, "Primary Key:"); ok {
-			val := strings.TrimSpace(after)
-			if val != "" {
-				pks = strings.Split(val, ",")
-				for i := range pks {
-					pks[i] = strings.TrimSpace(pks[i])
-				}
-			}
-		} else if after, ok := strings.CutPrefix(trimmed, "Primary Keys:"); ok {
+		if after, ok := strings.CutPrefix(trimmed, "Primary Keys:"); ok {
 			val := strings.TrimSpace(after)
 			if val != "" {
 				pks = strings.Split(val, ",")

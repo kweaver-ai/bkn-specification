@@ -1,0 +1,102 @@
+---
+type: action_type
+id: list_data_domains
+name: 列出数据域列表
+tags: [灾备, 数据查询, 数据域管理]
+action_type: add
+enabled: true
+risk_level: low
+requires_approval: false
+---
+
+## ActionType: 列出数据域列表
+
+列出Agent管理的所有数据域，供用户选择。
+
+### Bound Object
+
+| Bound Object |
+|--------------|
+| data_domain |
+
+### Affect Object
+
+| Affect Object |
+|---------------|
+| data_domain |
+
+### Trigger Condition
+
+```yaml
+  object_type_id: agent
+  field: initialized
+  operation: ==
+  value: true
+```
+
+> 当Agent初始化完成时触发
+
+### Pre-conditions
+
+无
+
+### Scope of Impact
+
+| Object | Impact Description |
+|--------|---------------------|
+| data_domain | 列出Agent管理的所有数据域信息 |
+
+### Tool Configuration
+
+| Type | Toolbox ID | Tool ID |
+|------|------------|---------|
+| tool | recovery_toolbox | list_data_domains |
+
+### Parameter Binding
+
+无
+
+### Schedule
+
+| Type | Expression |
+|------|------------|
+| ON_DEMAND | 按需执行 |
+
+### Execution Description
+
+1. 查询Agent管理的所有数据域
+2. 获取每个数据域的详细信息：
+   - 数据域ID
+   - 数据域名称
+   - 数据域IP地址
+   - 数据域类型（备份服务器/存储服务器）
+   - 数据域状态（Online/Offline）
+   - 数据域详情（容量、版本、配置等）
+   - 创建时间
+   - 更新时间
+3. 按数据域名称排序
+4. 输出数据域列表
+5. 如果没有数据域，提示用户需要先配置数据域
+
+### Output Format
+
+```json
+{
+  "data_domains": [
+    {
+      "id": "数据域ID",
+      "domain_name": "数据域名称",
+      "domain_ip": "数据域IP地址",
+      "domain_type": "数据域类型",
+      "status": "数据域状态",
+      "details": {
+        "capacity": "容量",
+        "version": "版本",
+        "config": "配置信息"
+      },
+      "created_time": "创建时间",
+      "updated_time": "更新时间"
+    }
+  ]
+}
+```

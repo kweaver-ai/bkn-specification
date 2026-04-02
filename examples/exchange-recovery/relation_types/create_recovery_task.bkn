@@ -1,0 +1,23 @@
+---
+type: relation_type
+id: create_recovery_task
+name: 生成恢复任务后执行恢复任务
+tags: [灾备, 流程关系, to]
+relation_category: flow
+---
+
+## RelationType: 生成恢复任务后执行恢复任务
+
+生成恢复任务完成后，执行恢复任务。
+
+### Endpoint
+
+| Source | Target | Type |
+|--------|--------|------|
+| create_recovery_task | execute_recovery_task | direct |
+
+### Mapping Rules
+
+| Source Property | Target Property |
+|-----------------|-----------------|
+| timepoint | timepoint |
