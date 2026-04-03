@@ -9,6 +9,7 @@ import (
 	"archive/tar"
 	"fmt"
 	"io"
+	"sort"
 	"strings"
 	"time"
 )
@@ -77,9 +78,15 @@ func WriteNetworkToTar(doc *BknNetwork, w io.Writer) error {
 		}
 	}
 
+	// Build ObjectType lookup for ConceptGroup serialization
+	otIndex := make(map[string]*BknObjectType, len(doc.ObjectTypes))
+	for _, ot := range doc.ObjectTypes {
+		otIndex[ot.ID] = ot
+	}
+
 	// Write ConceptGroups
 	for _, cg := range doc.ConceptGroups {
-		content := SerializeConceptGroup(cg)
+		content := SerializeConceptGroup(cg, otIndex)
 		path := "concept_groups/" + cg.ID + ".bkn"
 		mfs.AddFile(path, []byte(content))
 		if err := writeTarEntry(tw, path, []byte(content), now); err != nil {
@@ -133,7 +140,9 @@ func generateSkillMd(doc *BknNetwork) string {
 		sb.WriteString("### 核心对象\n\n")
 		sb.WriteString("| 对象 | 文件路径 | 说明 |\n")
 		sb.WriteString("|------|----------|------|\n")
-		for _, ot := range doc.ObjectTypes {
+		ots := append([]*BknObjectType(nil), doc.ObjectTypes...)
+		sort.Slice(ots, func(i, j int) bool { return ots[i].ID < ots[j].ID })
+		for _, ot := range ots {
 			path := "object_types/" + ot.ID + ".bkn"
 			sb.WriteString(fmt.Sprintf("| %s | `%s` | %s |\n", ot.Name, path, ot.Description))
 		}
@@ -145,7 +154,9 @@ func generateSkillMd(doc *BknNetwork) string {
 		sb.WriteString("### 核心关系\n\n")
 		sb.WriteString("| 关系 | 文件路径 | 说明 |\n")
 		sb.WriteString("|------|----------|------|\n")
-		for _, rt := range doc.RelationTypes {
+		rts := append([]*BknRelationType(nil), doc.RelationTypes...)
+		sort.Slice(rts, func(i, j int) bool { return rts[i].ID < rts[j].ID })
+		for _, rt := range rts {
 			path := "relation_types/" + rt.ID + ".bkn"
 			sb.WriteString(fmt.Sprintf("| %s | `%s` | %s |\n", rt.Name, path, rt.Description))
 		}
@@ -157,7 +168,9 @@ func generateSkillMd(doc *BknNetwork) string {
 		sb.WriteString("### 可用行动\n\n")
 		sb.WriteString("| 行动 | 文件路径 | 说明 |\n")
 		sb.WriteString("|------|----------|------|\n")
-		for _, at := range doc.ActionTypes {
+		ats := append([]*BknActionType(nil), doc.ActionTypes...)
+		sort.Slice(ats, func(i, j int) bool { return ats[i].ID < ats[j].ID })
+		for _, at := range ats {
 			path := "action_types/" + at.ID + ".bkn"
 			sb.WriteString(fmt.Sprintf("| %s | `%s` | %s |\n", at.Name, path, at.Description))
 		}

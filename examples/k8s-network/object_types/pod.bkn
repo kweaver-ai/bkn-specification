@@ -9,6 +9,12 @@ tags: [拓扑架构, 容器, Kubernetes]
 
 Kubernetes 中的最小部署单元，一个或多个容器的集合。
 
+### Data Source
+
+| Type | ID | Name |
+|------|-----|------|
+| data_view | d2mio43q6gt6p380dis0 | pod_info_view |
+
 ### Data Properties
 
 | Name | Display Name | Type | Description | Mapped Field |
@@ -29,10 +35,5 @@ Kubernetes 中的最小部署单元，一个或多个容器的集合。
 
 Primary Keys: id
 Display Key: pod_name
-Incremental Key:
+Incremental Key: 
 
-### Data Source
-
-| Type | ID | Name |
-|------|-----|------|
-| data_view | d2mio43q6gt6p380dis0 | pod_info_view |

@@ -183,7 +183,7 @@ func SerializeRelationType(rt *BknRelationType) string {
 		// ### Mapping Rules — simple source→target property table
 		sb.WriteString("### Mapping Rules\n\n")
 		sb.WriteString("| Source Property | Target Property |\n")
-		sb.WriteString("|-----------------|------------------|\n")
+		sb.WriteString("|-----------------|-----------------|\n")
 		if rules, ok := rt.MappingRules.(DirectMappingRule); ok {
 			for _, r := range rules {
 				sb.WriteString(fmt.Sprintf("| %s | %s |\n", r.SourceProperty, r.TargetProperty))
@@ -354,8 +354,9 @@ func SerializeRiskType(rt *BknRiskType) string {
 	return sb.String()
 }
 
-// SerializeConceptGroup Serializes BknConceptGroup to BKN format
-func SerializeConceptGroup(cg *BknConceptGroup) string {
+// SerializeConceptGroup Serializes BknConceptGroup to BKN format.
+// otIndex maps ObjectType ID → *BknObjectType for Name/Description lookup.
+func SerializeConceptGroup(cg *BknConceptGroup, otIndex map[string]*BknObjectType) string {
 	var sb strings.Builder
 	sb.WriteString("---\n")
 	sb.WriteString("type: concept_group\n")
@@ -367,6 +368,23 @@ func SerializeConceptGroup(cg *BknConceptGroup) string {
 	sb.WriteString(fmt.Sprintf("## ConceptGroup: %s\n\n", cg.Name))
 	if cg.Description != "" {
 		sb.WriteString(cg.Description + "\n\n")
+	}
+
+	if len(cg.ObjectTypes) > 0 {
+		sb.WriteString("### Object Types\n\n")
+		sb.WriteString("| ID | Name | Description |\n")
+		sb.WriteString("|----|------|-------------|\n")
+		ids := append([]string(nil), cg.ObjectTypes...)
+		sort.Strings(ids)
+		for _, id := range ids {
+			name, desc := id, ""
+			if ot, ok := otIndex[id]; ok {
+				name = ot.Name
+				desc = ot.Description
+			}
+			sb.WriteString(fmt.Sprintf("| %s | %s | %s |\n", id, name, desc))
+		}
+		sb.WriteString("\n")
 	}
 
 	return sb.String()

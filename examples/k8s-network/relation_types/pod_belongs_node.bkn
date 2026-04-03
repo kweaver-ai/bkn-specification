@@ -20,3 +20,4 @@ Pod 与其所在节点之间的归属关系。
 | Source Property | Target Property |
 |-----------------|-----------------|
 | pod_node_name | node_name |
+

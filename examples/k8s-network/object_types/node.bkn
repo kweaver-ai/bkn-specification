@@ -9,6 +9,12 @@ tags: [拓扑架构, 基础设施, Kubernetes]
 
 Kubernetes 集群中的工作节点，承载 Pod 运行。
 
+### Data Source
+
+| Type | ID | Name |
+|------|-----|------|
+| data_view | d2mio43q6gt6p380disg | node_info_view |
+
 ### Data Properties
 
 | Name | Display Name | Type | Description | Mapped Field |
@@ -25,14 +31,10 @@ Kubernetes 集群中的工作节点，承载 Pod 运行。
 
 ### Logic Properties
 
+
 ### Keys
 
 Primary Keys: id
 Display Key: node_name
-Incremental Key:
+Incremental Key: 
 
-### Data Source
-
-| Type | ID | Name |
-|------|-----|------|
-| data_view | d2mio43q6gt6p380disg | node_info_view |

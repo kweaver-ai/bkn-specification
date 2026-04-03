@@ -9,6 +9,12 @@ tags: [拓扑架构, 网络, Kubernetes]
 
 Kubernetes 服务抽象层，提供稳定的访问入口。
 
+### Data Source
+
+| Type | ID | Name |
+|------|-----|------|
+| data_view | d2mio43q6gt6p380dith | service_info_view |
+
 ### Data Properties
 
 | Name | Display Name | Type | Description | Mapped Field |
@@ -26,12 +32,8 @@ Kubernetes 服务抽象层，提供稳定的访问入口。
 
 
 ### Keys
+
 Primary Keys: id
 Display Key: service_name
-Incremental Key:
+Incremental Key: 
 
-### Data Source
-
-| Type | ID | Name |
-|------|-----|------|
-| data_view | d2mio43q6gt6p380dith | service_info_view |

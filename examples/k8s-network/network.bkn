@@ -12,7 +12,7 @@ business_domain: kubernetes
 
 ## Network Overview
 
-- **ObjectTypes** (object_types/): pod, node, service
+- **ObjectTypes** (object_types/): node, pod, service
 - **RelationTypes** (relation_types/): pod_belongs_node, service_routes_pod
-- **ActionTypes** (action_types/): restart_pod, cordon_node
+- **ActionTypes** (action_types/): cordon_node, restart_pod
 - **ConceptGroups** (concept_groups/): k8s

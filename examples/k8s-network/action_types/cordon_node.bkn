@@ -3,9 +3,7 @@ type: action_type
 id: cordon_node
 name: 隔离节点
 tags: [运维操作, 节点管理]
-enabled: false
-risk_level: high
-requires_approval: true
+action_type: modify
 ---
 
 ## ActionType: 隔离节点
@@ -14,50 +12,41 @@ requires_approval: true
 
 ### Bound Object
 
-| Bound Object | Action Type |
-|--------------|-------------|
-| node | modify |
+| Bound Object |
+|--------------|
+| node |
 
 ### Affect Object
 
-| Affect Object | 
-|---------------|-------------|
+| Affect Object | Affect Description |
+|---------------|--------------------|
+| node | Mark node unschedulable |
 
 ### Trigger Condition
 
 ```yaml
-condition:
-  object_type_id: node
-  field: node_status
-  operation: ==
-  value: NotReady
+object_type_id: node
+field: node_status
+operation: ==
+value: NotReady
 ```
 
-> 当 Node 状态为 NotReady 时触发
+### Action Source
 
-### Pre-conditions
-
-| Object | Check | Condition | Message |
-|--------|-------|-----------|---------|
-| node | property:node_status | != Ready | Node 状态必须为非 Ready 时才执行隔离 |
-
-### Scope of Impact
-
-| Object | Impact Description |
-|--------|---------------------|
-| node | Mark node unschedulable |
-
-### Tool Configuration
-
-| Type | MCP ID | Tool Name |
-|------|--------|-----------|
-| mcp | kubernetes-mcp | cordon_node |
+| Type | BoxID | ToolID | McpID | ToolName |
+|------|-------|--------|-------|----------|
+| mcp |  |  | kubernetes-mcp | cordon_node |
 
 ### Parameter Binding
 
-| Parameter | Type | Source | Binding | Description |
-|-----------|------|--------|---------|-------------|
-| node | string | property | node_name | Node name |
+| Name | Type | Source | Operation | ValueFrom | Value | Description |
+|------|------|--------|-----------|-----------|-------|-------------|
+| node_name | string | property |  |  | node_name | Node 名称 |
+
+### Schedule
+
+| Type | Expression |
+|------|------------|
 
 ### Execution Description
 
