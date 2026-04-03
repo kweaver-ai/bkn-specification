@@ -94,8 +94,11 @@ func WriteNetworkToTar(doc *BknNetwork, w io.Writer) error {
 		}
 	}
 
-	// Generate and write SKILL.md
-	skillContent := generateSkillMd(doc)
+	// Write SKILL.md: use existing content if loaded, otherwise generate.
+	skillContent := doc.SkillContent
+	if skillContent == "" {
+		skillContent = generateSkillMd(doc)
+	}
 	mfs.AddFile("SKILL.md", []byte(skillContent))
 	if err := writeTarEntry(tw, "SKILL.md", []byte(skillContent), now); err != nil {
 		return err

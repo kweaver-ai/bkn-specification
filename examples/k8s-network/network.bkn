@@ -12,7 +12,45 @@ business_domain: kubernetes
 
 ## Network Overview
 
-- **ObjectTypes** (object_types/): node, pod, service
-- **RelationTypes** (relation_types/): pod_belongs_node, service_routes_pod
-- **ActionTypes** (action_types/): cordon_node, restart_pod
-- **ConceptGroups** (concept_groups/): k8s
+### Object Types
+
+| ID | Name | File Path | Description |
+|----|------|-----------|-------------|
+| node | Node节点 | `object_types/node.bkn` | Kubernetes 集群中的工作节点，承载 Pod 运行。 |
+| pod | Pod实例 | `object_types/pod.bkn` | Kubernetes 中的最小部署单元，一个或多个容器的集合。 |
+| service | Service服务 | `object_types/service.bkn` | Kubernetes 服务抽象层，提供稳定的访问入口。 |
+
+### Relation Types
+
+| ID | Name | File Path | Description |
+|----|------|-----------|-------------|
+| pod_belongs_node | Pod属于节点 | `relation_types/pod_belongs_node.bkn` | Pod 与其所在节点之间的归属关系。 |
+| service_routes_pod | Service路由Pod | `relation_types/service_routes_pod.bkn` | Service 到 Pod 的流量路由关系。 |
+
+### Action Types
+
+| ID | Name | File Path | Description |
+|----|------|-----------|-------------|
+| cordon_node | 隔离节点 | `action_types/cordon_node.bkn` | 将故障节点标记为不可调度，防止新 Pod 被调度到该节点。 |
+| restart_pod | 重启Pod | `action_types/restart_pod.bkn` | 当 Pod 状态异常时，自动执行重启操作。 |
+
+## Directory Structure
+
+```
+.
+├── network.bkn
+├── SKILL.md
+├── CHECKSUM
+├── object_types/
+│   ├── node.bkn
+│   ├── pod.bkn
+│   └── service.bkn
+├── relation_types/
+│   ├── pod_belongs_node.bkn
+│   └── service_routes_pod.bkn
+├── action_types/
+│   ├── cordon_node.bkn
+│   └── restart_pod.bkn
+└── concept_groups/
+    └── k8s.bkn
+```

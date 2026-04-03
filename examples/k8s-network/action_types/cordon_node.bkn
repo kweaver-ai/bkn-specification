@@ -28,6 +28,8 @@ action_type: modify
 object_type_id: node
 field: node_status
 operation: ==
+sub_conds: []
+value_from: ""
 value: NotReady
 ```
 

@@ -28,7 +28,11 @@ action_type: modify
 object_type_id: pod
 field: pod_status
 operation: in
-value: [Unknown, Failed]
+sub_conds: []
+value_from: ""
+value:
+  - Unknown
+  - Failed
 ```
 
 ### Action Source

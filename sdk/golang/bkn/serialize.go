@@ -6,6 +6,7 @@
 package bkn
 
 import (
+	"bytes"
 	"fmt"
 	"sort"
 	"strings"
@@ -39,49 +40,109 @@ func SerializeBknNetwork(doc *BknNetwork) string {
 		sb.WriteString(fm.Description + "\n")
 	}
 
-	// Write Network Overview section
-	sb.WriteString("\n## Network Overview\n\n")
+	// Network Overview
+	sb.WriteString("\n## Network Overview\n")
 
 	if len(doc.ObjectTypes) > 0 {
-		var names []string
-		for _, ot := range doc.ObjectTypes {
-			names = append(names, ot.ID)
+		sb.WriteString("\n### Object Types\n\n")
+		sb.WriteString("| ID | Name | File Path | Description |\n")
+		sb.WriteString("|----|------|-----------|-------------|\n")
+		ots := append([]*BknObjectType(nil), doc.ObjectTypes...)
+		sort.Slice(ots, func(i, j int) bool { return ots[i].ID < ots[j].ID })
+		for _, ot := range ots {
+			fmt.Fprintf(&sb, "| %s | %s | `object_types/%s.bkn` | %s |\n", ot.ID, ot.Name, ot.ID, ot.Description)
 		}
-		sort.Strings(names)
-		sb.WriteString(fmt.Sprintf("- **ObjectTypes** (object_types/): %s\n", strings.Join(names, ", ")))
 	}
 	if len(doc.RelationTypes) > 0 {
-		var names []string
-		for _, rt := range doc.RelationTypes {
-			names = append(names, rt.ID)
+		sb.WriteString("\n### Relation Types\n\n")
+		sb.WriteString("| ID | Name | File Path | Description |\n")
+		sb.WriteString("|----|------|-----------|-------------|\n")
+		rts := append([]*BknRelationType(nil), doc.RelationTypes...)
+		sort.Slice(rts, func(i, j int) bool { return rts[i].ID < rts[j].ID })
+		for _, rt := range rts {
+			fmt.Fprintf(&sb, "| %s | %s | `relation_types/%s.bkn` | %s |\n", rt.ID, rt.Name, rt.ID, rt.Description)
 		}
-		sort.Strings(names)
-		sb.WriteString(fmt.Sprintf("- **RelationTypes** (relation_types/): %s\n", strings.Join(names, ", ")))
 	}
 	if len(doc.ActionTypes) > 0 {
-		var names []string
-		for _, at := range doc.ActionTypes {
-			names = append(names, at.ID)
+		sb.WriteString("\n### Action Types\n\n")
+		sb.WriteString("| ID | Name | File Path | Description |\n")
+		sb.WriteString("|----|------|-----------|-------------|\n")
+		ats := append([]*BknActionType(nil), doc.ActionTypes...)
+		sort.Slice(ats, func(i, j int) bool { return ats[i].ID < ats[j].ID })
+		for _, at := range ats {
+			fmt.Fprintf(&sb, "| %s | %s | `action_types/%s.bkn` | %s |\n", at.ID, at.Name, at.ID, at.Description)
 		}
-		sort.Strings(names)
-		sb.WriteString(fmt.Sprintf("- **ActionTypes** (action_types/): %s\n", strings.Join(names, ", ")))
+	}
+
+	// Directory Structure — full tree with file listings
+	type dirEntry struct {
+		dir   string
+		files []string
+	}
+	var dirs []dirEntry
+	if len(doc.ObjectTypes) > 0 {
+		ots := append([]*BknObjectType(nil), doc.ObjectTypes...)
+		sort.Slice(ots, func(i, j int) bool { return ots[i].ID < ots[j].ID })
+		files := make([]string, len(ots))
+		for i, ot := range ots {
+			files[i] = ot.ID + ".bkn"
+		}
+		dirs = append(dirs, dirEntry{"object_types", files})
+	}
+	if len(doc.RelationTypes) > 0 {
+		rts := append([]*BknRelationType(nil), doc.RelationTypes...)
+		sort.Slice(rts, func(i, j int) bool { return rts[i].ID < rts[j].ID })
+		files := make([]string, len(rts))
+		for i, rt := range rts {
+			files[i] = rt.ID + ".bkn"
+		}
+		dirs = append(dirs, dirEntry{"relation_types", files})
+	}
+	if len(doc.ActionTypes) > 0 {
+		ats := append([]*BknActionType(nil), doc.ActionTypes...)
+		sort.Slice(ats, func(i, j int) bool { return ats[i].ID < ats[j].ID })
+		files := make([]string, len(ats))
+		for i, at := range ats {
+			files[i] = at.ID + ".bkn"
+		}
+		dirs = append(dirs, dirEntry{"action_types", files})
 	}
 	if len(doc.RiskTypes) > 0 {
-		var names []string
-		for _, rt := range doc.RiskTypes {
-			names = append(names, rt.ID)
+		rts := append([]*BknRiskType(nil), doc.RiskTypes...)
+		sort.Slice(rts, func(i, j int) bool { return rts[i].ID < rts[j].ID })
+		files := make([]string, len(rts))
+		for i, rt := range rts {
+			files[i] = rt.ID + ".bkn"
 		}
-		sort.Strings(names)
-		sb.WriteString(fmt.Sprintf("- **RiskTypes** (risk_types/): %s\n", strings.Join(names, ", ")))
+		dirs = append(dirs, dirEntry{"risk_types", files})
 	}
 	if len(doc.ConceptGroups) > 0 {
-		var names []string
-		for _, cg := range doc.ConceptGroups {
-			names = append(names, cg.ID)
+		cgs := append([]*BknConceptGroup(nil), doc.ConceptGroups...)
+		sort.Slice(cgs, func(i, j int) bool { return cgs[i].ID < cgs[j].ID })
+		files := make([]string, len(cgs))
+		for i, cg := range cgs {
+			files[i] = cg.ID + ".bkn"
 		}
-		sort.Strings(names)
-		sb.WriteString(fmt.Sprintf("- **ConceptGroups** (concept_groups/): %s\n", strings.Join(names, ", ")))
+		dirs = append(dirs, dirEntry{"concept_groups", files})
 	}
+
+	sb.WriteString("\n## Directory Structure\n\n```\n.\n├── network.bkn\n├── SKILL.md\n├── CHECKSUM\n")
+	for i, d := range dirs {
+		isLastDir := i == len(dirs)-1
+		dirPrefix, childPrefix := "├── ", "│   "
+		if isLastDir {
+			dirPrefix, childPrefix = "└── ", "    "
+		}
+		fmt.Fprintf(&sb, "%s%s/\n", dirPrefix, d.dir)
+		for j, f := range d.files {
+			if j == len(d.files)-1 {
+				fmt.Fprintf(&sb, "%s└── %s\n", childPrefix, f)
+			} else {
+				fmt.Fprintf(&sb, "%s├── %s\n", childPrefix, f)
+			}
+		}
+	}
+	sb.WriteString("```\n")
 
 	return sb.String()
 }
@@ -265,8 +326,12 @@ func SerializeActionType(at *BknActionType) string {
 	sb.WriteString("### Trigger Condition\n\n")
 	if at.TriggerCondition != nil {
 		sb.WriteString("```yaml\n")
-		yamlContent, _ := yaml.Marshal(at.TriggerCondition)
-		sb.Write(yamlContent)
+		var yamlBuf bytes.Buffer
+		enc := yaml.NewEncoder(&yamlBuf)
+		enc.SetIndent(2)
+		enc.Encode(at.TriggerCondition)
+		enc.Close()
+		sb.Write(yamlBuf.Bytes())
 		sb.WriteString("```\n")
 	}
 	sb.WriteString("\n")
