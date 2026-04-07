@@ -3,6 +3,7 @@ type: relation_type
 id: service_routes_pod
 name: Service路由Pod
 tags: [拓扑架构, 网络]
+summary: Service 到 Pod 的流量路由关系。
 ---
 
 ## RelationType: Service路由Pod

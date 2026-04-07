@@ -3,6 +3,7 @@ type: object_type
 id: service
 name: Service服务
 tags: [拓扑架构, 网络, Kubernetes]
+summary: Kubernetes 服务抽象层，提供稳定的访问入口。
 ---
 
 ## ObjectType: Service服务

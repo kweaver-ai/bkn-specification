@@ -23,6 +23,7 @@ func SerializeBknNetwork(doc *BknNetwork) string {
 	sb.WriteString(fmt.Sprintf("id: %s\n", fm.ID))
 	sb.WriteString(fmt.Sprintf("name: %s\n", fm.Name))
 	sb.WriteString(fmt.Sprintf("tags: [%s]\n", strings.Join(fm.Tags, ", ")))
+	sb.WriteString(fmt.Sprintf("summary: %s\n", fm.Summary))
 
 	if fm.Version != "" {
 		sb.WriteString(fmt.Sprintf("version: %s\n", fm.Version))
@@ -50,7 +51,7 @@ func SerializeBknNetwork(doc *BknNetwork) string {
 		ots := append([]*BknObjectType(nil), doc.ObjectTypes...)
 		sort.Slice(ots, func(i, j int) bool { return ots[i].ID < ots[j].ID })
 		for _, ot := range ots {
-			fmt.Fprintf(&sb, "| %s | %s | `object_types/%s.bkn` | %s |\n", ot.ID, ot.Name, ot.ID, ot.Description)
+			fmt.Fprintf(&sb, "| %s | %s | `object_types/%s.bkn` | %s |\n", ot.ID, ot.Name, ot.ID, ot.Summary)
 		}
 	}
 	if len(doc.RelationTypes) > 0 {
@@ -60,7 +61,7 @@ func SerializeBknNetwork(doc *BknNetwork) string {
 		rts := append([]*BknRelationType(nil), doc.RelationTypes...)
 		sort.Slice(rts, func(i, j int) bool { return rts[i].ID < rts[j].ID })
 		for _, rt := range rts {
-			fmt.Fprintf(&sb, "| %s | %s | `relation_types/%s.bkn` | %s |\n", rt.ID, rt.Name, rt.ID, rt.Description)
+			fmt.Fprintf(&sb, "| %s | %s | `relation_types/%s.bkn` | %s |\n", rt.ID, rt.Name, rt.ID, rt.Summary)
 		}
 	}
 	if len(doc.ActionTypes) > 0 {
@@ -70,7 +71,7 @@ func SerializeBknNetwork(doc *BknNetwork) string {
 		ats := append([]*BknActionType(nil), doc.ActionTypes...)
 		sort.Slice(ats, func(i, j int) bool { return ats[i].ID < ats[j].ID })
 		for _, at := range ats {
-			fmt.Fprintf(&sb, "| %s | %s | `action_types/%s.bkn` | %s |\n", at.ID, at.Name, at.ID, at.Description)
+			fmt.Fprintf(&sb, "| %s | %s | `action_types/%s.bkn` | %s |\n", at.ID, at.Name, at.ID, at.Summary)
 		}
 	}
 
@@ -155,6 +156,7 @@ func SerializeObjectType(ot *BknObjectType) string {
 	sb.WriteString(fmt.Sprintf("id: %s\n", ot.ID))
 	sb.WriteString(fmt.Sprintf("name: %s\n", ot.Name))
 	sb.WriteString(fmt.Sprintf("tags: [%s]\n", strings.Join(ot.Tags, ", ")))
+	sb.WriteString(fmt.Sprintf("summary: %s\n", ot.Summary))
 	sb.WriteString("---\n\n")
 
 	sb.WriteString(fmt.Sprintf("## ObjectType: %s\n\n", ot.Name))
@@ -226,6 +228,7 @@ func SerializeRelationType(rt *BknRelationType) string {
 	sb.WriteString(fmt.Sprintf("id: %s\n", rt.ID))
 	sb.WriteString(fmt.Sprintf("name: %s\n", rt.Name))
 	sb.WriteString(fmt.Sprintf("tags: [%s]\n", strings.Join(rt.Tags, ", ")))
+	sb.WriteString(fmt.Sprintf("summary: %s\n", rt.Summary))
 	sb.WriteString("---\n\n")
 
 	sb.WriteString(fmt.Sprintf("## RelationType: %s\n\n", rt.Name))
@@ -296,6 +299,7 @@ func SerializeActionType(at *BknActionType) string {
 	sb.WriteString(fmt.Sprintf("id: %s\n", at.ID))
 	sb.WriteString(fmt.Sprintf("name: %s\n", at.Name))
 	sb.WriteString(fmt.Sprintf("tags: [%s]\n", strings.Join(at.Tags, ", ")))
+	sb.WriteString(fmt.Sprintf("summary: %s\n", at.Summary))
 	sb.WriteString(fmt.Sprintf("action_type: %s\n", at.ActionType))
 	sb.WriteString("---\n\n")
 
@@ -381,6 +385,7 @@ func SerializeRiskType(rt *BknRiskType) string {
 	sb.WriteString(fmt.Sprintf("id: %s\n", rt.ID))
 	sb.WriteString(fmt.Sprintf("name: %s\n", rt.Name))
 	sb.WriteString(fmt.Sprintf("tags: [%s]\n", strings.Join(rt.Tags, ", ")))
+	sb.WriteString(fmt.Sprintf("summary: %s\n", rt.Summary))
 	sb.WriteString("---\n\n")
 
 	sb.WriteString(fmt.Sprintf("## RiskType: %s\n\n", rt.Name))
@@ -445,7 +450,7 @@ func SerializeConceptGroup(cg *BknConceptGroup, otIndex map[string]*BknObjectTyp
 			name, desc := id, ""
 			if ot, ok := otIndex[id]; ok {
 				name = ot.Name
-				desc = ot.Description
+				desc = ot.Summary
 			}
 			sb.WriteString(fmt.Sprintf("| %s | %s | %s |\n", id, name, desc))
 		}

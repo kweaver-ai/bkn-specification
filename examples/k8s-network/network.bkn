@@ -3,6 +3,7 @@ type: knowledge_network
 id: k8s-network
 name: Kubernetes网络
 tags: [Kubernetes, 拓扑架构, 运维]
+summary: Kubernetes 集群拓扑与运维操作的知识网络。
 business_domain: kubernetes
 ---
 

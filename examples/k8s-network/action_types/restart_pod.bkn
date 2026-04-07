@@ -3,12 +3,17 @@ type: action_type
 id: restart_pod
 name: 重启Pod
 tags: [运维操作, 故障恢复]
+summary: 当 Pod 状态异常时，自动执行重启操作。
 action_type: modify
 ---
 
 ## ActionType: 重启Pod
 
-当 Pod 状态异常时，自动执行重启操作。
+执行说明:
+1. 确认 Pod 状态异常
+2. 执行删除操作
+3. 等待控制器重建
+4. 验证新 Pod 状态
 
 ### Bound Object
 
@@ -55,9 +60,3 @@ value:
 |------|------------|
 | FIX_RATE | 5m |
 
-### 执行说明
-
-1. 确认 Pod 状态异常
-2. 执行删除操作
-3. 等待控制器重建
-4. 验证新 Pod 状态
