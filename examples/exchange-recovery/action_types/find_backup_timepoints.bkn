@@ -36,7 +36,7 @@ Execution Description:
 
 | Type | BoxID | ToolID | McpID | ToolName |
 |------|-------|--------|-------|----------|
-| tool | recovery_toolbox | find_backup_timepoints | | |
+| tool | recovery_toolbox | find_backup_timepoints |  |  |
 
 ### Parameter Binding
 

@@ -48,7 +48,6 @@ Output Format:
 }
 ```
 
-
 ### Bound Object
 
 | Bound Object |
@@ -76,7 +75,7 @@ value: true
 
 | Type | BoxID | ToolID | McpID | ToolName |
 |------|-------|--------|-------|----------|
-| tool | recovery_toolbox | list_data_domains | | |
+| tool | recovery_toolbox | list_data_domains |  |  |
 
 ### Parameter Binding
 

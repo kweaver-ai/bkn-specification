@@ -7,6 +7,7 @@ summary: 产品需求计划通过MRP运算展开为物料需求计划。
 ---
 
 ## RelationType: 产品需求计划展开为物料需求计划
+
 产品需求计划Product Plan通过ERP计算（产品需求数量 * 物料用量 - 物料库存-在途物料订单量 = 物料缺口量）后形成物料需求计划MRP（Material Requirement Plan）。
 
 ### Endpoint

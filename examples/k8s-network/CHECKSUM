@@ -1,5 +1,5 @@
 # BKN Directory Checksum
-# generated: 2026-04-09T17:24:20+08:00
+# generated: 2026-04-09T17:32:22+08:00
 SKILL.md  sha256:dc8001908e7adf8c
 action_type:cordon_node  sha256:caacaaadacbe3f81
 action_type:restart_pod  sha256:545651b371d8d70a

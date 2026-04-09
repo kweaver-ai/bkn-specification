@@ -73,7 +73,7 @@ value: Pending
 
 | Type | BoxID | ToolID | McpID | ToolName |
 |------|-------|--------|-------|----------|
-| tool | recovery_toolbox | execute_recovery_task | | |
+| tool | recovery_toolbox | execute_recovery_task |  |  |
 
 ### Parameter Binding
 

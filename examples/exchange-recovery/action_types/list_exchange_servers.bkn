@@ -9,7 +9,6 @@ action_type: add
 
 ## ActionType: 列出Exchange服务器列表
 
-
 Execution Description:
 
 1. 连接到指定的数据域（备份服务器）
@@ -71,7 +70,7 @@ value: Online
 
 | Type | BoxID | ToolID | McpID | ToolName |
 |------|-------|--------|-------|----------|
-| tool | recovery_toolbox | list_exchange_servers | | |
+| tool | recovery_toolbox | list_exchange_servers |  |  |
 
 ### Parameter Binding
 

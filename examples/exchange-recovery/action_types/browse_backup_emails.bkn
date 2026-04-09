@@ -42,7 +42,7 @@ Execution Description:
 
 | Type | BoxID | ToolID | McpID | ToolName |
 |------|-------|--------|-------|----------|
-| tool | recovery_toolbox | browse_backup_emails | | |
+| tool | recovery_toolbox | browse_backup_emails |  |  |
 
 ### Parameter Binding
 
