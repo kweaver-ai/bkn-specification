@@ -3,11 +3,15 @@ type: object_type
 id: recovery_server
 name: Exchange恢复服务器
 tags: [灾备, 邮件服务器, Exchange, 恢复环境]
+summary: 用于恢复的Exchange服务器，作为恢复操作的目的地。
 ---
 
 ## ObjectType: Exchange恢复服务器
 
-用于恢复的Exchange服务器，作为恢复操作的目的地。
+### Data Source
+
+| Type | ID | Name |
+|------|----|------|
 
 ### Data Properties
 
@@ -24,13 +28,10 @@ tags: [灾备, 邮件服务器, Exchange, 恢复环境]
 
 ### Logic Properties
 
+
 ### Keys
 
 Primary Keys: id
 Display Key: server_name
-Incremental Key:
+Incremental Key: 
 
-### Data Source
-
-| Type | ID | Name |
-|------|-----|------|

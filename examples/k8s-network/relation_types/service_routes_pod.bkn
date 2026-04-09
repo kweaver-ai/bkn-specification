@@ -8,8 +8,6 @@ summary: Service 到 Pod 的流量路由关系。
 
 ## RelationType: Service路由Pod
 
-Service 到 Pod 的流量路由关系。
-
 ### Endpoint
 
 | Source | Target | Type |

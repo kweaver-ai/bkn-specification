@@ -3,11 +3,15 @@ type: object_type
 id: exchange_server
 name: Exchange生产服务器
 tags: [灾备, 邮件服务器, Exchange, 生产环境]
+summary: Microsoft Exchange邮件服务器，托管用户邮箱和邮件数据，是生产环境中的服务器。
 ---
 
 ## ObjectType: Exchange生产服务器
 
-Microsoft Exchange邮件服务器，托管用户邮箱和邮件数据，是生产环境中的服务器。
+### Data Source
+
+| Type | ID | Name |
+|------|----|------|
 
 ### Data Properties
 
@@ -24,13 +28,10 @@ Microsoft Exchange邮件服务器，托管用户邮箱和邮件数据，是生�
 
 ### Logic Properties
 
+
 ### Keys
 
 Primary Keys: id
 Display Key: server_name
-Incremental Key:
+Incremental Key: 
 
-### Data Source
-
-| Type | ID | Name |
-|------|-----|------|

@@ -67,7 +67,7 @@ func GenerateChecksumFileWithFS(fsys FileSystem, root string) (string, error) {
 	}
 	sort.Strings(entries)
 
-	now := time.Now().UTC().Format("2006-01-02T15:04:05Z07:00")
+	now := time.Now().Format(time.RFC3339)
 	lines := []string{
 		"# BKN Directory Checksum",
 		"# generated: " + now,

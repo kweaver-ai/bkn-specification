@@ -8,12 +8,10 @@ summary: Kubernetes 服务抽象层，提供稳定的访问入口。
 
 ## ObjectType: Service服务
 
-Kubernetes 服务抽象层，提供稳定的访问入口。
-
 ### Data Source
 
 | Type | ID | Name |
-|------|-----|------|
+|------|----|------|
 | data_view | d2mio43q6gt6p380dith | service_info_view |
 
 ### Data Properties

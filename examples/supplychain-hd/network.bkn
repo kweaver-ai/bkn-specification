@@ -3,6 +3,7 @@ type: knowledge_network
 id: supplychain-hd
 name: HD供应链业务知识网络
 tags: [供应链, 采购, 库存, MRP]
+summary: 
 business_domain: supplychain
 ---
 
@@ -18,5 +19,75 @@ business_domain: supplychain
 
 ## Network Overview
 
-- **ObjectTypes** (object_types/): product, material, bom, inventory, salesorder, forecast, mps, mrp, pp, pr, po, supplier
-- **RelationTypes** (relation_types/): salesorder2product, product2inventory, product2bom, bom2material, material2inventory, material2pr, pr2po, po2material, po2supplier, mrp2material, pp2mps, pp2mrp, pp2product, demand2pp
+### Object Types
+
+| ID | Name | File Path | Description |
+|----|------|-----------|-------------|
+| bom | 产品BOM | `object_types/bom.bkn` | 定义产品的物料清单结构，包含层级关系和替代料信息。 |
+| forecast | 需求预测 | `object_types/forecast.bkn` | 记录销售侧的月度需求预测数据，作为供应链计划（MRP）的输入源头。 |
+| inventory | 库存 | `object_types/inventory.bkn` | 实时记录物料在各仓库及仓位的现有库存量、库存状态及批次信息。 |
+| material | 物料 | `object_types/material.bkn` | 记录物料的基础信息，包括编码、名称、规格型号、属性（自制/外购）及单位等及相关参数。 |
+| mps | 工厂生产计划 | `object_types/mps.bkn` | 产品需求计划最终通过工厂生产计划进行执行，比如某产品A 2月需要1000台，根据物料和产能情况，生产计划经理排2个生产计划，2月15日完成800台，2月28日完成200台。 |
+| mrp | 物料需求计划 | `object_types/mrp.bkn` | MRP运算产生的物料净需求建议。 |
+| po | 采购订单 | `object_types/po.bkn` | 发给供应商的正式采购订单。 |
+| pp | 产品需求计划 | `object_types/pp.bkn` | 产品需求计划是指产品在特定时间需要交付的数量计划，比如2026年3月要交付1000台A产品。 |
+| pr | 采购申请单 | `object_types/pr.bkn` | 根据MRP生成的内部采购申请PR。 |
+| product | 产品 | `object_types/product.bkn` | 存储企业生产的成品基本信息，包括产品编码、名称。 |
+| salesorder | 销售订单 | `object_types/salesorder.bkn` | 客户销售订单信息。 |
+| supplier | 供应商 | `object_types/supplier.bkn` | 记录供应商的基础信息，包括编码、名称、信用代码、付款条件及对应采购员。 |
+
+### Relation Types
+
+| ID | Name | File Path | Description |
+|----|------|-----------|-------------|
+| bom2material | 产品BOM关联物料 | `relation_types/bom2material.bkn` | 产品BOM与物料之间的关联关系。 |
+| demand2pp | 需求预测关联产品需求计划 | `relation_types/demand2pp.bkn` | 需求预测与产品需求计划之间的关联关系。 |
+| material2inventory | 物料关联库存 | `relation_types/material2inventory.bkn` | 物料与库存记录之间的关联关系。 |
+| material2pr | 物料关联采购申请单 | `relation_types/material2pr.bkn` | 物料与采购申请单之间的关联关系。 |
+| mrp2material | 物料需求计划关联物料 | `relation_types/mrp2material.bkn` | 物料需求计划与物料之间的关联关系。 |
+| po2material | 采购订单关联物料 | `relation_types/po2material.bkn` | 采购订单与物料之间的关联关系。物料采购订单PO是关于某个物料的采购，基于物料编码来进行连接 |
+| po2supplier | 采购订单关联供应商 | `relation_types/po2supplier.bkn` | 采购订单与供应商之间的关联关系。 |
+| pp2mps | 产品需求计划分解为工厂生产计划 | `relation_types/pp2mps.bkn` | 产品需求计划分解为工厂生产计划执行。 |
+| pp2mrp | 产品需求计划展开为物料需求计划 | `relation_types/pp2mrp.bkn` | 产品需求计划通过MRP运算展开为物料需求计划。产品需求计划Product Plan通过ERP计算（产品需求数量 * 物料用量 - 物料库存-在途物料订单量 = 物料缺口量）后形成物料需求计划MRP（Material Requirement Plan）。 |
+| pp2product | 产品需求计划关联产品 | `relation_types/pp2product.bkn` | 产品需求计划与产品之间的关联关系。产品需求计划是某个产品在计划在某个时间的交付需求量，比如2月份要交付的产品A需求为100台。 |
+| pr2po | 采购申请单关联采购订单 | `relation_types/pr2po.bkn` | 采购申请单与采购订单之间的关联关系。 |
+| product2bom | 产品关联产品BOM | `relation_types/product2bom.bkn` | 产品与其BOM物料清单之间的关联关系。 |
+| product2inventory | 产品关联库存 | `relation_types/product2inventory.bkn` | 产品与库存之间的关联关系。 |
+| salesorder2product | 销售订单关联产品 | `relation_types/salesorder2product.bkn` | 销售订单与产品之间的关联关系。 |
+
+## Directory Structure
+
+```
+.
+├── network.bkn
+├── SKILL.md
+├── CHECKSUM
+├── object_types/
+│   ├── bom.bkn
+│   ├── forecast.bkn
+│   ├── inventory.bkn
+│   ├── material.bkn
+│   ├── mps.bkn
+│   ├── mrp.bkn
+│   ├── po.bkn
+│   ├── pp.bkn
+│   ├── pr.bkn
+│   ├── product.bkn
+│   ├── salesorder.bkn
+│   └── supplier.bkn
+└── relation_types/
+    ├── bom2material.bkn
+    ├── demand2pp.bkn
+    ├── material2inventory.bkn
+    ├── material2pr.bkn
+    ├── mrp2material.bkn
+    ├── po2material.bkn
+    ├── po2supplier.bkn
+    ├── pp2mps.bkn
+    ├── pp2mrp.bkn
+    ├── pp2product.bkn
+    ├── pr2po.bkn
+    ├── product2bom.bkn
+    ├── product2inventory.bkn
+    └── salesorder2product.bkn
+```

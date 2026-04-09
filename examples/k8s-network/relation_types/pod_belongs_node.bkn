@@ -8,8 +8,6 @@ summary: Pod 与其所在节点之间的归属关系。
 
 ## RelationType: Pod属于节点
 
-Pod 与其所在节点之间的归属关系。
-
 ### Endpoint
 
 | Source | Target | Type |

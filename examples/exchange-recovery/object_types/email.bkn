@@ -3,11 +3,15 @@ type: object_type
 id: email
 name: 邮件
 tags: [灾备, 邮件, Exchange]
+summary: Exchange服务器中的单封邮件对象。
 ---
 
 ## ObjectType: 邮件
 
-Exchange服务器中的单封邮件对象。
+### Data Source
+
+| Type | ID | Name |
+|------|----|------|
 
 ### Data Properties
 
@@ -31,9 +35,5 @@ Exchange服务器中的单封邮件对象。
 
 Primary Keys: id
 Display Key: email_subject
-Incremental Key:
+Incremental Key: 
 
-### Data Source
-
-| Type | ID | Name |
-|------|-----|------|

@@ -3,11 +3,16 @@ type: object_type
 id: product
 name: 产品
 tags: [供应链, 产品, 已审核]
+summary: 存储企业生产的成品基本信息，包括产品编码、名称。
 ---
 
 ## ObjectType: 产品
 
-存储企业生产的成品基本信息，包括产品编码、名称。
+### Data Source
+
+| Type | ID | Name |
+|------|----|------|
+| data_view | d606tgg8ubbiutnq84lg | HD_产品 |
 
 ### Data Properties
 
@@ -20,29 +25,23 @@ tags: [供应链, 产品, 已审核]
 
 #### product_bom
 
-- **Display**: product_bom
 - **Type**: operator
-- **Source**: bom_tree_builder (operator)
+- **Source**: operator (bom_tree_builder)
 
 | Parameter | Type | Source | Binding | Description |
 |-----------|------|--------|---------|-------------|
-| timeout | number | input | - |  |
-| authorization | string | const | <your_authorization_token> |  |
-| cache | boolean | input | - |  |
-| include_inventory | boolean | input | - |  |
-| include_substitutes | boolean | input | - |  |
-| knowledge_network_id | string | const | supplychain_hd0202 |  |
-| max_products | number | input | - |  |
-| product_codes | array | input | - |  |
+| timeout | number | input |  |  |
+| authorization | string | const |  |  |
+| cache | boolean | input |  |  |
+| include_inventory | boolean | input |  |  |
+| include_substitutes | boolean | input |  |  |
+| knowledge_network_id | string | const |  |  |
+| max_products | number | input |  |  |
+| product_codes | array | input |  |  |
 
 ### Keys
 
 Primary Keys: material_number
 Display Key: material_number
-Incremental Key:
+Incremental Key: 
 
-### Data Source
-
-| Type | ID | Name |
-|------|-----|------|
-| data_view | d606tgg8ubbiutnq84lg | HD_产品 |

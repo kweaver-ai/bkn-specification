@@ -3,16 +3,16 @@ type: concept_group
 id: exchange
 name: Exchange邮件恢复概念分组
 tags: [灾备, Exchange, 概念分组]
+summary: 将Exchange邮件恢复相关的对象类型组织在一起，便于理解和管理。
 ---
 
 ## ConceptGroup: Exchange邮件恢复概念分组
-
-将Exchange邮件恢复相关的对象类型组织在一起，便于理解和管理。
 
 ### Object Types
 
 | ID | Name | Description |
 |----|------|-------------|
-| exchange_server | Exchange服务器 | Microsoft Exchange邮件服务器，托管用户邮箱和邮件数据 |
-| backup_set | 备份集 | 备份软件中的备份集，包含特定时间点的数据快照 |
-| email | 邮件 | Exchange服务器中的单封邮件对象 |
+| backup_set | backup_set |  |
+| email | 邮件 | Exchange服务器中的单封邮件对象。 |
+| exchange_server | Exchange生产服务器 | Microsoft Exchange邮件服务器，托管用户邮箱和邮件数据，是生产环境中的服务器。 |
+

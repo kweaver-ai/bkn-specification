@@ -3,11 +3,15 @@ type: object_type
 id: recovery_task
 name: 恢复任务
 tags: [灾备, 恢复任务, 任务管理]
+summary: Exchange邮件恢复任务，包含恢复策略的所有信息。
 ---
 
 ## ObjectType: 恢复任务
 
-Exchange邮件恢复任务，包含恢复策略的所有信息。
+### Data Source
+
+| Type | ID | Name |
+|------|----|------|
 
 ### Data Properties
 
@@ -27,13 +31,10 @@ Exchange邮件恢复任务，包含恢复策略的所有信息。
 
 ### Logic Properties
 
+
 ### Keys
 
 Primary Keys: id
 Display Key: task_name
-Incremental Key:
+Incremental Key: 
 
-### Data Source
-
-| Type | ID | Name |
-|------|-----|------|

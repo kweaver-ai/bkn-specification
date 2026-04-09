@@ -3,11 +3,18 @@ type: object_type
 id: material
 name: 物料
 tags: [供应链, 物料, 已审核]
+summary: 记录物料的基础信息。
 ---
 
 ## ObjectType: 物料
 
-记录物料的基础信息，包括编码、名称、规格型号、属性（自制/外购）及单位等及相关参数。
+包括编码、名称、规格型号、属性（自制/外购）及单位等及相关参数。
+
+### Data Source
+
+| Type | ID | Name |
+|------|----|------|
+| data_view | d607dm08ubbiutnq84mg | HD_物料 |
 
 ### Data Properties
 
@@ -31,10 +38,5 @@ tags: [供应链, 物料, 已审核]
 
 Primary Keys: material_code
 Display Key: material_name
-Incremental Key:
+Incremental Key: 
 
-### Data Source
-
-| Type | ID | Name |
-|------|-----|------|
-| data_view | d607dm08ubbiutnq84mg | HD_物料 |

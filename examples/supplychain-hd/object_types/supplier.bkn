@@ -3,11 +3,16 @@ type: object_type
 id: supplier
 name: 供应商
 tags: [供应链, 供应商, 已审核]
+summary: 记录供应商的基础信息，包括编码、名称、信用代码、付款条件及对应采购员。
 ---
 
 ## ObjectType: 供应商
 
-记录供应商的基础信息，包括编码、名称、信用代码、付款条件及对应采购员。
+### Data Source
+
+| Type | ID | Name |
+|------|----|------|
+| data_view | 2017573348875202561 | erp_supplier |
 
 ### Data Properties
 
@@ -26,10 +31,5 @@ tags: [供应链, 供应商, 已审核]
 
 Primary Keys: supplier_code
 Display Key: supplier_name
-Incremental Key:
+Incremental Key: 
 
-### Data Source
-
-| Type | ID | Name |
-|------|-----|------|
-| data_view | 2017573348875202561 | erp_supplier |

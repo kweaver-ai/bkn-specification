@@ -3,11 +3,16 @@ type: object_type
 id: inventory
 name: 库存
 tags: [供应链, 库存, 已审核]
+summary: 实时记录物料在各仓库及仓位的现有库存量、库存状态及批次信息。
 ---
 
 ## ObjectType: 库存
 
-实时记录物料在各仓库及仓位的现有库存量、库存状态及批次信息。
+### Data Source
+
+| Type | ID | Name |
+|------|----|------|
+| data_view | 2017573348090867713 | erp_real_time_inventory |
 
 ### Data Properties
 
@@ -33,8 +38,3 @@ Primary Keys: seq_no
 Display Key: seq_no
 Incremental Key:
 
-### Data Source
-
-| Type | ID | Name |
-|------|-----|------|
-| data_view | 2017573348090867713 | erp_real_time_inventory |

@@ -3,11 +3,10 @@ type: relation_type
 id: po2supplier
 name: 采购订单关联供应商
 tags: [供应链, 关系, 已审核]
+summary: 采购订单与供应商之间的关联关系。
 ---
 
 ## RelationType: 采购订单关联供应商
-
-采购订单与供应商之间的关联关系。
 
 ### Endpoint
 
@@ -20,3 +19,4 @@ tags: [供应链, 关系, 已审核]
 | Source Property | Target Property |
 |-----------------|-----------------|
 | supplier_number | supplier_code |
+

@@ -3,15 +3,19 @@ type: action_type
 id: find_backup_timepoints
 name: 查找备份时间点副本
 tags: [灾备, 备份查找, 时间点]
+summary: 根据备份的exchange服务器查找该服务器的备份时间点副本。
 action_type: add
-enabled: false
-risk_level: low
-requires_approval: false
 ---
 
 ## ActionType: 查找备份时间点副本
 
-根据备份的exchange服务器查找该服务器的备份时间点副本。
+Execution Description:
+1. 接收Exchange服务器名称和地址作为输入参数
+2. 在备份软件中查找该服务器的备份时间点副本
+3. 按备份时间倒序排序
+4. 输出时间点副本列表，包括：
+   - 时间点副本ID、时间点名称、备份时间、时间点大小、是否验证
+   - 每个时间点副本的元数据摘要
 
 ### Bound Object
 
@@ -21,36 +25,25 @@ requires_approval: false
 
 ### Affect Object
 
-| Affect Object |
-|---------------|
-| exchange_server |
-| backup_timepoint |
+| Affect Object | Affect Description |
+|---------------|--------------------|
+| backup_timepoint |  |
 
-### Pre-conditions
+### Trigger Condition
 
-| Object | Check | Condition | Message |
-|--------|-------|-----------|---------|
-| exchange_server | property:status | != null | 服务器信息必须存在 |
 
-### Scope of Impact
+### Action Source
 
-| Object | Impact Description |
-|--------|---------------------|
-| exchange_server | 仅查询服务器信息，不修改数据 |
-| backup_timepoint | 仅查询时间点副本信息，不修改数据 |
-
-### Tool Configuration
-
-| Type | Toolbox ID | Tool ID |
-|------|------------|---------|
-| tool | recovery_toolbox | find_backup_timepoints |
+| Type | BoxID | ToolID | McpID | ToolName |
+|------|-------|--------|-------|----------|
+| tool | recovery_toolbox | find_backup_timepoints | | |
 
 ### Parameter Binding
 
-| Name | Type | Source | Binding | Description |
-|-----------|------|--------|---------|-------------|
-| server_name | string | property | server_name | Exchange服务器名称 |
-| server_address | string | property | server_address | Exchange服务器地址 |
+| Name | Type | Source | Operation | ValueFrom | Value | Description |
+|------|------|--------|-----------|-----------|-------|-------------|
+| server_name | string | property |  |  |  | Exchange服务器名称 |
+| server_address | string | property |  |  |  | Exchange服务器地址 |
 
 ### Schedule
 
@@ -58,11 +51,3 @@ requires_approval: false
 |------|------------|
 | EVENT | on_request |
 
-### Execution Description
-
-1. 接收Exchange服务器名称和地址作为输入参数
-2. 在备份软件中查找该服务器的备份时间点副本
-3. 按备份时间倒序排序
-4. 输出时间点副本列表，包括：
-   - 时间点副本ID、时间点名称、备份时间、时间点大小、是否验证
-   - 每个时间点副本的元数据摘要

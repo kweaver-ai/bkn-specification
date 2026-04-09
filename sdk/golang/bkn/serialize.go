@@ -167,7 +167,7 @@ func SerializeObjectType(ot *BknObjectType) string {
 	// Data Source
 	sb.WriteString("### Data Source\n\n")
 	sb.WriteString("| Type | ID | Name |\n")
-	sb.WriteString("|------|-----|------|\n")
+	sb.WriteString("|------|----|------|\n")
 	if ot.DataSource != nil {
 		sb.WriteString(fmt.Sprintf("| %s | %s | %s |\n",
 			ot.DataSource.Type, ot.DataSource.ID, ot.DataSource.Name))
@@ -194,7 +194,7 @@ func SerializeObjectType(ot *BknObjectType) string {
 			sb.WriteString(fmt.Sprintf("- **Type**: %s\n", lp.Type))
 		}
 		if lp.DataSource != nil {
-			sb.WriteString(fmt.Sprintf("- **Source**: %s (%s)\n", lp.DataSource.Type, lp.DataSource.Name))
+			sb.WriteString(fmt.Sprintf("- **Source**: %s (%s)\n", lp.DataSource.Name, lp.DataSource.Type))
 		}
 		if lp.Description != "" {
 			sb.WriteString(fmt.Sprintf("- **Description**: %s\n", lp.Description))
@@ -259,7 +259,7 @@ func SerializeRelationType(rt *BknRelationType) string {
 		// ### Mapping View — backing data source reference
 		sb.WriteString("### Mapping View\n\n")
 		sb.WriteString("| Type | ID |\n")
-		sb.WriteString("|------|-----|\n")
+		sb.WriteString("|------|----|\n")
 		if rules, ok := rt.MappingRules.(InDirectMappingRule); ok {
 			if rules.BackingDataSource != nil {
 				sb.WriteString(fmt.Sprintf("| %s | %s |\n", rules.BackingDataSource.Type, rules.BackingDataSource.ID))
@@ -269,7 +269,7 @@ func SerializeRelationType(rt *BknRelationType) string {
 			// ### Source Mapping — source property → view property
 			sb.WriteString("### Source Mapping\n\n")
 			sb.WriteString("| Source Property | View Property |\n")
-			sb.WriteString("|-----------------|----------------|\n")
+			sb.WriteString("|-----------------|---------------|\n")
 			for _, r := range rules.SourceMappingRules {
 				sb.WriteString(fmt.Sprintf("| %s | %s |\n", r.SourceProperty, r.TargetProperty))
 			}
@@ -278,7 +278,7 @@ func SerializeRelationType(rt *BknRelationType) string {
 			// ### Target Mapping — view property → target property
 			sb.WriteString("### Target Mapping\n\n")
 			sb.WriteString("| View Property | Target Property |\n")
-			sb.WriteString("|---------------|------------------|\n")
+			sb.WriteString("|---------------|-----------------|\n")
 			for _, r := range rules.TargetMappingRules {
 				sb.WriteString(fmt.Sprintf("| %s | %s |\n", r.SourceProperty, r.TargetProperty))
 			}

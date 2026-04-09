@@ -3,81 +3,13 @@ type: action_type
 id: verify_exchange_availability
 name: 验证Exchange可用性
 tags: [灾备, 可用性验证, Exchange验证]
+summary: 验证恢复后的Exchange邮件服务器可用性，检查邮件是否可读、邮件服务器是否可正常对外提供业务。
 action_type: add
-enabled: true
-risk_level: low
-requires_approval: false
 ---
 
 ## ActionType: 验证Exchange可用性
 
-验证恢复后的Exchange邮件服务器可用性，检查邮件是否可读、邮件服务器是否可正常对外提供业务。
-
-### Bound Object
-
-| Bound Object |
-|--------------|
-| recovery_job |
-
-### Affect Object
-
-| Affect Object |
-|---------------|
-| exchange_server |
-| email |
-
-### Trigger Condition
-
-```yaml
-  object_type_id: recovery_job
-  field: recovery_result
-  operation: ==
-  value: 成功
-```
-
-> 当恢复作业结果为成功时触发
-
-### Pre-conditions
-
-| Object | Check | Condition | Message |
-|--------|-------|-----------|---------|
-| recovery_job | property:id | != null | 恢复作业必须存在 |
-| recovery_job | property:recovery_result | == 成功 | 恢复作业结果必须为成功 |
-| recovery_task | property:id | != null | 恢复任务必须存在 |
-| recovery_task | property:recovery_destination | != null | 恢复目的地必须指定 |
-
-### Scope of Impact
-
-| Object | Impact Description |
-|--------|---------------------|
-| recovery_job | 读取恢复作业信息 |
-| recovery_job_verification | 产生可用性验证记录 |
-| exchange_server | 验证Exchange服务器可用性，更新服务器状态 |
-| recovery_server | 验证恢复服务器可用性，更新服务器状态 |
-| email | 验证邮件可读性 |
-
-### Tool Configuration
-
-| Type | Toolbox ID | Tool ID |
-|------|------------|---------|
-| tool | recovery_toolbox | verify_exchange_availability |
-
-### Parameter Binding
-
-| Name | Type | Source | Binding | Description |
-|-----------|------|--------|---------|-------------|
-| recovery_job_id | integer | property | id | 恢复作业ID |
-| recovery_task_id | integer | property | recovery_task_id | 恢复任务ID |
-| exchange_server_id | integer | property | exchange_server_id | Exchange服务器ID |
-| recovery_destination | string | property | recovery_destination | 恢复目的地 |
-
-### Schedule
-
-| Type | Expression |
-|------|------------|
-| FIX_RATE | 1m |
-
-### Execution Description
+Execution Description：
 
 1. 读取恢复作业信息：
    - 根据recovery_job_id读取恢复作业详细信息
@@ -110,7 +42,7 @@ requires_approval: false
      - 如果recovery_destination == production，将exchange_server.status更新为Offline
 7. 输出验证结果和验证详情
 
-### Verification Methods
+Verification Methods:
 
 | Verification Method | Description |
 |-------------------|-------------|
@@ -119,7 +51,7 @@ requires_approval: false
 | 附件检查 | 验证邮件附件是否可正常访问 |
 | 可读性检查 | 验证邮件是否可正常读取 |
 
-### Verification Details Fields
+Verification Details Fields:
 
 验证详情为JSON格式，包含以下字段：
 
@@ -136,3 +68,47 @@ requires_approval: false
   "verification_summary": "Exchange服务正常运行，邮件可读性良好"
 }
 ```
+
+### Bound Object
+
+| Bound Object |
+|--------------|
+| recovery_job |
+
+### Affect Object
+
+| Affect Object | Affect Description |
+|---------------|--------------------|
+| exchange_server |  |
+
+### Trigger Condition
+
+```yaml
+object_type_id: recovery_job
+field: recovery_result
+operation: ==
+sub_conds: []
+value_from: ""
+value: 成功
+```
+
+### Action Source
+
+| Type | BoxID | ToolID | McpID | ToolName |
+|------|-------|--------|-------|----------|
+
+### Parameter Binding
+
+| Name | Type | Source | Operation | ValueFrom | Value | Description |
+|------|------|--------|-----------|-----------|-------|-------------|
+| recovery_job_id | integer | property |  |  |  | 恢复作业ID |
+| recovery_task_id | integer | property |  |  |  | 恢复任务ID |
+| exchange_server_id | integer | property |  |  |  | Exchange服务器ID |
+| recovery_destination | string | property |  |  |  | 恢复目的地 |
+
+### Schedule
+
+| Type | Expression |
+|------|------------|
+| FIX_RATE | 1m |
+

@@ -3,66 +3,13 @@ type: action_type
 id: list_data_domains
 name: 列出数据域列表
 tags: [灾备, 数据查询, 数据域管理]
+summary: 列出Agent管理的所有数据域，供用户选择。
 action_type: add
-enabled: true
-risk_level: low
-requires_approval: false
 ---
 
 ## ActionType: 列出数据域列表
 
-列出Agent管理的所有数据域，供用户选择。
-
-### Bound Object
-
-| Bound Object |
-|--------------|
-| data_domain |
-
-### Affect Object
-
-| Affect Object |
-|---------------|
-| data_domain |
-
-### Trigger Condition
-
-```yaml
-  object_type_id: agent
-  field: initialized
-  operation: ==
-  value: true
-```
-
-> 当Agent初始化完成时触发
-
-### Pre-conditions
-
-无
-
-### Scope of Impact
-
-| Object | Impact Description |
-|--------|---------------------|
-| data_domain | 列出Agent管理的所有数据域信息 |
-
-### Tool Configuration
-
-| Type | Toolbox ID | Tool ID |
-|------|------------|---------|
-| tool | recovery_toolbox | list_data_domains |
-
-### Parameter Binding
-
-无
-
-### Schedule
-
-| Type | Expression |
-|------|------------|
-| ON_DEMAND | 按需执行 |
-
-### Execution Description
+Execution Description:
 
 1. 查询Agent管理的所有数据域
 2. 获取每个数据域的详细信息：
@@ -78,7 +25,7 @@ requires_approval: false
 4. 输出数据域列表
 5. 如果没有数据域，提示用户需要先配置数据域
 
-### Output Format
+Output Format:
 
 ```json
 {
@@ -100,3 +47,45 @@ requires_approval: false
   ]
 }
 ```
+
+
+### Bound Object
+
+| Bound Object |
+|--------------|
+| data_domain |
+
+### Affect Object
+
+| Affect Object | Affect Description |
+|---------------|--------------------|
+| data_domain |  |
+
+### Trigger Condition
+
+```yaml
+object_type_id: agent
+field: initialized
+operation: ==
+sub_conds: []
+value_from: ""
+value: true
+```
+
+### Action Source
+
+| Type | BoxID | ToolID | McpID | ToolName |
+|------|-------|--------|-------|----------|
+| tool | recovery_toolbox | list_data_domains | | |
+
+### Parameter Binding
+
+| Name | Type | Source | Operation | ValueFrom | Value | Description |
+|------|------|--------|-----------|-----------|-------|-------------|
+
+### Schedule
+
+| Type | Expression |
+|------|------------|
+| ON_DEMAND | 按需执行 |
+
