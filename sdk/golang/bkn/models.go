@@ -239,12 +239,6 @@ type BknRiskTypeFrontmatter struct {
 type BknRiskType struct {
 	BknRiskTypeFrontmatter
 	RawContent string
-
-	ControlScope      string
-	ControlPolicy     string
-	PreChecks         []*CondCfg
-	RollbackPlan      string
-	AuditRequirements string
 }
 
 // BknConceptGroupFrontmatter is YAML frontmatter metadata for a .bkn file.

@@ -15,6 +15,36 @@ import (
 
 var sectionRE = regexp.MustCompile(`(?m)^###\s+(.+)$`)
 var subSectionRE = regexp.MustCompile(`(?m)^####\s+(.+)$`)
+
+var knownObjectTypeSections = map[string]bool{
+	"Data Source":      true,
+	"Data Properties":  true,
+	"Logic Properties": true,
+	"Keys":             true,
+}
+
+var knownRelationTypeSections = map[string]bool{
+	"Endpoint":       true,
+	"Mapping Rules":  true,
+	"Mapping View":   true,
+	"Source Mapping": true,
+	"Target Mapping": true,
+}
+
+var knownActionTypeSections = map[string]bool{
+	"Bound Object":      true,
+	"Affect Object":     true,
+	"Trigger Condition": true,
+	"Action Source":     true,
+	"Parameter Binding": true,
+	"Schedule":          true,
+}
+
+var knownRiskTypeSections = map[string]bool{}
+
+var knownConceptGroupSections = map[string]bool{
+	"Object Types": true,
+}
 var inlineMetaRE = regexp.MustCompile(`(?m)^-\s+\*\*(\w+)\*\*:\s*(.+)$`)
 var h1HeadingRE = regexp.MustCompile(`(?m)^#\s+(.+)$`)
 var h2HeadingRE = regexp.MustCompile(`(?m)^##\s+(.+)$`)
@@ -119,6 +149,53 @@ func parseTable(lines []string) []map[string]string {
 		rows = append(rows, row)
 	}
 	return rows
+}
+
+// extractSectionsWithDesc splits a BKN entity file into the pre-section description
+// and all ### sections (map + document order). One pass replaces both
+// extractBodyDescription and extractSections for ### level.
+func extractSectionsWithDesc(text string) (desc string, sections map[string]string, order []string) {
+	_, body := splitFrontmatter(text)
+
+	h2Loc := h2HeadingRE.FindStringIndex(body)
+	if h2Loc == nil {
+		return "", make(map[string]string), nil
+	}
+	rest := body[h2Loc[1]:]
+
+	matches := sectionRE.FindAllStringSubmatchIndex(rest, -1)
+	sections = make(map[string]string, len(matches))
+	if len(matches) == 0 {
+		return strings.TrimSpace(rest), sections, nil
+	}
+
+	desc = strings.TrimSpace(rest[:matches[0][0]])
+	for i, m := range matches {
+		title := strings.TrimSpace(rest[m[2]:m[3]])
+		start := m[1]
+		end := len(rest)
+		if i+1 < len(matches) {
+			end = matches[i+1][0]
+		}
+		sections[title] = strings.TrimSpace(rest[start:end])
+		order = append(order, title)
+	}
+	return
+}
+
+// buildDescription joins the pre-section description text with any unknown sections
+// (sections whose titles are not in knownSections), preserving document order.
+func buildDescription(desc string, sections map[string]string, order []string, knownSections map[string]bool) string {
+	var parts []string
+	if desc != "" {
+		parts = append(parts, desc)
+	}
+	for _, title := range order {
+		if !knownSections[title] {
+			parts = append(parts, "### "+title+"\n\n"+sections[title])
+		}
+	}
+	return strings.Join(parts, "\n\n")
 }
 
 func extractSections(body string, level string) map[string]string {
@@ -357,6 +434,8 @@ func ParseObjectTypeFile(text string, sourcePath string) (*BknObjectType, error)
 		return nil, err
 	}
 
+	desc, sections, order := extractSectionsWithDesc(text)
+
 	obj := &BknObjectType{
 		BknObjectTypeFrontmatter: BknObjectTypeFrontmatter{
 			Type:        "object_type",
@@ -364,14 +443,14 @@ func ParseObjectTypeFile(text string, sourcePath string) (*BknObjectType, error)
 			Name:        strVal(fmData, "name"),
 			Tags:        strSliceVal(fmData, "tags"),
 			Summary:     strVal(fmData, "summary"),
-			Description: extractBodyDescription(text),
+			Description: buildDescription(desc, sections, order, knownObjectTypeSections),
 		},
 		RawContent: text,
 	}
 
-	sections := extractSections(text, "###")
 	_, obj.HasDataPropertiesSection = sections["Data Properties"]
 	_, obj.HasKeysSection = sections["Keys"]
+
 	if s, ok := sections["Data Source"]; ok {
 		obj.DataSource = parseDataSource(s)
 	}
@@ -398,6 +477,8 @@ func ParseRelationTypeFile(text string, sourcePath string) (*BknRelationType, er
 		return nil, err
 	}
 
+	desc, sections, order := extractSectionsWithDesc(text)
+
 	rel := &BknRelationType{
 		BknRelationTypeFrontmatter: BknRelationTypeFrontmatter{
 			Type:        "relation_type",
@@ -405,12 +486,10 @@ func ParseRelationTypeFile(text string, sourcePath string) (*BknRelationType, er
 			Name:        strVal(fmData, "name"),
 			Tags:        strSliceVal(fmData, "tags"),
 			Summary:     strVal(fmData, "summary"),
-			Description: extractBodyDescription(text),
+			Description: buildDescription(desc, sections, order, knownRelationTypeSections),
 		},
 		RawContent: text,
 	}
-
-	sections := extractSections(text, "###")
 
 	if s, ok := sections["Endpoint"]; ok {
 		rows := parseTable(strings.Split(s, "\n"))
@@ -479,6 +558,8 @@ func ParseActionTypeFile(text string, sourcePath string) (*BknActionType, error)
 		return nil, err
 	}
 
+	desc, sections, order := extractSectionsWithDesc(text)
+
 	act := &BknActionType{
 		BknActionTypeFrontmatter: BknActionTypeFrontmatter{
 			Type:        "action_type",
@@ -487,12 +568,10 @@ func ParseActionTypeFile(text string, sourcePath string) (*BknActionType, error)
 			Tags:        strSliceVal(fmData, "tags"),
 			Summary:     strVal(fmData, "summary"),
 			ActionType:  strVal(fmData, "action_type"),
-			Description: extractBodyDescription(text),
+			Description: buildDescription(desc, sections, order, knownActionTypeSections),
 		},
 		RawContent: text,
 	}
-
-	sections := extractSections(text, "###")
 
 	if s, ok := sections["Bound Object"]; ok {
 		bo, at := parseBoundObject(s)
@@ -647,6 +726,8 @@ func ParseRiskTypeFile(text string, sourcePath string) (*BknRiskType, error) {
 		return nil, err
 	}
 
+	desc, sections, order := extractSectionsWithDesc(text)
+
 	risk := &BknRiskType{
 		BknRiskTypeFrontmatter: BknRiskTypeFrontmatter{
 			Type:        "risk_type",
@@ -654,49 +735,12 @@ func ParseRiskTypeFile(text string, sourcePath string) (*BknRiskType, error) {
 			Name:        strVal(fmData, "name"),
 			Tags:        strSliceVal(fmData, "tags"),
 			Summary:     strVal(fmData, "summary"),
-			Description: extractBodyDescription(text),
+			Description: buildDescription(desc, sections, order, knownRiskTypeSections),
 		},
 		RawContent: text,
 	}
 
-	sections := extractSections(text, "###")
-
-	if s, ok := sections["Control Scope"]; ok {
-		risk.ControlScope = s
-	}
-	if s, ok := sections["Control Policy"]; ok {
-		risk.ControlPolicy = s
-	}
-	if s, ok := sections["Pre-checks"]; ok {
-		risk.PreChecks = parseRiskPreChecks(s)
-	}
-	if s, ok := sections["Rollback Plan"]; ok {
-		risk.RollbackPlan = s
-	}
-	if s, ok := sections["Audit Requirements"]; ok {
-		risk.AuditRequirements = s
-	}
-
 	return risk, nil
-}
-
-// parseRiskPreChecks parses the pre-checks table for risk types.
-func parseRiskPreChecks(sectionText string) []*CondCfg {
-	rows := parseTable(strings.Split(sectionText, "\n"))
-	var checks []*CondCfg
-	for _, row := range rows {
-		check := &CondCfg{
-			ObjectTypeID: row["Object"],
-			Field:        row["Check"],
-			Operation:    row["Condition"],
-		}
-		// Parse value from condition if it's a simple comparison
-		if val := row["Condition"]; val != "" {
-			check.Value = val
-		}
-		checks = append(checks, check)
-	}
-	return checks
 }
 
 func ParseConceptGroupFile(text string, sourcePath string) (*BknConceptGroup, error) {
@@ -705,6 +749,8 @@ func ParseConceptGroupFile(text string, sourcePath string) (*BknConceptGroup, er
 		return nil, err
 	}
 
+	desc, sections, order := extractSectionsWithDesc(text)
+
 	cg := &BknConceptGroup{
 		BknConceptGroupFrontmatter: BknConceptGroupFrontmatter{
 			Type:        "concept_group",
@@ -712,12 +758,10 @@ func ParseConceptGroupFile(text string, sourcePath string) (*BknConceptGroup, er
 			Name:        strVal(fmData, "name"),
 			Tags:        strSliceVal(fmData, "tags"),
 			Summary:     strVal(fmData, "summary"),
-			Description: extractBodyDescription(text),
+			Description: buildDescription(desc, sections, order, knownConceptGroupSections),
 		},
 		RawContent: text,
 	}
-
-	sections := extractSections(text, "###")
 
 	if s, ok := sections["Object Types"]; ok {
 		cg.ObjectTypes = parseConceptGroupObjectTypes(s)

@@ -336,7 +336,6 @@ production
 	require.NoError(t, err)
 	assert.Equal(t, "high_memory", rt.ID)
 	assert.Equal(t, "High Memory Usage", rt.Name)
-	assert.Equal(t, "production", rt.ControlScope)
 }
 
 // === Parse Concept Group Tests ===
@@ -1004,4 +1003,3 @@ Pod runs on Node via data view
 	assert.Equal(t, "view_node_name", rules.TargetMappingRules[0].SourceProperty)
 	assert.Equal(t, "name", rules.TargetMappingRules[0].TargetProperty)
 }
-

@@ -393,34 +393,6 @@ func SerializeRiskType(rt *BknRiskType) string {
 		sb.WriteString(rt.Description + "\n\n")
 	}
 
-	sb.WriteString("### Control Scope\n\n")
-	if rt.ControlScope != "" {
-		sb.WriteString(rt.ControlScope)
-		sb.WriteString("\n")
-	}
-	sb.WriteString("\n")
-
-	sb.WriteString("### Control Policy\n\n")
-	if rt.ControlPolicy != "" {
-		sb.WriteString(rt.ControlPolicy)
-		sb.WriteString("\n")
-	}
-	sb.WriteString("\n")
-
-	sb.WriteString("### Rollback Plan\n\n")
-	if rt.RollbackPlan != "" {
-		sb.WriteString(rt.RollbackPlan)
-		sb.WriteString("\n")
-	}
-	sb.WriteString("\n")
-
-	sb.WriteString("### Audit Requirements\n\n")
-	if rt.AuditRequirements != "" {
-		sb.WriteString(rt.AuditRequirements)
-		sb.WriteString("\n")
-	}
-	sb.WriteString("\n")
-
 	return sb.String()
 }
 

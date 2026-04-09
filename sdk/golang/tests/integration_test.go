@@ -122,6 +122,7 @@ func compareDirs(t *testing.T, srcDir, dstDir string) {
 		"concept_groups",
 		"object_types",
 		"relation_types",
+		"risk_types",
 	}
 
 	for _, target := range targets {
