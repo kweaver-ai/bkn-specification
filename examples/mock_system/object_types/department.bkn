@@ -3,6 +3,7 @@ type: object_type
 id: department
 name: 部门
 tags: []
+summary: 
 ---
 
 ## ObjectType: 部门
@@ -28,7 +29,7 @@ tags: []
 
 ### Keys
 
-Primary Key: department_id
+Primary Keys: department_id
 Display Key: name
 Incremental Key: 
 

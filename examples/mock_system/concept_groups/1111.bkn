@@ -3,6 +3,7 @@ type: concept_group
 id: 1111
 name: 11111
 tags: [333]
+summary: 
 ---
 
 ## ConceptGroup: 11111

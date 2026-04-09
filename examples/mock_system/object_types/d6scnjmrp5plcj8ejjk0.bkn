@@ -3,6 +3,7 @@ type: object_type
 id: d6scnjmrp5plcj8ejjk0
 name: 1
 tags: []
+summary: 
 ---
 
 ## ObjectType: 1
@@ -40,7 +41,7 @@ tags: []
 
 ### Keys
 
-Primary Key: component
+Primary Keys: component
 Display Key: component
 Incremental Key: 
 

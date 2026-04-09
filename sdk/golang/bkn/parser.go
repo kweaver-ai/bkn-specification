@@ -711,6 +711,7 @@ func ParseConceptGroupFile(text string, sourcePath string) (*BknConceptGroup, er
 			ID:          strVal(fmData, "id"),
 			Name:        strVal(fmData, "name"),
 			Tags:        strSliceVal(fmData, "tags"),
+			Summary:     strVal(fmData, "summary"),
 			Description: extractBodyDescription(text),
 		},
 		RawContent: text,

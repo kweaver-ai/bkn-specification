@@ -3,6 +3,7 @@ type: concept_group
 id: k8s
 name: Kubernetes集群
 tags: [k8s]
+summary: 
 ---
 
 ## ConceptGroup: Kubernetes集群

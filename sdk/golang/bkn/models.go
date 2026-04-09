@@ -253,6 +253,7 @@ type BknConceptGroupFrontmatter struct {
 	ID          string   `yaml:"id"`
 	Name        string   `yaml:"name"`
 	Tags        []string `yaml:"tags"`
+	Summary     string   `yaml:"summary"`
 	Description string   `yaml:"description"`
 }
 

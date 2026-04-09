@@ -433,6 +433,7 @@ func SerializeConceptGroup(cg *BknConceptGroup, otIndex map[string]*BknObjectTyp
 	sb.WriteString(fmt.Sprintf("id: %s\n", cg.ID))
 	sb.WriteString(fmt.Sprintf("name: %s\n", cg.Name))
 	sb.WriteString(fmt.Sprintf("tags: [%s]\n", strings.Join(cg.Tags, ", ")))
+	sb.WriteString(fmt.Sprintf("summary: %s\n", cg.Summary))
 	sb.WriteString("---\n\n")
 
 	sb.WriteString(fmt.Sprintf("## ConceptGroup: %s\n\n", cg.Name))

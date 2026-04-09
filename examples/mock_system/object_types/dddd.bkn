@@ -3,6 +3,7 @@ type: object_type
 id: dddd
 name: dddd
 tags: []
+summary: 
 ---
 
 ## ObjectType: dddd
@@ -26,7 +27,7 @@ tags: []
 
 ### Keys
 
-Primary Key: c_commentid
+Primary Keys: c_commentid
 Display Key: c_commentid
 Incremental Key: 
 

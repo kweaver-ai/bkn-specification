@@ -3,6 +3,7 @@ type: object_type
 id: 44444
 name: 4444
 tags: []
+summary: 
 ---
 
 ## ObjectType: 4444
@@ -26,7 +27,7 @@ tags: []
 
 ### Keys
 
-Primary Key: c_commentid
+Primary Keys: c_commentid
 Display Key: c_commentid
 Incremental Key: 
 

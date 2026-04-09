@@ -3,6 +3,7 @@ type: object_type
 id: employee
 name: 员工
 tags: []
+summary: 
 ---
 
 ## ObjectType: 员工
@@ -30,7 +31,7 @@ tags: []
 
 ### Keys
 
-Primary Key: employee_id
+Primary Keys: employee_id
 Display Key: name
 Incremental Key: 
 
