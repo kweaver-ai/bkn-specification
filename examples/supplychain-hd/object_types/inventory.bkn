@@ -36,5 +36,5 @@ summary: 实时记录物料在各仓库及仓位的现有库存量、库存状�
 
 Primary Keys: seq_no
 Display Key: seq_no
-Incremental Key:
+Incremental Key: 
 

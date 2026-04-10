@@ -35,5 +35,5 @@ summary: 产品需求计划最终通过工厂生产计划进行执行，
 
 Primary Keys: seq_no
 Display Key: bom_code
-Incremental Key:
+Incremental Key: 
 

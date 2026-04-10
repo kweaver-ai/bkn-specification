@@ -1,5 +1,5 @@
 # BKN Directory Checksum
-# generated: 2026-04-09T17:38:26+08:00
+# generated: 2026-04-10T23:00:20+08:00
 SKILL.md  sha256:84b912d3c20e2382
 action_type:browse_backup_emails  sha256:6a200e1f19130d16
 action_type:execute_recovery_task  sha256:0422269ba6cb962d
@@ -28,5 +28,5 @@ relation_type:recovery_job_to_generate_recovery_report  sha256:ba4770f991cbfd9e
 relation_type:recovery_task_from_backup_timepoint  sha256:564c985a57b5808f
 relation_type:recovery_task_restores_exchange  sha256:8c90c3988e2461fa
 relation_type:verify_exchange_availability  sha256:ae5961670dff346a
-risk_type:backup_timepoint_verification_failed  sha256:833f7b3415237d3e
-risk_type:production_data_overwrite  sha256:c743344e6afe5eb2
+risk_type:backup_timepoint_verification_failed  sha256:85261f85447a90ac
+risk_type:production_data_overwrite  sha256:d75adc59b44ddf57
