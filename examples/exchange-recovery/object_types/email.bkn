@@ -2,7 +2,7 @@
 type: object_type
 id: email
 name: 邮件
-tags: [灾备, 邮件, Exchange]
+tags: [Exchange, 灾备, 邮件]
 ---
 
 ## ObjectType: 邮件
@@ -30,6 +30,30 @@ Exchange服务器中的单封邮件对象。
 | is_important | 是否重要 | boolean | 是否为重要邮件 | is_important |
 
 ### Logic Properties
+
+#### is_readable
+
+**Meta**
+
+| Display Name | Type | Description |
+|--------------|------|-------------|
+| 邮件可读 | operator | 检查邮件是否可读（内容完整性验证） |
+
+**Source**
+
+| Source Type | Source ID | Source Name |
+|-------------|-----------|-------------|
+
+**Parameters**
+
+| Name | Type | Source | Operation | ValueFrom | Value | Description |
+|------|------|--------|-----------|-----------|-------|-------------|
+| email_content | text | property |  | email_content |  | 邮件内容 |
+
+**Analysis Dimensions**
+
+| Name | Display Name | Type | Description |
+|------|--------------|------|-------------|
 
 
 ### Keys

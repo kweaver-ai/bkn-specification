@@ -1,5 +1,5 @@
 # BKN Directory Checksum
-# generated: 2026-04-13T14:34:53+08:00
+# generated: 2026-04-13T18:21:31+08:00
 SKILL.md  sha256:d88bd5ba972bca41
 object_type:bom  sha256:f4f550e8d816d5e6
 object_type:forecast  sha256:e7f99dc1bfe45d96
@@ -10,7 +10,7 @@ object_type:mrp  sha256:d5738f6d73c93899
 object_type:po  sha256:77dd28bb3710a2a6
 object_type:pp  sha256:9863a94178966233
 object_type:pr  sha256:e018fbba0479780b
-object_type:product  sha256:c197c9dd5b5a065e
+object_type:product  sha256:ee4ea3f06a559968
 object_type:salesorder  sha256:dcf50a31f7bfa408
 object_type:supplier  sha256:985c51fb0e83aa1b
 relation_type:bom2material  sha256:9345e1e23d3fd017

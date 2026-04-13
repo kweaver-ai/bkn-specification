@@ -2,7 +2,7 @@
 type: object_type
 id: recovery_job_verification
 name: Exchange可用性验证
-tags: [灾备, 验证, 可用性验证]
+tags: [可用性验证, 灾备, 验证]
 ---
 
 ## ObjectType: Exchange可用性验证

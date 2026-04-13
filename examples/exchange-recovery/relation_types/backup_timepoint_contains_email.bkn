@@ -2,7 +2,7 @@
 type: relation_type
 id: backup_timepoint_contains_email
 name: 备份时间点副本包含邮件
-tags: [灾备, 包含关系, contains]
+tags: [contains, 包含关系, 灾备]
 ---
 
 ## RelationType: 备份时间点副本包含邮件
@@ -19,5 +19,5 @@ tags: [灾备, 包含关系, contains]
 
 | Source Property | Target Property |
 |-----------------|-----------------|
-| metadata | email_subject |
+| metadata.email_list | email_subject |
 

@@ -2,7 +2,7 @@
 type: relation_type
 id: recovery_task_from_backup_timepoint
 name: 恢复任务依赖备份时间点副本
-tags: [灾备, 依赖关系, from]
+tags: [from, 依赖关系, 灾备]
 ---
 
 ## RelationType: 恢复任务依赖备份时间点副本

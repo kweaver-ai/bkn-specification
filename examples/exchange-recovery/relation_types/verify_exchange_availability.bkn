@@ -2,7 +2,7 @@
 type: relation_type
 id: verify_exchange_availability
 name: 验证Exchange可用性后生成恢复报告
-tags: [灾备, 流程关系, to]
+tags: [to, 流程关系, 灾备]
 ---
 
 ## RelationType: 验证Exchange可用性后生成恢复报告

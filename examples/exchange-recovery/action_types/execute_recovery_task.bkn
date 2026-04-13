@@ -2,7 +2,7 @@
 type: action_type
 id: execute_recovery_task
 name: 执行恢复任务
-tags: [灾备, 恢复任务, 任务执行]
+tags: [任务执行, 恢复任务, 灾备]
 action_type: add
 ---
 
@@ -10,7 +10,7 @@ action_type: add
 
 执行已生成的恢复任务，产生恢复作业。
 
-### Execution Description:
+### Execution Description
 
 1. 检查备份时间点验证状态：
    - 如果backup_timepoint.is_verified == false || backup_timepoint.verification_result != success，告知用户备份时间点未验证或验证结果为非可恢复
@@ -80,13 +80,13 @@ value: Pending
 
 | Name | Type | Source | Operation | ValueFrom | Value | Description |
 |------|------|--------|-----------|-----------|-------|-------------|
-| task_id | string | property |  |  |  | 任务ID |
-| timepoint | datetime | property |  |  |  | 备份时间点 |
-| recovery_type | string | property |  |  |  | 恢复类型（挂载恢复/数据恢复） |
-| recovery_granularity | string | property |  |  |  | 恢复粒度（邮件服务器/邮件级别） |
-| recovery_destination | string | property |  |  |  | 恢复目的地（production/recovery_server） |
-| target_emails | array | property |  |  |  | 目标邮件列表（邮件级别恢复时使用） |
-| user_id | string | input |  |  |  | 执行恢复操作的用户ID |
+| task_id | string | property |  | id |  | 任务ID |
+| timepoint | datetime | property |  | timepoint |  | 备份时间点 |
+| recovery_type | string | property |  | recovery_type |  | 恢复类型（挂载恢复/数据恢复） |
+| recovery_granularity | string | property |  | recovery_granularity |  | 恢复粒度（邮件服务器/邮件级别） |
+| recovery_destination | string | property |  | recovery_destination |  | 恢复目的地（production/recovery_server） |
+| target_emails | array | property |  | target_emails |  | 目标邮件列表（邮件级别恢复时使用） |
+| user_id | string | input |  | - |  | 执行恢复操作的用户ID |
 
 ### Schedule
 

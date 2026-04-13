@@ -2,7 +2,7 @@
 type: object_type
 id: data_domain
 name: 数据域
-tags: [灾备, 数据域, 备份服务器]
+tags: [备份服务器, 数据域, 灾备]
 ---
 
 ## ObjectType: 数据域

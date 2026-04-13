@@ -2,7 +2,8 @@
 type: knowledge_network
 id: exchange-recovery
 name: Exchange邮件恢复网络
-tags: [灾备, Exchange, Exchange邮件服务器或邮件恢复]
+tags: [Exchange, Exchange邮件服务器或邮件恢复, 灾备]
+branch: main
 business_domain: disaster_recovery
 ---
 

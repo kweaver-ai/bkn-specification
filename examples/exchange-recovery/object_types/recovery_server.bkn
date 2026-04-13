@@ -2,7 +2,7 @@
 type: object_type
 id: recovery_server
 name: Exchange恢复服务器
-tags: [灾备, 邮件服务器, Exchange, 恢复环境]
+tags: [Exchange, 恢复环境, 灾备, 邮件服务器]
 ---
 
 ## ObjectType: Exchange恢复服务器

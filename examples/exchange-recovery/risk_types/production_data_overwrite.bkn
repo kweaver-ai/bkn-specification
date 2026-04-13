@@ -2,7 +2,7 @@
 type: risk_type
 id: production_data_overwrite
 name: 生产数据覆盖风险
-tags: [灾备, 风险管控, 数据安全]
+tags: [数据安全, 灾备, 风险管控]
 ---
 
 ## RiskType: 生产数据覆盖风险

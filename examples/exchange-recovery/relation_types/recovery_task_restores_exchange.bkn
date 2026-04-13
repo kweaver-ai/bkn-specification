@@ -2,7 +2,7 @@
 type: relation_type
 id: recovery_task_restores_exchange
 name: 恢复任务恢复Exchange
-tags: [灾备, 恢复关系, restores]
+tags: [restores, 恢复关系, 灾备]
 ---
 
 ## RelationType: 恢复任务恢复Exchange

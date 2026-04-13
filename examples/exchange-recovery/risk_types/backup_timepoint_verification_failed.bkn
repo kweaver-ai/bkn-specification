@@ -2,7 +2,7 @@
 type: risk_type
 id: backup_timepoint_verification_failed
 name: 备份时间点验证失败风险
-tags: [灾备, 风险管控, 备份质量]
+tags: [备份质量, 灾备, 风险管控]
 ---
 
 ## RiskType: 备份时间点验证失败风险

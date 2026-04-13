@@ -2,7 +2,7 @@
 type: action_type
 id: find_backup_timepoints
 name: 查找备份时间点副本
-tags: [灾备, 备份查找, 时间点]
+tags: [备份查找, 时间点, 灾备]
 action_type: add
 ---
 
@@ -10,7 +10,7 @@ action_type: add
 
 根据备份的exchange服务器查找该服务器的备份时间点副本。
 
-### Execution Description:
+### Execution Description
 
 1. 接收Exchange服务器名称和地址作为输入参数
 2. 在备份软件中查找该服务器的备份时间点副本
@@ -44,8 +44,8 @@ action_type: add
 
 | Name | Type | Source | Operation | ValueFrom | Value | Description |
 |------|------|--------|-----------|-----------|-------|-------------|
-| server_name | string | property |  |  |  | Exchange服务器名称 |
-| server_address | string | property |  |  |  | Exchange服务器地址 |
+| server_name | string | property |  | server_name |  | Exchange服务器名称 |
+| server_address | string | property |  | server_address |  | Exchange服务器地址 |
 
 ### Schedule
 

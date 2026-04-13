@@ -2,7 +2,7 @@
 type: action_type
 id: generate_recovery_report
 name: 生成恢复报告
-tags: [灾备, 报告生成, 结果反馈]
+tags: [报告生成, 灾备, 结果反馈]
 action_type: add
 ---
 
@@ -10,7 +10,7 @@ action_type: add
 
 生成恢复操作的完整报告，包括恢复状态、数据统计、时效评估。
 
-### Execution Description:
+### Execution Description
 
 1. 从recovery_job中获取恢复操作信息：
    - recovery_task_id：恢复任务ID
@@ -69,23 +69,24 @@ value: success
 
 | Type | BoxID | ToolID | McpID | ToolName |
 |------|-------|--------|-------|----------|
+| tool | recovery_toolbox | generate_recovery_report |  |  |
 
 ### Parameter Binding
 
 | Name | Type | Source | Operation | ValueFrom | Value | Description |
 |------|------|--------|-----------|-----------|-------|-------------|
-| recovery_task_id | string | property |  |  |  | 恢复任务ID |
-| recovery_job_id | string | property |  |  |  | 恢复作业ID |
-| user_id | string | property |  |  |  | 执行用户ID |
-| execution_time | datetime | property |  |  |  | 执行时间 |
-| end_time | datetime | property |  |  |  | 结束时间 |
-| duration | integer | property |  |  |  | 恢复耗时（秒） |
-| recovery_result | string | property |  |  |  | 恢复结果 |
-| verification_id | string | property |  |  |  | 验证ID（如有） |
-| verification_method | string | property |  |  |  | 验证方法（如有） |
-| verification_result | string | property |  |  |  | 验证结果（如有） |
-| verification_time | datetime | property |  |  |  | 验证时间（如有） |
-| verification_details | json | property |  |  |  | 验证详情（如有） |
+| recovery_task_id | string | property |  | recovery_task_id |  | 恢复任务ID |
+| recovery_job_id | string | property |  | id |  | 恢复作业ID |
+| user_id | string | property |  | user_id |  | 执行用户ID |
+| execution_time | datetime | property |  | execution_time |  | 执行时间 |
+| end_time | datetime | property |  | end_time |  | 结束时间 |
+| duration | integer | property |  | duration |  | 恢复耗时（秒） |
+| recovery_result | string | property |  | recovery_result |  | 恢复结果 |
+| verification_id | string | property |  | id |  | 验证ID（如有） |
+| verification_method | string | property |  | verification_method |  | 验证方法（如有） |
+| verification_result | string | property |  | verification_result |  | 验证结果（如有） |
+| verification_time | datetime | property |  | verification_time |  | 验证时间（如有） |
+| verification_details | json | property |  | verification_details |  | 验证详情（如有） |
 
 ### Schedule
 

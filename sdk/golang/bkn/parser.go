@@ -86,9 +86,9 @@ func extractBodyDescription(text string) string {
 	return ""
 }
 
-// extractSummary derives a one-sentence summary from a description:
+// ExtractSummary derives a one-sentence summary from a description:
 // the text up to the first "。", ". " (period+space), or "\n", whichever comes first.
-func extractSummary(desc string) string {
+func ExtractSummary(desc string) string {
 	if desc == "" {
 		return ""
 	}
@@ -296,38 +296,76 @@ func parseLogicProperties(sectionText string) []*LogicProperty {
 	return props
 }
 
+// boldLabelRE matches a bold label anchor like **Meta** at the start of a trimmed line.
+var boldLabelRE = regexp.MustCompile(`^\*\*(.+?)\*\*$`)
+
 func parseLogicPropertySubSection(name, content string) *LogicProperty {
 	prop := &LogicProperty{Name: name}
+	lines := strings.Split(content, "\n")
+	var currentLabel string
+	var tableLines []string
 
-	for _, line := range strings.Split(content, "\n") {
-		matches := inlineMetaRE.FindStringSubmatch(strings.TrimSpace(line))
-		if len(matches) == 3 {
-			val := strings.TrimSpace(matches[2])
-			switch matches[1] {
-			case "Display":
-				prop.DisplayName = val
-			case "Type":
-				prop.Type = val
-			case "Source":
-				prop.DataSource = parseInlineSource(val)
-			case "Description":
-				prop.Description = val
+	flush := func() {
+		if currentLabel == "" || len(tableLines) == 0 {
+			return
+		}
+		rows := parseTable(tableLines)
+		switch currentLabel {
+		case "Meta":
+			if len(rows) > 0 {
+				prop.DisplayName = rows[0]["Display Name"]
+				prop.Type = rows[0]["Type"]
+				prop.Description = rows[0]["Description"]
+			}
+		case "Source":
+			if len(rows) > 0 {
+				prop.DataSource = &ResourceInfo{
+					Type: rows[0]["Source Type"],
+					ID:   rows[0]["Source ID"],
+					Name: rows[0]["Source Name"],
+				}
+			}
+		case "Parameters":
+			for _, row := range rows {
+				v := any(row["Value"])
+				if row["Value"] == "" {
+					v = nil
+				}
+				prop.Parameters = append(prop.Parameters, Parameter{
+					Name:        row["Name"],
+					Type:        row["Type"],
+					Source:      row["Source"],
+					Operation:   row["Operation"],
+					ValueFrom:   row["ValueFrom"],
+					Value:       v,
+					Description: row["Description"],
+				})
+			}
+		case "Analysis Dimensions":
+			for _, row := range rows {
+				prop.AnalysisDims = append(prop.AnalysisDims, Field{
+					Name:        row["Name"],
+					DisplayName: row["Display Name"],
+					Type:        row["Type"],
+					Description: row["Description"],
+				})
 			}
 		}
+		tableLines = nil
 	}
 
-	// Parse parameter table
-	rows := parseTable(strings.Split(content, "\n"))
-	for _, row := range rows {
-		prop.Parameters = append(prop.Parameters, Parameter{
-			Name:        row["Parameter"],
-			Type:        row["Type"],
-			Source:      row["Source"],
-			ValueFrom:   row["Binding"],
-			Description: row["Description"],
-		})
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if m := boldLabelRE.FindStringSubmatch(trimmed); len(m) == 2 {
+			flush()
+			currentLabel = m[1]
+			continue
+		}
+		if strings.HasPrefix(trimmed, "|") {
+			tableLines = append(tableLines, trimmed)
+		}
 	}
-
+	flush()
 	return prop
 }
 
@@ -437,7 +475,7 @@ func ParseNetworkFile(text string, sourcePath string) (*BknNetwork, error) {
 		},
 		RawContent: text,
 	}
-	network.Summary = extractSummary(network.Description)
+	network.Summary = ExtractSummary(network.Description)
 
 	return network, nil
 }
@@ -461,7 +499,7 @@ func ParseObjectTypeFile(text string, sourcePath string) (*BknObjectType, error)
 		},
 		RawContent: text,
 	}
-	obj.Summary = extractSummary(obj.Description)
+	obj.Summary = ExtractSummary(obj.Description)
 
 	_, obj.HasDataPropertiesSection = sections["Data Properties"]
 	_, obj.HasKeysSection = sections["Keys"]
@@ -504,7 +542,7 @@ func ParseRelationTypeFile(text string, sourcePath string) (*BknRelationType, er
 		},
 		RawContent: text,
 	}
-	rel.Summary = extractSummary(rel.Description)
+	rel.Summary = ExtractSummary(rel.Description)
 
 	if s, ok := sections["Endpoint"]; ok {
 		rows := parseTable(strings.Split(s, "\n"))
@@ -586,7 +624,7 @@ func ParseActionTypeFile(text string, sourcePath string) (*BknActionType, error)
 		},
 		RawContent: text,
 	}
-	act.Summary = extractSummary(act.Description)
+	act.Summary = ExtractSummary(act.Description)
 
 	if s, ok := sections["Bound Object"]; ok {
 		bo, at := parseBoundObject(s)
@@ -675,8 +713,9 @@ func parseTriggerCondition(sectionText string) *CondCfg {
 }
 
 // parseParameterBinding parses the parameter binding table.
-// BKN files use column header "Parameter" for the name field, and "Binding"
-// for the value_from field.
+// Current column headers: Name | Type | Source | Operation | ValueFrom | Value | Description.
+// Legacy aliases "Parameter" (for Name) and "Binding"/"Value From" (for ValueFrom) are
+// also accepted for backwards compatibility with older BKN files.
 func parseParameterBinding(sectionText string) []Parameter {
 	rows := parseTable(strings.Split(sectionText, "\n"))
 	var params []Parameter
@@ -753,7 +792,7 @@ func ParseRiskTypeFile(text string, sourcePath string) (*BknRiskType, error) {
 		},
 		RawContent: text,
 	}
-	risk.Summary = extractSummary(risk.Description)
+	risk.Summary = ExtractSummary(risk.Description)
 
 	return risk, nil
 }
@@ -776,7 +815,7 @@ func ParseConceptGroupFile(text string, sourcePath string) (*BknConceptGroup, er
 		},
 		RawContent: text,
 	}
-	cg.Summary = extractSummary(cg.Description)
+	cg.Summary = ExtractSummary(cg.Description)
 
 	if s, ok := sections["Object Types"]; ok {
 		cg.ObjectTypes = parseConceptGroupObjectTypes(s)

@@ -2,7 +2,7 @@
 type: action_type
 id: list_data_domains
 name: 列出数据域列表
-tags: [灾备, 数据查询, 数据域管理]
+tags: [数据域管理, 数据查询, 灾备]
 action_type: add
 ---
 
@@ -10,7 +10,7 @@ action_type: add
 
 列出Agent管理的所有数据域，供用户选择。
 
-### Execution Description:
+### Execution Description
 
 1. 查询Agent管理的所有数据域
 2. 获取每个数据域的详细信息：
@@ -26,7 +26,7 @@ action_type: add
 4. 输出数据域列表
 5. 如果没有数据域，提示用户需要先配置数据域
 
-Output Format:
+### Output Format
 
 ```json
 {

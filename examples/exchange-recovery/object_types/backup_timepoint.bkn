@@ -2,7 +2,7 @@
 type: object_type
 id: backup_timepoint
 name: 备份时间点副本
-tags: [灾备, 备份, 时间点]
+tags: [备份, 时间点, 灾备]
 ---
 
 ## ObjectType: 备份时间点副本

@@ -2,7 +2,7 @@
 type: action_type
 id: browse_backup_emails
 name: 浏览备份邮件
-tags: [灾备, 备份浏览, 邮件]
+tags: [备份浏览, 灾备, 邮件]
 action_type: add
 ---
 
@@ -10,7 +10,7 @@ action_type: add
 
 根据时间点副本查找里面备份了哪些邮件。
 
-### Execution Description:
+### Execution Description
 
 1. 接收备份时间点副本ID和过滤条件作为输入参数
 2. 读取备份时间点副本的元数据
@@ -35,7 +35,7 @@ action_type: add
 
 | Affect Object | Affect Description |
 |---------------|--------------------|
-| backup_timepoint |  |
+| email |  |
 
 ### Trigger Condition
 
@@ -50,12 +50,12 @@ action_type: add
 
 | Name | Type | Source | Operation | ValueFrom | Value | Description |
 |------|------|--------|-----------|-----------|-------|-------------|
-| backup_timepoint_id | integer | property |  |  |  | 备份时间点副本ID |
-| backup_timepoint_time | datetime | property |  |  |  | 备份时间 |
-| metadata | json | property |  |  |  | 备份时间点副本元数据 |
-| email_subject_filter | string | input |  |  |  | 邮件主题过滤（可选） |
-| email_sender_filter | string | input |  |  |  | 邮件发件人过滤（可选） |
-| email_date_filter | datetime | input |  |  |  | 邮件日期过滤（可选） |
+| backup_timepoint_id | integer | property |  | id |  | 备份时间点副本ID |
+| backup_timepoint_time | datetime | property |  | snapshot_time |  | 备份时间 |
+| metadata | json | property |  | metadata |  | 备份时间点副本元数据 |
+| email_subject_filter | string | input |  | - |  | 邮件主题过滤（可选） |
+| email_sender_filter | string | input |  | - |  | 邮件发件人过滤（可选） |
+| email_date_filter | datetime | input |  | - |  | 邮件日期过滤（可选） |
 
 ### Schedule
 

@@ -197,23 +197,44 @@ func SerializeObjectType(ot *BknObjectType) string {
 	sb.WriteString("### Logic Properties\n\n")
 	for _, lp := range ot.LogicProperties {
 		sb.WriteString(fmt.Sprintf("#### %s\n\n", lp.Name))
-		if lp.Type != "" {
-			sb.WriteString(fmt.Sprintf("- **Type**: %s\n", lp.Type))
-		}
+
+		// Meta table
+		sb.WriteString("**Meta**\n\n")
+		sb.WriteString("| Display Name | Type | Description |\n")
+		sb.WriteString("|--------------|------|-------------|\n")
+		sb.WriteString(fmt.Sprintf("| %s | %s | %s |\n\n", lp.DisplayName, lp.Type, lp.Description))
+
+		// Source table
+		sb.WriteString("**Source**\n\n")
+		sb.WriteString("| Source Type | Source ID | Source Name |\n")
+		sb.WriteString("|-------------|-----------|-------------|\n")
 		if lp.DataSource != nil {
-			sb.WriteString(fmt.Sprintf("- **Source**: %s (%s)\n", lp.DataSource.Name, lp.DataSource.Type))
+			sb.WriteString(fmt.Sprintf("| %s | %s | %s |\n", lp.DataSource.Type, lp.DataSource.ID, lp.DataSource.Name))
 		}
-		if lp.Description != "" {
-			sb.WriteString(fmt.Sprintf("- **Description**: %s\n", lp.Description))
-		}
-		if len(lp.Parameters) > 0 {
-			sb.WriteString("\n| Parameter | Type | Source | Binding | Description |\n")
-			sb.WriteString("|-----------|------|--------|---------|-------------|\n")
-			for _, p := range lp.Parameters {
-				sb.WriteString(fmt.Sprintf("| %s | %s | %s | %s | %s |\n",
-					p.Name, p.Type, p.Source, p.Operation, p.Description))
+		sb.WriteString("\n")
+
+		// Parameter table
+		sb.WriteString("**Parameters**\n\n")
+		sb.WriteString("| Name | Type | Source | Operation | ValueFrom | Value | Description |\n")
+		sb.WriteString("|------|------|--------|-----------|-----------|-------|-------------|\n")
+		for _, p := range lp.Parameters {
+			v := ""
+			if p.Value != nil {
+				v = fmt.Sprintf("%v", p.Value)
 			}
+			sb.WriteString(fmt.Sprintf("| %s | %s | %s | %s | %s | %s | %s |\n",
+				p.Name, p.Type, p.Source, p.Operation, p.ValueFrom, v, p.Description))
 		}
+		sb.WriteString("\n")
+
+		// Analysis Dims table
+		sb.WriteString("**Analysis Dimensions**\n\n")
+		sb.WriteString("| Name | Display Name | Type | Description |\n")
+		sb.WriteString("|------|--------------|------|-------------|\n")
+		for _, d := range lp.AnalysisDims {
+			sb.WriteString(fmt.Sprintf("| %s | %s | %s | %s |\n", d.Name, d.DisplayName, d.Type, d.Description))
+		}
+		sb.WriteString("\n")
 	}
 	sb.WriteString("\n")
 
@@ -416,10 +437,10 @@ func SerializeConceptGroup(cg *BknConceptGroup, otIndex map[string]*BknObjectTyp
 		sb.WriteString(cg.Description + "\n\n")
 	}
 
+	sb.WriteString("### Object Types\n\n")
+	sb.WriteString("| ID | Name | Description |\n")
+	sb.WriteString("|----|------|-------------|\n")
 	if len(cg.ObjectTypes) > 0 {
-		sb.WriteString("### Object Types\n\n")
-		sb.WriteString("| ID | Name | Description |\n")
-		sb.WriteString("|----|------|-------------|\n")
 		ids := append([]string(nil), cg.ObjectTypes...)
 		sort.Strings(ids)
 		for _, id := range ids {
@@ -430,8 +451,8 @@ func SerializeConceptGroup(cg *BknConceptGroup, otIndex map[string]*BknObjectTyp
 			}
 			sb.WriteString(fmt.Sprintf("| %s | %s | %s |\n", id, name, desc))
 		}
-		sb.WriteString("\n")
 	}
+	sb.WriteString("\n")
 
 	return sb.String()
 }

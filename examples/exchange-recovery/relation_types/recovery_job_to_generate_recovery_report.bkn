@@ -2,7 +2,7 @@
 type: relation_type
 id: recovery_job_to_generate_recovery_report
 name: 恢复作业后生成恢复报告
-tags: [灾备, 流程关系, to]
+tags: [to, 流程关系, 灾备]
 ---
 
 ## RelationType: 恢复作业后生成恢复报告

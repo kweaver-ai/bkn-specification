@@ -2,7 +2,7 @@
 type: relation_type
 id: find_backup_timepoints
 name: 查找备份时间点后浏览备份邮件
-tags: [灾备, 流程关系, to]
+tags: [to, 流程关系, 灾备]
 ---
 
 ## RelationType: 查找备份时间点后浏览备份邮件

@@ -2,7 +2,7 @@
 type: relation_type
 id: exchange_server
 name: Exchange生产服务器包含备份时间点副本
-tags: [灾备, 包含关系, contains]
+tags: [contains, 包含关系, 灾备]
 ---
 
 ## RelationType: Exchange生产服务器包含备份时间点副本

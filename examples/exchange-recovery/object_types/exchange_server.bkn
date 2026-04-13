@@ -2,7 +2,7 @@
 type: object_type
 id: exchange_server
 name: Exchange生产服务器
-tags: [灾备, 邮件服务器, Exchange, 生产环境]
+tags: [Exchange, 灾备, 生产环境, 邮件服务器]
 ---
 
 ## ObjectType: Exchange生产服务器

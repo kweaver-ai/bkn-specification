@@ -482,15 +482,30 @@ name: 产品
 
 #### product_bom
 
-- **Display**: product_bom
-- **Type**: operator
-- **Source**: bom_tree_builder (operator)
+**Meta**
 
-| Parameter | Type | Source | Binding | Description |
-|-----------|------|--------|---------|-------------|
-| timeout | number | input | - |  |
-| cache | boolean | input | - |  |
-| knowledge_network_id | string | const | supplychain_hd0202 |  |
+| Display Name | Type | Description |
+|--------------|------|-------------|
+| product_bom | operator |  |
+
+**Source**
+
+| Source Type | Source ID | Source Name |
+|-------------|-----------|-------------|
+| operator | bom_tree_builder | bom_tree_builder |
+
+**Parameters**
+
+| Name | Type | Source | Operation | ValueFrom | Value | Description |
+|------|------|--------|-----------|-----------|-------|-------------|
+| timeout | number | input |  |  |  |  |
+| cache | boolean | input |  |  |  |  |
+| knowledge_network_id | string | const |  | supplychain_hd0202 |  |  |
+
+**Analysis Dimensions**
+
+| Name | Display Name | Type | Description |
+|------|--------------|------|-------------|
 `
 	ot, err := ParseObjectTypeFile(text, "/test/product.bkn")
 	require.NoError(t, err)

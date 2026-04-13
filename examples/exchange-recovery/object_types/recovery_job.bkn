@@ -2,7 +2,7 @@
 type: object_type
 id: recovery_job
 name: 恢复作业
-tags: [灾备, 恢复作业, 作业管理]
+tags: [作业管理, 恢复作业, 灾备]
 ---
 
 ## ObjectType: 恢复作业

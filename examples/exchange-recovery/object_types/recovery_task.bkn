@@ -2,7 +2,7 @@
 type: object_type
 id: recovery_task
 name: 恢复任务
-tags: [灾备, 恢复任务, 任务管理]
+tags: [任务管理, 恢复任务, 灾备]
 ---
 
 ## ObjectType: 恢复任务

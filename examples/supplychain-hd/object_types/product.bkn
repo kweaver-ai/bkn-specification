@@ -26,19 +26,36 @@ tags: [供应链, 产品, 已审核]
 
 #### product_bom
 
-- **Type**: operator
-- **Source**: operator (bom_tree_builder)
+**Meta**
 
-| Parameter | Type | Source | Binding | Description |
-|-----------|------|--------|---------|-------------|
-| timeout | number | input |  |  |
-| authorization | string | const |  |  |
-| cache | boolean | input |  |  |
-| include_inventory | boolean | input |  |  |
-| include_substitutes | boolean | input |  |  |
-| knowledge_network_id | string | const |  |  |
-| max_products | number | input |  |  |
-| product_codes | array | input |  |  |
+| Display Name | Type | Description |
+|--------------|------|-------------|
+| product_bom | operator |  |
+
+**Source**
+
+| Source Type | Source ID | Source Name |
+|-------------|-----------|-------------|
+| operator | bom_tree_builder | bom_tree_builder |
+
+**Parameters**
+
+| Name | Type | Source | Operation | ValueFrom | Value | Description |
+|------|------|--------|-----------|-----------|-------|-------------|
+| timeout | number | input |  |  |  |  |
+| authorization | string | const |  |  |  |  |
+| cache | boolean | input |  |  |  |  |
+| include_inventory | boolean | input |  |  |  |  |
+| include_substitutes | boolean | input |  |  |  |  |
+| knowledge_network_id | string | const |  |  |  |  |
+| max_products | number | input |  |  |  |  |
+| product_codes | array | input |  |  |  |  |
+
+**Analysis Dimensions**
+
+| Name | Display Name | Type | Description |
+|------|--------------|------|-------------|
+
 
 ### Keys
 

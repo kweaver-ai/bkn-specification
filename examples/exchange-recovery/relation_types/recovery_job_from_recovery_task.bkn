@@ -2,7 +2,7 @@
 type: relation_type
 id: recovery_job_from_recovery_task
 name: 恢复作业依赖于恢复任务
-tags: [灾备, 依赖关系, from]
+tags: [from, 依赖关系, 灾备]
 ---
 
 ## RelationType: 恢复作业依赖于恢复任务
