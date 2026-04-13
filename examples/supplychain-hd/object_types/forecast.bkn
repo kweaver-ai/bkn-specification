@@ -3,10 +3,11 @@ type: object_type
 id: forecast
 name: 需求预测
 tags: [供应链, 预测, 已审核, 模拟数据]
-summary: 记录销售侧的月度需求预测数据，作为供应链计划（MRP）的输入源头。
 ---
 
 ## ObjectType: 需求预测
+
+记录销售侧的月度需求预测数据，作为供应链计划（MRP）的输入源头。
 
 ### Data Source
 

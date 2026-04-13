@@ -3,13 +3,14 @@ type: action_type
 id: list_exchange_servers
 name: 列出Exchange服务器列表
 tags: [灾备, 数据查询, 服务器管理]
-summary: 从指定的数据域中列出所有Exchange服务器，供用户选择。
 action_type: add
 ---
 
 ## ActionType: 列出Exchange服务器列表
 
-Execution Description:
+从指定的数据域中列出所有Exchange服务器，供用户选择。
+
+### Execution Description:
 
 1. 连接到指定的数据域（备份服务器）
 2. 查询该数据域中的所有Exchange服务器

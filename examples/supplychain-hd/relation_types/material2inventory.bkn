@@ -3,10 +3,11 @@ type: relation_type
 id: material2inventory
 name: 物料关联库存
 tags: [供应链, 关系, 已审核]
-summary: 物料与库存记录之间的关联关系。
 ---
 
 ## RelationType: 物料关联库存
+
+物料与库存记录之间的关联关系。
 
 ### Endpoint
 

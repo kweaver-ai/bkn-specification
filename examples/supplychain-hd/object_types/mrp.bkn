@@ -3,10 +3,11 @@ type: object_type
 id: mrp
 name: 物料需求计划
 tags: [供应链, MRP, 已审核, 手工表]
-summary: MRP运算产生的物料净需求建议。
 ---
 
 ## ObjectType: 物料需求计划
+
+MRP运算产生的物料净需求建议。
 
 ### Data Source
 

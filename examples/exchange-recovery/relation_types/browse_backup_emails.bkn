@@ -3,10 +3,11 @@ type: relation_type
 id: browse_backup_emails
 name: 浏览备份邮件后生成恢复任务
 tags: [灾备, 流程关系, to]
-summary: 浏览备份邮件完成后，生成恢复任务。
 ---
 
 ## RelationType: 浏览备份邮件后生成恢复任务
+
+浏览备份邮件完成后，生成恢复任务。
 
 ### Endpoint
 

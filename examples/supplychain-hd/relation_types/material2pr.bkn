@@ -3,10 +3,11 @@ type: relation_type
 id: material2pr
 name: 物料关联采购申请单
 tags: [供应链, 关系, 已审核]
-summary: 物料与采购申请单之间的关联关系。
 ---
 
 ## RelationType: 物料关联采购申请单
+
+物料与采购申请单之间的关联关系。
 
 ### Endpoint
 

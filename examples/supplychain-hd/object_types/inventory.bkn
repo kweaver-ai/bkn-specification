@@ -3,10 +3,11 @@ type: object_type
 id: inventory
 name: 库存
 tags: [供应链, 库存, 已审核]
-summary: 实时记录物料在各仓库及仓位的现有库存量、库存状态及批次信息。
 ---
 
 ## ObjectType: 库存
+
+实时记录物料在各仓库及仓位的现有库存量、库存状态及批次信息。
 
 ### Data Source
 

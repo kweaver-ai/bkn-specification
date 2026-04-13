@@ -3,10 +3,11 @@ type: object_type
 id: pod
 name: Pod实例
 tags: [拓扑架构, 容器, Kubernetes]
-summary: Kubernetes 中的最小部署单元，一个或多个容器的集合。
 ---
 
 ## ObjectType: Pod实例
+
+Kubernetes 中的最小部署单元，一个或多个容器的集合。
 
 ### Data Source
 

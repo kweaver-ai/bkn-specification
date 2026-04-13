@@ -3,10 +3,11 @@ type: object_type
 id: salesorder
 name: 销售订单
 tags: [供应链, 销售, 已审核, 老数据]
-summary: 客户销售订单信息。
 ---
 
 ## ObjectType: 销售订单
+
+客户销售订单信息。
 
 ### Data Source
 

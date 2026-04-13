@@ -3,10 +3,11 @@ type: object_type
 id: backup_timepoint
 name: 备份时间点副本
 tags: [灾备, 备份, 时间点]
-summary: 备份集中的单个备份时间点副本，包含该时间点的所有邮件数据。
 ---
 
 ## ObjectType: 备份时间点副本
+
+备份集中的单个备份时间点副本，包含该时间点的所有邮件数据。
 
 ### Data Source
 

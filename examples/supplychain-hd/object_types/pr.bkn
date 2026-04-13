@@ -3,10 +3,11 @@ type: object_type
 id: pr
 name: 采购申请单
 tags: [供应链, 采购, 已审核]
-summary: 根据MRP生成的内部采购申请PR。
 ---
 
 ## ObjectType: 采购申请单
+
+根据MRP生成的内部采购申请PR。
 
 ### Data Source
 

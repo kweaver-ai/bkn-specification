@@ -11,7 +11,7 @@ type BknNetworkFrontmatter struct {
 	ID          string   `yaml:"id"`
 	Name        string   `yaml:"name"`
 	Tags        []string `yaml:"tags"`
-	Summary     string   `yaml:"summary"`
+	Summary     string
 	Description string   `yaml:"description"`
 
 	Version        string `yaml:"version"`
@@ -38,7 +38,7 @@ type BknObjectTypeFrontmatter struct {
 	ID          string   `yaml:"id"`
 	Name        string   `yaml:"name"`
 	Tags        []string `yaml:"tags"`
-	Summary     string   `yaml:"summary"`
+	Summary     string
 	Description string   `yaml:"description"`
 }
 
@@ -114,7 +114,7 @@ type BknRelationTypeFrontmatter struct {
 	ID          string   `yaml:"id"`
 	Name        string   `yaml:"name"`
 	Tags        []string `yaml:"tags"`
-	Summary     string   `yaml:"summary"`
+	Summary     string
 	Description string   `yaml:"description"`
 }
 
@@ -156,7 +156,7 @@ type BknActionTypeFrontmatter struct {
 	ID          string   `yaml:"id"`
 	Name        string   `yaml:"name"`
 	Tags        []string `yaml:"tags"`
-	Summary     string   `yaml:"summary"`
+	Summary     string
 	Description string   `yaml:"description"`
 	ActionType  string   `yaml:"action_type"`
 }
@@ -231,7 +231,7 @@ type BknRiskTypeFrontmatter struct {
 	ID          string   `yaml:"id"`
 	Name        string   `yaml:"name"`
 	Tags        []string `yaml:"tags"`
-	Summary     string   `yaml:"summary"`
+	Summary     string
 	Description string   `yaml:"description"`
 }
 
@@ -247,7 +247,7 @@ type BknConceptGroupFrontmatter struct {
 	ID          string   `yaml:"id"`
 	Name        string   `yaml:"name"`
 	Tags        []string `yaml:"tags"`
-	Summary     string   `yaml:"summary"`
+	Summary     string
 	Description string   `yaml:"description"`
 }
 

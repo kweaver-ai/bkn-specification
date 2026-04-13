@@ -3,10 +3,11 @@ type: object_type
 id: recovery_job_verification
 name: Exchange可用性验证
 tags: [灾备, 验证, 可用性验证]
-summary: 恢复成功后，对邮件是否可读、邮件服务器是否可正常对外提供业务的验证结果，记录验证的详细信息。
 ---
 
 ## ObjectType: Exchange可用性验证
+
+恢复成功后，对邮件是否可读、邮件服务器是否可正常对外提供业务的验证结果，记录验证的详细信息。
 
 ### Data Source
 

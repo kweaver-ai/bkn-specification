@@ -3,10 +3,11 @@ type: concept_group
 id: exchange
 name: Exchange邮件恢复概念分组
 tags: [灾备, Exchange, 概念分组]
-summary: 将Exchange邮件恢复相关的对象类型组织在一起，便于理解和管理。
 ---
 
 ## ConceptGroup: Exchange邮件恢复概念分组
+
+将Exchange邮件恢复相关的对象类型组织在一起，便于理解和管理。
 
 ### Object Types
 

@@ -3,7 +3,6 @@ type: object_type
 id: relation
 name: 员工部门关系
 tags: []
-summary: 
 ---
 
 ## ObjectType: 员工部门关系

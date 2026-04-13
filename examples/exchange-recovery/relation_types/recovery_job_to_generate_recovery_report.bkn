@@ -3,10 +3,11 @@ type: relation_type
 id: recovery_job_to_generate_recovery_report
 name: 恢复作业后生成恢复报告
 tags: [灾备, 流程关系, to]
-summary: 恢复作业产生后，如果没有验证Exchange可用性的流程，直接生成恢复报告。
 ---
 
 ## RelationType: 恢复作业后生成恢复报告
+
+恢复作业产生后，如果没有验证Exchange可用性的流程，直接生成恢复报告。
 
 ### Endpoint
 

@@ -3,13 +3,15 @@ type: action_type
 id: browse_backup_emails
 name: 浏览备份邮件
 tags: [灾备, 备份浏览, 邮件]
-summary: 根据时间点副本查找里面备份了哪些邮件。
 action_type: add
 ---
 
 ## ActionType: 浏览备份邮件
 
-Execution Description:
+根据时间点副本查找里面备份了哪些邮件。
+
+### Execution Description:
+
 1. 接收备份时间点副本ID和过滤条件作为输入参数
 2. 读取备份时间点副本的元数据
 3. 从元数据中提取邮件列表

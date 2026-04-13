@@ -3,13 +3,15 @@ type: action_type
 id: generate_recovery_report
 name: 生成恢复报告
 tags: [灾备, 报告生成, 结果反馈]
-summary: 生成恢复操作的完整报告，包括恢复状态、数据统计、时效评估。
 action_type: add
 ---
 
 ## ActionType: 生成恢复报告
 
-Execution Description:
+生成恢复操作的完整报告，包括恢复状态、数据统计、时效评估。
+
+### Execution Description:
+
 1. 从recovery_job中获取恢复操作信息：
    - recovery_task_id：恢复任务ID
    - user_id：执行用户ID

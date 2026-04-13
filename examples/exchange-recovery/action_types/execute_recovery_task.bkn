@@ -3,13 +3,14 @@ type: action_type
 id: execute_recovery_task
 name: 执行恢复任务
 tags: [灾备, 恢复任务, 任务执行]
-summary: 执行已生成的恢复任务，产生恢复作业。
 action_type: add
 ---
 
 ## ActionType: 执行恢复任务
 
-Execution Description:
+执行已生成的恢复任务，产生恢复作业。
+
+### Execution Description:
 
 1. 检查备份时间点验证状态：
    - 如果backup_timepoint.is_verified == false || backup_timepoint.verification_result != success，告知用户备份时间点未验证或验证结果为非可恢复

@@ -3,10 +3,11 @@ type: object_type
 id: data_domain
 name: 数据域
 tags: [灾备, 数据域, 备份服务器]
-summary: 数据域（备份服务器），Agent可以接入多个数据域，每个数据域包含多个Exchange服务器。
 ---
 
 ## ObjectType: 数据域
+
+数据域（备份服务器），Agent可以接入多个数据域，每个数据域包含多个Exchange服务器。
 
 ### Data Source
 

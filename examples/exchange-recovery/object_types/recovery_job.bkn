@@ -3,10 +3,11 @@ type: object_type
 id: recovery_job
 name: 恢复作业
 tags: [灾备, 恢复作业, 作业管理]
-summary: 执行恢复任务产生的恢复作业，记录恢复操作的详细信息。
 ---
 
 ## ObjectType: 恢复作业
+
+执行恢复任务产生的恢复作业，记录恢复操作的详细信息。
 
 ### Data Source
 

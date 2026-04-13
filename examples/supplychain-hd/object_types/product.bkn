@@ -3,10 +3,11 @@ type: object_type
 id: product
 name: 产品
 tags: [供应链, 产品, 已审核]
-summary: 存储企业生产的成品基本信息，包括产品编码、名称。
 ---
 
 ## ObjectType: 产品
+
+存储企业生产的成品基本信息，包括产品编码、名称。
 
 ### Data Source
 

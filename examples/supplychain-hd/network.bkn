@@ -3,7 +3,6 @@ type: knowledge_network
 id: supplychain-hd
 name: HD供应链业务知识网络
 tags: [供应链, 采购, 库存, MRP]
-summary: 
 business_domain: supplychain
 ---
 
@@ -54,6 +53,21 @@ business_domain: supplychain
 | product2bom | 产品关联产品BOM | `relation_types/product2bom.bkn` | 产品与其BOM物料清单之间的关联关系。 |
 | product2inventory | 产品关联库存 | `relation_types/product2inventory.bkn` | 产品与库存之间的关联关系。 |
 | salesorder2product | 销售订单关联产品 | `relation_types/salesorder2product.bkn` | 销售订单与产品之间的关联关系。 |
+
+### Action Types
+
+| ID | Name | File Path | Description |
+|----|------|-----------|-------------|
+
+### Risk Types
+
+| ID | Name | File Path | Description |
+|----|------|-----------|-------------|
+
+### Concept Groups
+
+| ID | Name | File Path | Description |
+|----|------|-----------|-------------|
 
 ## Directory Structure
 

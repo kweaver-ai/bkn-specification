@@ -3,11 +3,12 @@ type: action_type
 id: cordon_node
 name: 隔离节点
 tags: [运维操作, 节点管理]
-summary: 将故障节点标记为不可调度，防止新 Pod 被调度到该节点。
 action_type: modify
 ---
 
 ## ActionType: 隔离节点
+
+将故障节点标记为不可调度，防止新 Pod 被调度到该节点。
 
 执行说明:
 1. 执行 `kubectl cordon` 标记节点

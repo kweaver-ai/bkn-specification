@@ -3,10 +3,11 @@ type: relation_type
 id: salesorder2product
 name: 销售订单关联产品
 tags: [供应链, 关系, 已审核]
-summary: 销售订单与产品之间的关联关系。
 ---
 
 ## RelationType: 销售订单关联产品
+
+销售订单与产品之间的关联关系。
 
 ### Endpoint
 

@@ -3,10 +3,11 @@ type: object_type
 id: node
 name: Node节点
 tags: [拓扑架构, 基础设施, Kubernetes]
-summary: Kubernetes 集群中的工作节点，承载 Pod 运行。
 ---
 
 ## ObjectType: Node节点
+
+Kubernetes 集群中的工作节点，承载 Pod 运行。
 
 ### Data Source
 

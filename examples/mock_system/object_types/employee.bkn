@@ -3,7 +3,6 @@ type: object_type
 id: employee
 name: 员工
 tags: []
-summary: 
 ---
 
 ## ObjectType: 员工

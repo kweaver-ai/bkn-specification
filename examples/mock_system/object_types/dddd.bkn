@@ -3,7 +3,6 @@ type: object_type
 id: dddd
 name: dddd
 tags: []
-summary: 
 ---
 
 ## ObjectType: dddd

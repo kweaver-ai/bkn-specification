@@ -3,13 +3,14 @@ type: action_type
 id: verify_exchange_availability
 name: 验证Exchange可用性
 tags: [灾备, 可用性验证, Exchange验证]
-summary: 验证恢复后的Exchange邮件服务器可用性，检查邮件是否可读、邮件服务器是否可正常对外提供业务。
 action_type: add
 ---
 
 ## ActionType: 验证Exchange可用性
 
-Execution Description：
+验证恢复后的Exchange邮件服务器可用性，检查邮件是否可读、邮件服务器是否可正常对外提供业务。
+
+### Execution Description：
 
 1. 读取恢复作业信息：
    - 根据recovery_job_id读取恢复作业详细信息

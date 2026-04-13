@@ -3,10 +3,11 @@ type: risk_type
 id: production_data_overwrite
 name: 生产数据覆盖风险
 tags: [灾备, 风险管控, 数据安全]
-summary: 评估恢复操作是否会覆盖生产服务器或恢复资源中的服务器数据，这是灾备恢复中的关键风险点。
 ---
 
 ## RiskType: 生产数据覆盖风险
+
+评估恢复操作是否会覆盖生产服务器或恢复资源中的服务器数据，这是灾备恢复中的关键风险点。
 
 ### Control Scope
 

@@ -3,7 +3,6 @@ type: action_type
 id: 1111
 name: 1111
 tags: [1111]
-summary: 
 action_type: add
 ---
 

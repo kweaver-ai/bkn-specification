@@ -3,10 +3,11 @@ type: object_type
 id: bom
 name: 产品BOM
 tags: [供应链, BOM, 已审核]
-summary: 定义产品的物料清单结构，包含层级关系和替代料信息。
 ---
 
 ## ObjectType: 产品BOM
+
+定义产品的物料清单结构，包含层级关系和替代料信息。
 
 BOM结构：4层(成品→半成品→PCBA→元器件)；含自制、委外、外购。
 替代识别规则：

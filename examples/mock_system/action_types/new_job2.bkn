@@ -3,7 +3,6 @@ type: action_type
 id: new_job2
 name: 新员工入职2
 tags: []
-summary: 
 action_type: add
 ---
 

@@ -86,6 +86,21 @@ func extractBodyDescription(text string) string {
 	return ""
 }
 
+// extractSummary derives a one-sentence summary from a description:
+// the text up to the first "。", ". " (period+space), or "\n", whichever comes first.
+func extractSummary(desc string) string {
+	if desc == "" {
+		return ""
+	}
+	end := len(desc)
+	for _, sep := range []string{"。", ". ", "\n"} {
+		if i := strings.Index(desc, sep); i >= 0 && i < end {
+			end = i + len(sep)
+		}
+	}
+	return strings.TrimSpace(desc[:end])
+}
+
 func splitFrontmatter(text string) (fm string, body string) {
 	text = strings.TrimPrefix(text, "\ufeff")
 	if !strings.HasPrefix(text, "---") {
@@ -415,7 +430,6 @@ func ParseNetworkFile(text string, sourcePath string) (*BknNetwork, error) {
 			ID:             strVal(fmData, "id"),
 			Name:           strVal(fmData, "name"),
 			Tags:           strSliceVal(fmData, "tags"),
-			Summary:        strVal(fmData, "summary"),
 			Description:    extractBodyDescription(text),
 			Version:        strVal(fmData, "version"),
 			Branch:         strVal(fmData, "branch"),
@@ -423,6 +437,7 @@ func ParseNetworkFile(text string, sourcePath string) (*BknNetwork, error) {
 		},
 		RawContent: text,
 	}
+	network.Summary = extractSummary(network.Description)
 
 	return network, nil
 }
@@ -442,11 +457,11 @@ func ParseObjectTypeFile(text string, sourcePath string) (*BknObjectType, error)
 			ID:          strVal(fmData, "id"),
 			Name:        strVal(fmData, "name"),
 			Tags:        strSliceVal(fmData, "tags"),
-			Summary:     strVal(fmData, "summary"),
 			Description: buildDescription(desc, sections, order, knownObjectTypeSections),
 		},
 		RawContent: text,
 	}
+	obj.Summary = extractSummary(obj.Description)
 
 	_, obj.HasDataPropertiesSection = sections["Data Properties"]
 	_, obj.HasKeysSection = sections["Keys"]
@@ -485,11 +500,11 @@ func ParseRelationTypeFile(text string, sourcePath string) (*BknRelationType, er
 			ID:          strVal(fmData, "id"),
 			Name:        strVal(fmData, "name"),
 			Tags:        strSliceVal(fmData, "tags"),
-			Summary:     strVal(fmData, "summary"),
 			Description: buildDescription(desc, sections, order, knownRelationTypeSections),
 		},
 		RawContent: text,
 	}
+	rel.Summary = extractSummary(rel.Description)
 
 	if s, ok := sections["Endpoint"]; ok {
 		rows := parseTable(strings.Split(s, "\n"))
@@ -566,12 +581,12 @@ func ParseActionTypeFile(text string, sourcePath string) (*BknActionType, error)
 			ID:          strVal(fmData, "id"),
 			Name:        strVal(fmData, "name"),
 			Tags:        strSliceVal(fmData, "tags"),
-			Summary:     strVal(fmData, "summary"),
 			ActionType:  strVal(fmData, "action_type"),
 			Description: buildDescription(desc, sections, order, knownActionTypeSections),
 		},
 		RawContent: text,
 	}
+	act.Summary = extractSummary(act.Description)
 
 	if s, ok := sections["Bound Object"]; ok {
 		bo, at := parseBoundObject(s)
@@ -734,11 +749,11 @@ func ParseRiskTypeFile(text string, sourcePath string) (*BknRiskType, error) {
 			ID:          strVal(fmData, "id"),
 			Name:        strVal(fmData, "name"),
 			Tags:        strSliceVal(fmData, "tags"),
-			Summary:     strVal(fmData, "summary"),
 			Description: buildDescription(desc, sections, order, knownRiskTypeSections),
 		},
 		RawContent: text,
 	}
+	risk.Summary = extractSummary(risk.Description)
 
 	return risk, nil
 }
@@ -757,11 +772,11 @@ func ParseConceptGroupFile(text string, sourcePath string) (*BknConceptGroup, er
 			ID:          strVal(fmData, "id"),
 			Name:        strVal(fmData, "name"),
 			Tags:        strSliceVal(fmData, "tags"),
-			Summary:     strVal(fmData, "summary"),
 			Description: buildDescription(desc, sections, order, knownConceptGroupSections),
 		},
 		RawContent: text,
 	}
+	cg.Summary = extractSummary(cg.Description)
 
 	if s, ok := sections["Object Types"]; ok {
 		cg.ObjectTypes = parseConceptGroupObjectTypes(s)

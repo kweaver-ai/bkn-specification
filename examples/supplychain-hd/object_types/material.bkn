@@ -3,10 +3,11 @@ type: object_type
 id: material
 name: 物料
 tags: [供应链, 物料, 已审核]
-summary: 记录物料的基础信息。
 ---
 
 ## ObjectType: 物料
+
+记录物料的基础信息。
 
 包括编码、名称、规格型号、属性（自制/外购）及单位等及相关参数。
 

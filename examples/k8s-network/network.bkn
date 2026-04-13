@@ -3,13 +3,14 @@ type: knowledge_network
 id: k8s-network
 name: Kubernetes网络
 tags: [Kubernetes, 拓扑架构, 运维]
-summary: Kubernetes 集群拓扑与运维操作的知识网络。
 business_domain: kubernetes
 ---
 
 # Kubernetes网络
 
 采用每定义一文件的模块化组织方式，适合大规模知识网络
+
+Kubernetes 集群拓扑与运维操作的知识网络。
 
 ## Network Overview
 
@@ -34,6 +35,17 @@ business_domain: kubernetes
 |----|------|-----------|-------------|
 | cordon_node | 隔离节点 | `action_types/cordon_node.bkn` | 将故障节点标记为不可调度，防止新 Pod 被调度到该节点。 |
 | restart_pod | 重启Pod | `action_types/restart_pod.bkn` | 当 Pod 状态异常时，自动执行重启操作。 |
+
+### Risk Types
+
+| ID | Name | File Path | Description |
+|----|------|-----------|-------------|
+
+### Concept Groups
+
+| ID | Name | File Path | Description |
+|----|------|-----------|-------------|
+| k8s | Kubernetes集群 | `concept_groups/k8s.bkn` | Kubernetes集群相关概念分组 |
 
 ## Directory Structure
 

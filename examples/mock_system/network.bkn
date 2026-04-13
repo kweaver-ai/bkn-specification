@@ -3,7 +3,6 @@ type: knowledge_network
 id: mock_system
 name: 员工入职系统
 tags: []
-summary: 
 branch: main
 business_domain: bd_public
 ---
@@ -44,7 +43,19 @@ business_domain: bd_public
 | new_job | 新员工入职 | `action_types/new_job.bkn` |  |
 | new_job2 | 新员工入职2 | `action_types/new_job2.bkn` |  |
 | no | no | `action_types/no.bkn` |  |
-| xxx | xxx | `action_types/xxx.bkn` |  |
+| xxx | xxx | `action_types/xxx.bkn` | xxx |
+
+### Risk Types
+
+| ID | Name | File Path | Description |
+|----|------|-----------|-------------|
+
+### Concept Groups
+
+| ID | Name | File Path | Description |
+|----|------|-----------|-------------|
+| 1111 | 11111 | `concept_groups/1111.bkn` | 333 |
+| 333333333 | 3333333333 | `concept_groups/333333333.bkn` | 333333333333 |
 
 ## Directory Structure
 

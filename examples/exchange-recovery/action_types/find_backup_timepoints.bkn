@@ -3,13 +3,15 @@ type: action_type
 id: find_backup_timepoints
 name: 查找备份时间点副本
 tags: [灾备, 备份查找, 时间点]
-summary: 根据备份的exchange服务器查找该服务器的备份时间点副本。
 action_type: add
 ---
 
 ## ActionType: 查找备份时间点副本
 
-Execution Description:
+根据备份的exchange服务器查找该服务器的备份时间点副本。
+
+### Execution Description:
+
 1. 接收Exchange服务器名称和地址作为输入参数
 2. 在备份软件中查找该服务器的备份时间点副本
 3. 按备份时间倒序排序

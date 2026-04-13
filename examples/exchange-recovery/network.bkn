@@ -3,11 +3,12 @@ type: knowledge_network
 id: exchange-recovery
 name: Exchange邮件恢复网络
 tags: [灾备, Exchange, Exchange邮件服务器或邮件恢复]
-summary: 针对Exchange服务器宕机、数据丢失、邮件误删场景的自动化恢复知识网络。
 business_domain: disaster_recovery
 ---
 
 # Exchange邮件恢复网络
+
+针对Exchange服务器宕机、数据丢失、邮件误删场景的自动化恢复知识网络。
 
 支持Accident Request → Think → Risk Evaluate → Plan → Act → Report的完整恢复工作流。
 
@@ -53,6 +54,19 @@ business_domain: disaster_recovery
 | list_data_domains | 列出数据域列表 | `action_types/list_data_domains.bkn` | 列出Agent管理的所有数据域，供用户选择。 |
 | list_exchange_servers | 列出Exchange服务器列表 | `action_types/list_exchange_servers.bkn` | 从指定的数据域中列出所有Exchange服务器，供用户选择。 |
 | verify_exchange_availability | 验证Exchange可用性 | `action_types/verify_exchange_availability.bkn` | 验证恢复后的Exchange邮件服务器可用性，检查邮件是否可读、邮件服务器是否可正常对外提供业务。 |
+
+### Risk Types
+
+| ID | Name | File Path | Description |
+|----|------|-----------|-------------|
+| backup_timepoint_verification_failed | 备份时间点验证失败风险 | `risk_types/backup_timepoint_verification_failed.bkn` | 评估使用的备份时间点是否经过验证且验证结果为可恢复，这是确保恢复成功的关键风险点。 |
+| production_data_overwrite | 生产数据覆盖风险 | `risk_types/production_data_overwrite.bkn` | 评估恢复操作是否会覆盖生产服务器或恢复资源中的服务器数据，这是灾备恢复中的关键风险点。 |
+
+### Concept Groups
+
+| ID | Name | File Path | Description |
+|----|------|-----------|-------------|
+| exchange | Exchange邮件恢复概念分组 | `concept_groups/exchange.bkn` | 将Exchange邮件恢复相关的对象类型组织在一起，便于理解和管理。 |
 
 ## Directory Structure
 
