@@ -1006,7 +1006,7 @@ Pod runs on Node via data view
 	require.NoError(t, err)
 	assert.Equal(t, "data_view", rt.Endpoint.Type)
 
-	rules, ok := rt.MappingRules.(InDirectMappingRule)
+	rules, ok := rt.MappingRules.(*InDirectMappingRule)
 	require.True(t, ok, "MappingRules should be InDirectMappingRule for data_view")
 	require.NotNil(t, rules.BackingDataSource)
 	assert.Equal(t, "data_view", rules.BackingDataSource.Type)

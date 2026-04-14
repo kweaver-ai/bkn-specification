@@ -16,8 +16,8 @@ business_domain: bd_public
 
 | ID | Name | File Path | Description |
 |----|------|-----------|-------------|
+| 1 | 1 | `object_types/1.bkn` |  |
 | 44444 | 4444 | `object_types/44444.bkn` |  |
-| d6scnjmrp5plcj8ejjk0 | 1 | `object_types/d6scnjmrp5plcj8ejjk0.bkn` |  |
 | dddd | dddd | `object_types/dddd.bkn` |  |
 | department | 部门 | `object_types/department.bkn` |  |
 | employee | 员工 | `object_types/employee.bkn` |  |
@@ -27,6 +27,7 @@ business_domain: bd_public
 
 | ID | Name | File Path | Description |
 |----|------|-----------|-------------|
+| d7er5n28f99vh27vq1g0 | bug | `relation_types/d7er5n28f99vh27vq1g0.bkn` |  |
 | source_object_type_id | source_object_type_id | `relation_types/source_object_type_id.bkn` |  |
 
 ### Action Types
@@ -65,13 +66,14 @@ business_domain: bd_public
 ├── SKILL.md
 ├── CHECKSUM
 ├── object_types/
+│   ├── 1.bkn
 │   ├── 44444.bkn
-│   ├── d6scnjmrp5plcj8ejjk0.bkn
 │   ├── dddd.bkn
 │   ├── department.bkn
 │   ├── employee.bkn
 │   └── relation.bkn
 ├── relation_types/
+│   ├── d7er5n28f99vh27vq1g0.bkn
 │   └── source_object_type_id.bkn
 ├── action_types/
 │   ├── 1111.bkn

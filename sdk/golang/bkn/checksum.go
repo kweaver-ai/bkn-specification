@@ -243,12 +243,15 @@ func computeBknChecksumWithFS(fsys FileSystem, path string) []string {
 
 	var results []string
 	typeValRaw, typeOk := fm["type"].(string)
-	idRaw, idOk := fm["id"].(string)
-	if !typeOk || !idOk {
+	if !typeOk {
 		return nil
 	}
 	typeVal := strings.TrimSpace(typeValRaw)
-	id := strings.TrimSpace(idRaw)
+
+	if fm["id"] == nil {
+		return nil
+	}
+	id := strings.TrimSpace(fmt.Sprintf("%v", fm["id"]))
 
 	// For network type, use "network" (no :id suffix per DESIGN.md)
 	if typeVal == "network" {

@@ -570,7 +570,7 @@ func ParseRelationTypeFile(text string, sourcePath string) (*BknRelationType, er
 			rel.MappingRules = DirectMappingRule(rules)
 		}
 	case "data_view":
-		indirect := InDirectMappingRule{}
+		indirect := &InDirectMappingRule{}
 		if s, ok := sections["Mapping View"]; ok {
 			rows := parseTable(strings.Split(s, "\n"))
 			if len(rows) > 0 {

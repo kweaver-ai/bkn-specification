@@ -1,0 +1,33 @@
+---
+type: relation_type
+id: d7er5n28f99vh27vq1g0
+name: bug
+tags: []
+---
+
+## RelationType: bug
+
+### Endpoint
+
+| Source | Target | Type |
+|--------|--------|------|
+| 1 | relation | data_view |
+
+### Mapping View
+
+| Type | ID |
+|------|----|
+| data_view | 00c7f1fe-9a0c-4b09-899f-e7cc28e6c463 |
+
+### Source Mapping
+
+| Source Property | View Property |
+|-----------------|---------------|
+| id | id |
+
+### Target Mapping
+
+| View Property | Target Property |
+|---------------|-----------------|
+| id | id |
+

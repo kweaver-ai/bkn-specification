@@ -287,7 +287,7 @@ func SerializeRelationType(rt *BknRelationType) string {
 		sb.WriteString("### Mapping View\n\n")
 		sb.WriteString("| Type | ID |\n")
 		sb.WriteString("|------|----|\n")
-		if rules, ok := rt.MappingRules.(InDirectMappingRule); ok {
+		if rules, ok := rt.MappingRules.(*InDirectMappingRule); ok {
 			if rules.BackingDataSource != nil {
 				sb.WriteString(fmt.Sprintf("| %s | %s |\n", rules.BackingDataSource.Type, rules.BackingDataSource.ID))
 			}

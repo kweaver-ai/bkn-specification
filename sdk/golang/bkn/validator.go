@@ -560,13 +560,7 @@ func validateRelationTypeDeep(result *ValidationResult, table string, rt *BknRel
 			seen[key] = true
 		}
 	case relationTypeDataView:
-		ind, ok := rt.MappingRules.(InDirectMappingRule)
-		if !ok {
-			if ptr, ok2 := rt.MappingRules.(*InDirectMappingRule); ok2 && ptr != nil {
-				ind = *ptr
-				ok = true
-			}
-		}
+		ind, ok := rt.MappingRules.(*InDirectMappingRule)
 		if !ok {
 			appendError(result, table, "mapping_rules", "invalid_relation_type", "data_view relation requires InDirectMappingRule")
 			return
