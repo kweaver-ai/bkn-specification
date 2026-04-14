@@ -29,6 +29,31 @@ tags: [备份, 时间点, 灾备]
 
 ### Logic Properties
 
+#### contains_target_email
+
+**Meta**
+
+| Display Name | Type | Description |
+|--------------|------|-------------|
+| 包含目标邮件 | operator | 检查备份时间点副本是否包含目标邮件 |
+
+**Source**
+
+| Source Type | Source ID | Source Name |
+|-------------|-----------|-------------|
+
+**Parameters**
+
+| Name | Type | Source | Operation | ValueFrom | Value | Description |
+|------|------|--------|-----------|-----------|-------|-------------|
+| target_email_subject | string | input |  |  |  | 目标邮件主题 |
+| snapshot_metadata | json | property |  | metadata |  | 时间点元数据 |
+
+**Analysis Dimensions**
+
+| Name | Display Name | Type | Description |
+|------|--------------|------|-------------|
+
 
 ### Keys
 
