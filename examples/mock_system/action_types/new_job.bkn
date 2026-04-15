@@ -41,7 +41,7 @@ value: 0
 
 | Name | Type | Source | Operation | ValueFrom | Value | Description |
 |------|------|--------|-----------|-----------|-------|-------------|
-| employee_id | string | Query |  | property | employee_id |  |
+| employee_id | string | Query |  | property | id |  |
 
 ### Schedule
 

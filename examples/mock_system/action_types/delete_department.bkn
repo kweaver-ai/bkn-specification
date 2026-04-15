@@ -1,35 +1,26 @@
 ---
 type: action_type
-id: new_job2
-name: 新员工入职2
+id: delete_department
+name: 删除部门
 tags: []
-action_type: add
+action_type: delete
 ---
 
-## ActionType: 新员工入职2
+## ActionType: 删除部门
 
 ### Bound Object
 
 | Bound Object |
 |--------------|
-| employee |
+| department |
 
 ### Affect Object
 
 | Affect Object | Affect Description |
 |---------------|--------------------|
-| employee | 调用工具后，更新员工入职状态 |
 
 ### Trigger Condition
 
-```yaml
-object_type_id: employee
-field: status
-operation: ==
-sub_conds: []
-value_from: ""
-value: 0
-```
 
 ### Action Source
 
@@ -41,11 +32,10 @@ value: 0
 
 | Name | Type | Source | Operation | ValueFrom | Value | Description |
 |------|------|--------|-----------|-----------|-------|-------------|
-| employee_id | string | Query |  | property | employee_id |  |
+| employee_id | string | Query |  | input |  |  |
 
 ### Schedule
 
 | Type | Expression |
 |------|------------|
-| CRON | 0 0 0 * * ? |
 

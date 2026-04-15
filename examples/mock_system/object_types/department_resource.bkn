@@ -1,17 +1,17 @@
 ---
 type: object_type
-id: department
-name: 部门表
+id: department_resource
+name: 部门表（Resource版）
 tags: []
 ---
 
-## ObjectType: 部门表
+## ObjectType: 部门表（Resource版）
 
 ### Data Source
 
 | Type | ID | Name |
 |------|----|------|
-| data_view | 470bfb7b-32bc-4dfd-af00-d2b99a8a1f67 | 部门表 |
+| resource | d7blk86fmoj81ili0q2g | 部门表 |
 
 ### Data Properties
 

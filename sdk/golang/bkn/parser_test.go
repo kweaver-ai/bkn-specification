@@ -1018,3 +1018,86 @@ Pod runs on Node via data view
 	assert.Equal(t, "view_node_name", rules.TargetMappingRules[0].SourceProperty)
 	assert.Equal(t, "name", rules.TargetMappingRules[0].TargetProperty)
 }
+
+// === RelationType filtered_cross_join Tests ===
+
+func TestParseRelationType_FilteredCrossJoin(t *testing.T) {
+	text := `---
+type: relation_type
+id: emp_dept
+name: Emp Dept
+---
+
+## RelationType: Emp Dept
+
+### Endpoint
+
+| Source | Target | Type |
+|--------|--------|------|
+| employee | department | filtered_cross_join |
+
+### Source Condition
+
+` + "```yaml" + `
+object_type_id: employee
+field: status
+operation: eq
+value: active
+` + "```" + `
+
+### Target Condition
+
+` + "```yaml" + `
+object_type_id: department
+field: active
+operation: eq
+value: true
+` + "```" + `
+`
+	rt, err := ParseRelationTypeFile(text, "/test/emp_dept.bkn")
+	require.NoError(t, err)
+	assert.Equal(t, "filtered_cross_join", rt.Endpoint.Type)
+
+	rules, ok := rt.MappingRules.(*FilteredCrossJoinMapping)
+	require.True(t, ok, "MappingRules should be *FilteredCrossJoinMapping for filtered_cross_join")
+
+	require.NotNil(t, rules.SourceCondition)
+	assert.Equal(t, "employee", rules.SourceCondition.ObjectTypeID)
+	assert.Equal(t, "status", rules.SourceCondition.Field)
+	assert.Equal(t, "eq", rules.SourceCondition.Operation)
+
+	require.NotNil(t, rules.TargetCondition)
+	assert.Equal(t, "department", rules.TargetCondition.ObjectTypeID)
+	assert.Equal(t, "active", rules.TargetCondition.Field)
+	assert.Equal(t, "eq", rules.TargetCondition.Operation)
+}
+
+func TestParseRelationType_FilteredCrossJoin_NilConditions(t *testing.T) {
+	text := `---
+type: relation_type
+id: emp_dept
+name: Emp Dept
+---
+
+## RelationType: Emp Dept
+
+### Endpoint
+
+| Source | Target | Type |
+|--------|--------|------|
+| employee | department | filtered_cross_join |
+
+### Source Condition
+
+### Target Condition
+
+`
+	rt, err := ParseRelationTypeFile(text, "/test/emp_dept.bkn")
+	require.NoError(t, err)
+	assert.Equal(t, "filtered_cross_join", rt.Endpoint.Type)
+
+	rules, ok := rt.MappingRules.(*FilteredCrossJoinMapping)
+	require.True(t, ok)
+	assert.Nil(t, rules.SourceCondition)
+	assert.Nil(t, rules.TargetCondition)
+}

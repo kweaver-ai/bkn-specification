@@ -1,13 +1,13 @@
 ---
 type: knowledge_network
-id: mock_system
-name: 员工入职系统
+id: yzm_mock_system2
+name: 员工入职系统-resource版本
 tags: []
 branch: main
 business_domain: bd_public
 ---
 
-# 员工入职系统
+# 员工入职系统-resource版本
 
 
 ## Network Overview
@@ -16,35 +16,29 @@ business_domain: bd_public
 
 | ID | Name | File Path | Description |
 |----|------|-----------|-------------|
-| 1 | 1 | `object_types/1.bkn` |  |
-| 44444 | 4444 | `object_types/44444.bkn` |  |
-| dddd | dddd | `object_types/dddd.bkn` |  |
-| department | 部门 | `object_types/department.bkn` |  |
-| employee | 员工 | `object_types/employee.bkn` |  |
+| department | 部门表 | `object_types/department.bkn` |  |
+| department_resource | 部门表（Resource版） | `object_types/department_resource.bkn` |  |
+| employee | 员工表 | `object_types/employee.bkn` | d7blk86fmoj81ili0q3g |
+| employee_resource | 员工表（Resource版） | `object_types/employee_resource.bkn` | d7blk86fmoj81ili0q3g |
 | relation | 员工部门关系 | `object_types/relation.bkn` |  |
+| skill | 技能类 | `object_types/skill.bkn` |  |
 
 ### Relation Types
 
 | ID | Name | File Path | Description |
 |----|------|-----------|-------------|
-| d7er5n28f99vh27vq1g0 | bug | `relation_types/d7er5n28f99vh27vq1g0.bkn` |  |
-| source_object_type_id | source_object_type_id | `relation_types/source_object_type_id.bkn` |  |
+| emp_dept_resource | 员工-部门（Resource版） | `relation_types/emp_dept_resource.bkn` |  |
+| emp_skill | 员工-skill | `relation_types/emp_skill.bkn` |  |
+| source_object_type_id | 员工-部门 | `relation_types/source_object_type_id.bkn` |  |
 
 ### Action Types
 
 | ID | Name | File Path | Description |
 |----|------|-----------|-------------|
-| 1111 | 1111 | `action_types/1111.bkn` |  |
-| 222 | 222 | `action_types/222.bkn` |  |
-| 2223 | 2223 | `action_types/2223.bkn` |  |
-| 44 | 44 | `action_types/44.bkn` |  |
-| d62pdl8jijbh3srg26qg | test0206 | `action_types/d62pdl8jijbh3srg26qg.bkn` |  |
-| d62qc80jijbh3srg26rg | test-demo | `action_types/d62qc80jijbh3srg26rg.bkn` |  |
-| d6p330u1v4b3l62f0l00 | del | `action_types/d6p330u1v4b3l62f0l00.bkn` |  |
+| assess_department | 评估部门 | `action_types/assess_department.bkn` |  |
+| delete_department | 删除部门 | `action_types/delete_department.bkn` |  |
+| new_employee_resource | 新员工入职（Resource版） | `action_types/new_employee_resource.bkn` |  |
 | new_job | 新员工入职 | `action_types/new_job.bkn` |  |
-| new_job2 | 新员工入职2 | `action_types/new_job2.bkn` |  |
-| no | no | `action_types/no.bkn` |  |
-| xxx | xxx | `action_types/xxx.bkn` | xxx |
 
 ### Risk Types
 
@@ -55,8 +49,7 @@ business_domain: bd_public
 
 | ID | Name | File Path | Description |
 |----|------|-----------|-------------|
-| 1111 | 11111 | `concept_groups/1111.bkn` | 333 |
-| 333333333 | 3333333333 | `concept_groups/333333333.bkn` | 333333333333 |
+| employee_onboarding | 员工入职流程 | `concept_groups/employee_onboarding.bkn` | 员工入职相关的核心对象类型 |
 
 ## Directory Structure
 
@@ -66,28 +59,21 @@ business_domain: bd_public
 ├── SKILL.md
 ├── CHECKSUM
 ├── object_types/
-│   ├── 1.bkn
-│   ├── 44444.bkn
-│   ├── dddd.bkn
 │   ├── department.bkn
+│   ├── department_resource.bkn
 │   ├── employee.bkn
-│   └── relation.bkn
+│   ├── employee_resource.bkn
+│   ├── relation.bkn
+│   └── skill.bkn
 ├── relation_types/
-│   ├── d7er5n28f99vh27vq1g0.bkn
+│   ├── emp_dept_resource.bkn
+│   ├── emp_skill.bkn
 │   └── source_object_type_id.bkn
 ├── action_types/
-│   ├── 1111.bkn
-│   ├── 222.bkn
-│   ├── 2223.bkn
-│   ├── 44.bkn
-│   ├── d62pdl8jijbh3srg26qg.bkn
-│   ├── d62qc80jijbh3srg26rg.bkn
-│   ├── d6p330u1v4b3l62f0l00.bkn
-│   ├── new_job.bkn
-│   ├── new_job2.bkn
-│   ├── no.bkn
-│   └── xxx.bkn
+│   ├── assess_department.bkn
+│   ├── delete_department.bkn
+│   ├── new_employee_resource.bkn
+│   └── new_job.bkn
 └── concept_groups/
-    ├── 1111.bkn
-    └── 333333333.bkn
+    └── employee_onboarding.bkn
 ```

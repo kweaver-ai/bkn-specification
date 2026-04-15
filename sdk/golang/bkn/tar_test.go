@@ -252,23 +252,23 @@ func TestWriteNetworkToTar_MinimalNetwork(t *testing.T) {
 func TestWriteNetworkToTar_FullNetwork(t *testing.T) {
 	net := &BknNetwork{
 		BknNetworkFrontmatter: BknNetworkFrontmatter{
-			Type:        "network",
-			ID:          "full-net",
-			Name:        "Full Network",
-			Description: "A complete network",
-			Tags:        []string{"test", "full"},
-			Version:     "2.0",
-			Branch:      "main",
+			Type:    "network",
+			ID:      "full-net",
+			Name:    "Full Network",
+			Tags:    []string{"test", "full"},
+			Version: "2.0",
+			Branch:  "main",
 		},
+		Description: "A complete network",
 		ObjectTypes: []*BknObjectType{
 			{
 				BknObjectTypeFrontmatter: BknObjectTypeFrontmatter{
-					Type:        "object_type",
-					ID:          "pod",
-					Name:        "Pod",
-					Description: "Kubernetes Pod",
-					Tags:        []string{"k8s"},
+					Type: "object_type",
+					ID:   "pod",
+					Name: "Pod",
+					Tags: []string{"k8s"},
 				},
+				Description: "Kubernetes Pod",
 				DataSource: &ResourceInfo{
 					Type: "data_view",
 					ID:   "dv1",
@@ -352,13 +352,13 @@ func TestWriteNetworkToTar_FullNetwork(t *testing.T) {
 func TestRoundTrip_NetworkWithAllTypes(t *testing.T) {
 	original := &BknNetwork{
 		BknNetworkFrontmatter: BknNetworkFrontmatter{
-			Type:        "network",
-			ID:          "roundtrip-net",
-			Name:        "Roundtrip Network",
-			Description: "Testing round trip",
-			Tags:        []string{"test"},
-			Version:     "1.0",
+			Type:    "network",
+			ID:      "roundtrip-net",
+			Name:    "Roundtrip Network",
+			Tags:    []string{"test"},
+			Version: "1.0",
 		},
+		Description: "Testing round trip",
 		ObjectTypes: []*BknObjectType{
 			{
 				BknObjectTypeFrontmatter: BknObjectTypeFrontmatter{
@@ -553,13 +553,13 @@ func TestVerifyChecksumFromTar_MissingChecksumFile(t *testing.T) {
 func TestGenerateSkillMd_Content(t *testing.T) {
 	net := &BknNetwork{
 		BknNetworkFrontmatter: BknNetworkFrontmatter{
-			Type:        "network",
-			ID:          "test-net",
-			Name:        "Test Network",
-			Description: "A test network for validation",
-			Version:     "1.2.3",
-			Tags:        []string{"test", "demo"},
+			Type:    "network",
+			ID:      "test-net",
+			Name:    "Test Network",
+			Version: "1.2.3",
+			Tags:    []string{"test", "demo"},
 		},
+		Description: "A test network for validation",
 		ObjectTypes: []*BknObjectType{
 			{BknObjectTypeFrontmatter: BknObjectTypeFrontmatter{ID: "pod", Name: "Pod"}},
 			{BknObjectTypeFrontmatter: BknObjectTypeFrontmatter{ID: "node", Name: "Node"}},

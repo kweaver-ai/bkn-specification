@@ -28,11 +28,16 @@ const (
 	maxPropertyNum      = 1000
 )
 
-const (
-	dataSourceTypeDataView = "data_view"
-	relationTypeDirect     = "direct"
-	relationTypeDataView   = "data_view"
-)
+var validDataSourceTypes = map[string]bool{
+	DATA_SOURCE_TYPE_DATA_VIEW: true,
+	DATA_SOURCE_TYPE_RESOURCE:  true,
+}
+
+var validRelationMappingTypes = map[string]bool{
+	RELATION_MAPPING_TYPE_DIRECT:              true,
+	RELATION_MAPPING_TYPE_DATA_VIEW:           true,
+	RELATION_MAPPING_TYPE_FILTERED_CROSS_JOIN: true,
+}
 
 const valueFromProperty = "property"
 
@@ -374,9 +379,9 @@ func validateComment(comment string) error {
 
 func validateObjectTypeDeep(result *ValidationResult, table string, ot *BknObjectType) {
 	if ot.DataSource != nil && strings.TrimSpace(ot.DataSource.Type) != "" {
-		if normType(ot.DataSource.Type) != dataSourceTypeDataView {
+		if !validDataSourceTypes[normType(ot.DataSource.Type)] {
 			appendError(result, table, "data_source", "invalid_data_source",
-				fmt.Sprintf("data_source.type must be %q when set, got %q", dataSourceTypeDataView, ot.DataSource.Type))
+				fmt.Sprintf("data_source.type must be %q or %q when set, got %q", DATA_SOURCE_TYPE_DATA_VIEW, DATA_SOURCE_TYPE_RESOURCE, ot.DataSource.Type))
 		}
 	}
 	if len(ot.DataProperties) > maxPropertyNum {
@@ -516,9 +521,9 @@ func validatePropertyName(name string) error {
 
 func validateRelationTypeDeep(result *ValidationResult, table string, rt *BknRelationType) {
 	epType := strings.TrimSpace(rt.Endpoint.Type)
-	if epType != "" && epType != relationTypeDirect && epType != relationTypeDataView {
+	if epType != "" && !validRelationMappingTypes[epType] {
 		appendError(result, table, "endpoint.type", "invalid_relation_type",
-			fmt.Sprintf("relation type must be %q or %q, got %q", relationTypeDirect, relationTypeDataView, epType))
+			fmt.Sprintf("relation type must be %q, %q, or %q, got %q", RELATION_MAPPING_TYPE_DIRECT, RELATION_MAPPING_TYPE_DATA_VIEW, RELATION_MAPPING_TYPE_FILTERED_CROSS_JOIN, epType))
 	}
 	if strings.TrimSpace(rt.Endpoint.Source) == "" {
 		appendError(result, table, "Source", "invalid_relation_type", "endpoint source_object_type_id must not be empty")
@@ -535,7 +540,7 @@ func validateRelationTypeDeep(result *ValidationResult, table string, rt *BknRel
 	}
 
 	switch epType {
-	case relationTypeDirect:
+	case RELATION_MAPPING_TYPE_DIRECT:
 		rules, ok := rt.MappingRules.(DirectMappingRule)
 		if !ok {
 			appendError(result, table, "mapping_rules", "invalid_relation_type", "direct relation requires direct mapping rules array")
@@ -559,7 +564,7 @@ func validateRelationTypeDeep(result *ValidationResult, table string, rt *BknRel
 			}
 			seen[key] = true
 		}
-	case relationTypeDataView:
+	case RELATION_MAPPING_TYPE_DATA_VIEW:
 		ind, ok := rt.MappingRules.(*InDirectMappingRule)
 		if !ok {
 			appendError(result, table, "mapping_rules", "invalid_relation_type", "data_view relation requires InDirectMappingRule")
@@ -571,9 +576,9 @@ func validateRelationTypeDeep(result *ValidationResult, table string, rt *BknRel
 		}
 		if strings.TrimSpace(ind.BackingDataSource.Type) == "" {
 			appendError(result, table, "backing_data_source", "invalid_relation_type", "backing_data_source.type must not be empty")
-		} else if normType(ind.BackingDataSource.Type) != relationTypeDataView {
+		} else if normType(ind.BackingDataSource.Type) != RELATION_MAPPING_TYPE_DATA_VIEW {
 			appendError(result, table, "backing_data_source", "invalid_relation_type",
-				fmt.Sprintf("backing_data_source.type must be %q", relationTypeDataView))
+				fmt.Sprintf("backing_data_source.type must be %q", RELATION_MAPPING_TYPE_DATA_VIEW))
 		}
 		if strings.TrimSpace(ind.BackingDataSource.ID) == "" {
 			appendError(result, table, "backing_data_source", "invalid_relation_type", "backing_data_source.id must not be empty")
@@ -605,6 +610,18 @@ func validateRelationTypeDeep(result *ValidationResult, table string, rt *BknRel
 				appendError(result, table, "target_mapping_rules", "invalid_relation_type", fmt.Sprintf("duplicate mapping %q", key))
 			}
 			seenT[key] = true
+		}
+	case RELATION_MAPPING_TYPE_FILTERED_CROSS_JOIN:
+		fcj, ok := rt.MappingRules.(*FilteredCrossJoinMapping)
+		if !ok {
+			appendError(result, table, "mapping_rules", "invalid_relation_type", "filtered_cross_join relation requires FilteredCrossJoinMapping")
+			return
+		}
+		if fcj.SourceCondition == nil {
+			appendError(result, table, "source_condition", "invalid_relation_type", "source_condition must not be empty")
+		}
+		if fcj.TargetCondition == nil {
+			appendError(result, table, "target_condition", "invalid_relation_type", "target_condition must not be empty")
 		}
 	}
 }
@@ -659,7 +676,7 @@ func validateActionTypeDeep(result *ValidationResult, table string, at *BknActio
 	}
 }
 
-func validateActionCondition(result *ValidationResult, table string, cfg *CondCfg, depth int) {
+func validateActionCondition(result *ValidationResult, table string, cfg *ActionCondCfg, depth int) {
 	if cfg == nil {
 		return
 	}

@@ -16,28 +16,27 @@ import (
 
 // SerializeBknNetwork Serializes BknNetwork to BKN format
 func SerializeBknNetwork(doc *BknNetwork) string {
-	fm := doc.BknNetworkFrontmatter
 	var sb strings.Builder
 	sb.WriteString("---\n")
 	sb.WriteString("type: knowledge_network\n")
-	sb.WriteString(fmt.Sprintf("id: %s\n", fm.ID))
-	sb.WriteString(fmt.Sprintf("name: %s\n", fm.Name))
-	sb.WriteString(fmt.Sprintf("tags: [%s]\n", strings.Join(fm.Tags, ", ")))
+	sb.WriteString(fmt.Sprintf("id: %s\n", doc.ID))
+	sb.WriteString(fmt.Sprintf("name: %s\n", doc.Name))
+	sb.WriteString(fmt.Sprintf("tags: [%s]\n", strings.Join(doc.Tags, ", ")))
 
-	if fm.Version != "" {
-		sb.WriteString(fmt.Sprintf("version: %s\n", fm.Version))
+	if doc.Version != "" {
+		sb.WriteString(fmt.Sprintf("version: %s\n", doc.Version))
 	}
-	if fm.Branch != "" {
-		sb.WriteString(fmt.Sprintf("branch: %s\n", fm.Branch))
+	if doc.Branch != "" {
+		sb.WriteString(fmt.Sprintf("branch: %s\n", doc.Branch))
 	}
-	if fm.BusinessDomain != "" {
-		sb.WriteString(fmt.Sprintf("business_domain: %s\n", fm.BusinessDomain))
+	if doc.BusinessDomain != "" {
+		sb.WriteString(fmt.Sprintf("business_domain: %s\n", doc.BusinessDomain))
 	}
 	sb.WriteString("---\n\n")
 
-	sb.WriteString(fmt.Sprintf("# %s\n\n", fm.Name))
-	if fm.Description != "" {
-		sb.WriteString(fm.Description + "\n")
+	sb.WriteString(fmt.Sprintf("# %s\n\n", doc.Name))
+	if doc.Description != "" {
+		sb.WriteString(doc.Description + "\n")
 	}
 
 	// Network Overview
@@ -270,7 +269,7 @@ func SerializeRelationType(rt *BknRelationType) string {
 	sb.WriteString(fmt.Sprintf("| %s | %s | %s |\n\n", rt.Endpoint.Source, rt.Endpoint.Target, rt.Endpoint.Type))
 
 	switch rt.Endpoint.Type {
-	case "direct":
+	case RELATION_MAPPING_TYPE_DIRECT:
 		// ### Mapping Rules — simple source→target property table
 		sb.WriteString("### Mapping Rules\n\n")
 		sb.WriteString("| Source Property | Target Property |\n")
@@ -282,7 +281,7 @@ func SerializeRelationType(rt *BknRelationType) string {
 		}
 		sb.WriteString("\n")
 
-	case "data_view":
+	case RELATION_MAPPING_TYPE_DATA_VIEW:
 		// ### Mapping View — backing data source reference
 		sb.WriteString("### Mapping View\n\n")
 		sb.WriteString("| Type | ID |\n")
@@ -312,6 +311,26 @@ func SerializeRelationType(rt *BknRelationType) string {
 			sb.WriteString("\n")
 		} else {
 			sb.WriteString("\n")
+		}
+
+	case RELATION_MAPPING_TYPE_FILTERED_CROSS_JOIN:
+		writeCondCfgSection := func(title string, cond *ActionCondCfg) {
+			sb.WriteString("### " + title + "\n\n")
+			if cond != nil {
+				sb.WriteString("```yaml\n")
+				var yamlBuf bytes.Buffer
+				enc := yaml.NewEncoder(&yamlBuf)
+				enc.SetIndent(2)
+				enc.Encode(cond)
+				enc.Close()
+				sb.Write(yamlBuf.Bytes())
+				sb.WriteString("```\n")
+			}
+			sb.WriteString("\n")
+		}
+		if fcj, ok := rt.MappingRules.(*FilteredCrossJoinMapping); ok {
+			writeCondCfgSection("Source Condition", fcj.SourceCondition)
+			writeCondCfgSection("Target Condition", fcj.TargetCondition)
 		}
 	}
 

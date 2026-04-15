@@ -5,14 +5,25 @@
 
 package bkn
 
+// RelationType mapping types.
+const (
+	RELATION_MAPPING_TYPE_DIRECT              = "direct"
+	RELATION_MAPPING_TYPE_DATA_VIEW           = "data_view"
+	RELATION_MAPPING_TYPE_FILTERED_CROSS_JOIN = "filtered_cross_join"
+)
+
+// ObjectType data source types.
+const (
+	DATA_SOURCE_TYPE_DATA_VIEW = "data_view"
+	DATA_SOURCE_TYPE_RESOURCE  = "resource"
+)
+
 // BknNetworkFrontmatter is YAML frontmatter metadata for a .bkn file.
 type BknNetworkFrontmatter struct {
-	Type        string   `yaml:"type"`
-	ID          string   `yaml:"id"`
-	Name        string   `yaml:"name"`
-	Tags        []string `yaml:"tags"`
-	Summary     string
-	Description string   `yaml:"description"`
+	Type string   `yaml:"type"`
+	ID   string   `yaml:"id"`
+	Name string   `yaml:"name"`
+	Tags []string `yaml:"tags"`
 
 	Version        string `yaml:"version"`
 	Branch         string `yaml:"branch"`
@@ -22,6 +33,9 @@ type BknNetworkFrontmatter struct {
 // BknDocument is a parsed network.bkn file: frontmatter + body definitions.
 type BknNetwork struct {
 	BknNetworkFrontmatter
+	Summary     string
+	Description string
+
 	RawContent   string
 	SkillContent string
 
@@ -34,17 +48,19 @@ type BknNetwork struct {
 
 // BknObjectTypeFrontmatter is YAML frontmatter metadata for a .bkn file.
 type BknObjectTypeFrontmatter struct {
-	Type        string   `yaml:"type"`
-	ID          string   `yaml:"id"`
-	Name        string   `yaml:"name"`
-	Tags        []string `yaml:"tags"`
-	Summary     string
-	Description string   `yaml:"description"`
+	Type string   `yaml:"type"`
+	ID   string   `yaml:"id"`
+	Name string   `yaml:"name"`
+	Tags []string `yaml:"tags"`
 }
 
 // BknObjectType represents an object type definition.
 type BknObjectType struct {
 	BknObjectTypeFrontmatter
+
+	Summary     string
+	Description string
+
 	RawContent string
 
 	DataSource      *ResourceInfo
@@ -110,17 +126,19 @@ type Parameter struct {
 
 // BknRelationTypeFrontmatter is YAML frontmatter metadata for a .bkn file.
 type BknRelationTypeFrontmatter struct {
-	Type        string   `yaml:"type"`
-	ID          string   `yaml:"id"`
-	Name        string   `yaml:"name"`
-	Tags        []string `yaml:"tags"`
-	Summary     string
-	Description string   `yaml:"description"`
+	Type string   `yaml:"type"`
+	ID   string   `yaml:"id"`
+	Name string   `yaml:"name"`
+	Tags []string `yaml:"tags"`
 }
 
 // BknRelationType represents a relation type definition.
 type BknRelationType struct {
 	BknRelationTypeFrontmatter
+
+	Summary     string
+	Description string
+
 	RawContent string
 
 	// Endpoint
@@ -131,7 +149,7 @@ type BknRelationType struct {
 type Endpoint struct {
 	Source string
 	Target string
-	Type   string // direct | data_view
+	Type   string // direct | data_view | filtered_cross_join
 }
 
 // MappingRule represents a property mapping between source and target.
@@ -150,20 +168,29 @@ type InDirectMappingRule struct {
 	TargetMappingRules []MappingRule
 }
 
+// FilteredCrossJoinMapping rules for relation type filtered_cross_join (per-side conditions, no key mapping).
+type FilteredCrossJoinMapping struct {
+	SourceCondition *ActionCondCfg
+	TargetCondition *ActionCondCfg
+}
+
 // BknActionTypeFrontmatter is YAML frontmatter metadata for a .bkn file.
 type BknActionTypeFrontmatter struct {
-	Type        string   `yaml:"type"`
-	ID          string   `yaml:"id"`
-	Name        string   `yaml:"name"`
-	Tags        []string `yaml:"tags"`
-	Summary     string
-	Description string   `yaml:"description"`
-	ActionType  string   `yaml:"action_type"`
+	Type string   `yaml:"type"`
+	ID   string   `yaml:"id"`
+	Name string   `yaml:"name"`
+	Tags []string `yaml:"tags"`
+
+	ActionType string `yaml:"action_type"`
 }
 
 // BknActionType represents an action type definition.
 type BknActionType struct {
 	BknActionTypeFrontmatter
+
+	Summary     string
+	Description string
+
 	RawContent string
 
 	// Bound Object
@@ -173,7 +200,7 @@ type BknActionType struct {
 	AffectObject *ActionAffect
 
 	// Trigger Condition
-	TriggerCondition *CondCfg
+	TriggerCondition *ActionCondCfg
 
 	// Tool Configuration
 	ActionSource *ActionSource
@@ -186,13 +213,13 @@ type BknActionType struct {
 }
 
 // CondCfg represents a condition configuration.
-type CondCfg struct {
-	ObjectTypeID string     `yaml:"object_type_id"`
-	Field        string     `yaml:"field"`
-	Operation    string     `yaml:"operation"`
-	SubConds     []*CondCfg `yaml:"sub_conds"`
-	ValueFrom    string     `yaml:"value_from"`
-	Value        any        `yaml:"value"`
+type ActionCondCfg struct {
+	ObjectTypeID string           `yaml:"object_type_id"`
+	Field        string           `yaml:"field"`
+	Operation    string           `yaml:"operation"`
+	SubConds     []*ActionCondCfg `yaml:"sub_conds"`
+	ValueFrom    string           `yaml:"value_from"`
+	Value        any              `yaml:"value"`
 }
 
 // PreCondition represents a pre-condition check.
@@ -227,33 +254,37 @@ type ActionSource struct {
 
 // BknRiskTypeFrontmatter is YAML frontmatter metadata for a .bkn file.
 type BknRiskTypeFrontmatter struct {
-	Type        string   `yaml:"type"`
-	ID          string   `yaml:"id"`
-	Name        string   `yaml:"name"`
-	Tags        []string `yaml:"tags"`
-	Summary     string
-	Description string   `yaml:"description"`
+	Type string   `yaml:"type"`
+	ID   string   `yaml:"id"`
+	Name string   `yaml:"name"`
+	Tags []string `yaml:"tags"`
 }
 
 // BknRiskType represents a risk type definition.
 type BknRiskType struct {
 	BknRiskTypeFrontmatter
+
+	Summary     string
+	Description string
+
 	RawContent string
 }
 
 // BknConceptGroupFrontmatter is YAML frontmatter metadata for a .bkn file.
 type BknConceptGroupFrontmatter struct {
-	Type        string   `yaml:"type"`
-	ID          string   `yaml:"id"`
-	Name        string   `yaml:"name"`
-	Tags        []string `yaml:"tags"`
-	Summary     string
-	Description string   `yaml:"description"`
+	Type string   `yaml:"type"`
+	ID   string   `yaml:"id"`
+	Name string   `yaml:"name"`
+	Tags []string `yaml:"tags"`
 }
 
 // BknConceptGroup represents a concept group definition.
 type BknConceptGroup struct {
 	BknConceptGroupFrontmatter
+
+	Summary     string
+	Description string
+
 	RawContent string
 
 	ObjectTypes []string

@@ -133,8 +133,8 @@ func generateSkillMd(doc *BknNetwork) string {
 
 	// Overview
 	sb.WriteString("## 网络概览\n\n")
-	if fm.Description != "" {
-		sb.WriteString(fm.Description)
+	if doc.Description != "" {
+		sb.WriteString(doc.Description)
 		sb.WriteString("\n\n")
 	}
 

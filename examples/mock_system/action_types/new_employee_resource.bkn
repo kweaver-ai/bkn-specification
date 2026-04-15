@@ -1,45 +1,47 @@
 ---
 type: action_type
-id: 1111
-name: 1111
-tags: [1111]
+id: new_employee_resource
+name: 新员工入职（Resource版）
+tags: []
 action_type: add
 ---
 
-## ActionType: 1111
+## ActionType: 新员工入职（Resource版）
 
 ### Bound Object
 
 | Bound Object |
 |--------------|
-| department |
+| employee_resource |
 
 ### Affect Object
 
 | Affect Object | Affect Description |
 |---------------|--------------------|
-| department | 1 |
+| employee_resource |  |
 
 ### Trigger Condition
 
 ```yaml
-object_type_id: department
-field: description
+object_type_id: employee_resource
+field: status
 operation: ==
 sub_conds: []
 value_from: ""
-value: "1"
+value: 0
 ```
 
 ### Action Source
 
 | Type | BoxID | ToolID | McpID | ToolName |
 |------|-------|--------|-------|----------|
+| tool | 26299643-33b3-4148-a7fc-b14ec705d834 | ab6cb7d0-9d12-4b08-86df-ab5b35779b49 |  |  |
 
 ### Parameter Binding
 
 | Name | Type | Source | Operation | ValueFrom | Value | Description |
 |------|------|--------|-----------|-----------|-------|-------------|
+| employee_id | string | Query |  | input |  |  |
 
 ### Schedule
 
