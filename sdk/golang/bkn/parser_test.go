@@ -1039,7 +1039,6 @@ name: Emp Dept
 ### Source Condition
 
 ` + "```yaml" + `
-object_type_id: employee
 field: status
 operation: eq
 value: active
@@ -1048,7 +1047,6 @@ value: active
 ### Target Condition
 
 ` + "```yaml" + `
-object_type_id: department
 field: active
 operation: eq
 value: true
@@ -1062,12 +1060,10 @@ value: true
 	require.True(t, ok, "MappingRules should be *FilteredCrossJoinMapping for filtered_cross_join")
 
 	require.NotNil(t, rules.SourceCondition)
-	assert.Equal(t, "employee", rules.SourceCondition.ObjectTypeID)
 	assert.Equal(t, "status", rules.SourceCondition.Field)
 	assert.Equal(t, "eq", rules.SourceCondition.Operation)
 
 	require.NotNil(t, rules.TargetCondition)
-	assert.Equal(t, "department", rules.TargetCondition.ObjectTypeID)
 	assert.Equal(t, "active", rules.TargetCondition.Field)
 	assert.Equal(t, "eq", rules.TargetCondition.Operation)
 }

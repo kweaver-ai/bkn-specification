@@ -564,10 +564,10 @@ func ParseRelationTypeFile(text string, sourcePath string) (*BknRelationType, er
 	case RELATION_MAPPING_TYPE_FILTERED_CROSS_JOIN:
 		mapping := &FilteredCrossJoinMapping{}
 		if s, ok := sections["Source Condition"]; ok {
-			mapping.SourceCondition = parseTriggerCondition(s)
+			mapping.SourceCondition = parseCondition(s)
 		}
 		if s, ok := sections["Target Condition"]; ok {
-			mapping.TargetCondition = parseTriggerCondition(s)
+			mapping.TargetCondition = parseCondition(s)
 		}
 		rel.MappingRules = mapping
 	case RELATION_MAPPING_TYPE_DATA_VIEW:
@@ -638,7 +638,7 @@ func ParseActionTypeFile(text string, sourcePath string) (*BknActionType, error)
 		act.AffectObject = parseAffectObject(s)
 	}
 	if s, ok := sections["Trigger Condition"]; ok {
-		act.TriggerCondition = parseTriggerCondition(s)
+		act.TriggerCondition = parseActionCondition(s)
 	}
 	if s, ok := sections["Action Source"]; ok {
 		act.ActionSource = parseActionSource(s)
@@ -681,9 +681,41 @@ func parseAffectObject(sectionText string) (affectObject *ActionAffect) {
 	return affectObject
 }
 
-// parseTriggerCondition parses the trigger condition from YAML code block.
+// parseActionCondition parses the trigger condition from YAML code block.
 // Handles both direct CondCfg and wrapped `condition:` / `trigger_condition:` keys.
-func parseTriggerCondition(sectionText string) *ActionCondCfg {
+func parseCondition(sectionText string) *CondCfg {
+	matches := yamlBlockRE.FindStringSubmatch(sectionText)
+	if len(matches) < 2 {
+		return nil
+	}
+
+	yamlContent := matches[1]
+
+	// Try wrapped format first: { condition: {...} } or { trigger_condition: {...} }
+	var wrapper map[string]*CondCfg
+	if err := yaml.Unmarshal([]byte(yamlContent), &wrapper); err == nil {
+		if c, ok := wrapper["condition"]; ok && c != nil {
+			return c
+		}
+		if c, ok := wrapper["trigger_condition"]; ok && c != nil {
+			return c
+		}
+	}
+
+	// Fall back to direct CondCfg
+	var cond CondCfg
+	if err := yaml.Unmarshal([]byte(yamlContent), &cond); err != nil {
+		return nil
+	}
+	if cond.Operation == "" && cond.Field == "" && len(cond.SubConds) == 0 {
+		return nil
+	}
+	return &cond
+}
+
+// parseActionCondition parses the trigger condition from YAML code block.
+// Handles both direct CondCfg and wrapped `condition:` / `trigger_condition:` keys.
+func parseActionCondition(sectionText string) *ActionCondCfg {
 	matches := yamlBlockRE.FindStringSubmatch(sectionText)
 	if len(matches) < 2 {
 		return nil

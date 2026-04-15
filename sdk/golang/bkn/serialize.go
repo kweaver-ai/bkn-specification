@@ -314,7 +314,7 @@ func SerializeRelationType(rt *BknRelationType) string {
 		}
 
 	case RELATION_MAPPING_TYPE_FILTERED_CROSS_JOIN:
-		writeCondCfgSection := func(title string, cond *ActionCondCfg) {
+		writeCondCfgSection := func(title string, cond *CondCfg) {
 			sb.WriteString("### " + title + "\n\n")
 			if cond != nil {
 				sb.WriteString("```yaml\n")

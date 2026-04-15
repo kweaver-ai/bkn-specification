@@ -170,8 +170,16 @@ type InDirectMappingRule struct {
 
 // FilteredCrossJoinMapping rules for relation type filtered_cross_join (per-side conditions, no key mapping).
 type FilteredCrossJoinMapping struct {
-	SourceCondition *ActionCondCfg
-	TargetCondition *ActionCondCfg
+	SourceCondition *CondCfg
+	TargetCondition *CondCfg
+}
+
+type CondCfg struct {
+	Field     string     `yaml:"field"`
+	Operation string     `yaml:"operation"`
+	SubConds  []*CondCfg `yaml:"sub_conds"`
+	ValueFrom string     `yaml:"value_from"`
+	Value     any        `yaml:"value"`
 }
 
 // BknActionTypeFrontmatter is YAML frontmatter metadata for a .bkn file.
