@@ -15,7 +15,28 @@ tags: []
 
 ### Source Condition
 
+```yaml
+field: ""
+operation: and
+sub_conds:
+  - field: employee_id
+    operation: in
+    value_from: const
+    value:
+      - emp_001
+      - emp_002
+      - emp_003
+```
 
 ### Target Condition
 
+```yaml
+field: ""
+operation: and
+sub_conds:
+  - field: skill_id
+    operation: ==
+    value_from: const
+    value: a0f20bd5-2532-4042-8122-382605ab4de4
+```
 

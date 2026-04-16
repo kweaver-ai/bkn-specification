@@ -14,6 +14,16 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// encodeYAMLBlock encodes v to YAML and wraps it in a ```yaml code fence.
+func encodeYAMLBlock(v any) string {
+	var buf bytes.Buffer
+	enc := yaml.NewEncoder(&buf)
+	enc.SetIndent(2)
+	_ = enc.Encode(v)
+	_ = enc.Close()
+	return "```yaml\n" + buf.String() + "```\n"
+}
+
 // SerializeBknNetwork Serializes BknNetwork to BKN format
 func SerializeBknNetwork(doc *BknNetwork) string {
 	var sb strings.Builder
@@ -314,23 +324,18 @@ func SerializeRelationType(rt *BknRelationType) string {
 		}
 
 	case RELATION_MAPPING_TYPE_FILTERED_CROSS_JOIN:
-		writeCondCfgSection := func(title string, cond *CondCfg) {
-			sb.WriteString("### " + title + "\n\n")
-			if cond != nil {
-				sb.WriteString("```yaml\n")
-				var yamlBuf bytes.Buffer
-				enc := yaml.NewEncoder(&yamlBuf)
-				enc.SetIndent(2)
-				enc.Encode(cond)
-				enc.Close()
-				sb.Write(yamlBuf.Bytes())
-				sb.WriteString("```\n")
+		if fcj, ok := rt.MappingRules.(*FilteredCrossJoinMapping); ok {
+			sb.WriteString("### Source Condition\n\n")
+			if fcj.SourceCondition != nil {
+				sb.WriteString(encodeYAMLBlock(fcj.SourceCondition))
 			}
 			sb.WriteString("\n")
-		}
-		if fcj, ok := rt.MappingRules.(*FilteredCrossJoinMapping); ok {
-			writeCondCfgSection("Source Condition", fcj.SourceCondition)
-			writeCondCfgSection("Target Condition", fcj.TargetCondition)
+
+			sb.WriteString("### Target Condition\n\n")
+			if fcj.TargetCondition != nil {
+				sb.WriteString(encodeYAMLBlock(fcj.TargetCondition))
+			}
+			sb.WriteString("\n")
 		}
 	}
 
@@ -374,14 +379,7 @@ func SerializeActionType(at *BknActionType) string {
 	// Trigger Condition
 	sb.WriteString("### Trigger Condition\n\n")
 	if at.TriggerCondition != nil {
-		sb.WriteString("```yaml\n")
-		var yamlBuf bytes.Buffer
-		enc := yaml.NewEncoder(&yamlBuf)
-		enc.SetIndent(2)
-		enc.Encode(at.TriggerCondition)
-		enc.Close()
-		sb.Write(yamlBuf.Bytes())
-		sb.WriteString("```\n")
+		sb.WriteString(encodeYAMLBlock(at.TriggerCondition))
 	}
 	sb.WriteString("\n")
 

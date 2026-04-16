@@ -62,8 +62,6 @@ action_type: add
 object_type_id: data_domain
 field: status
 operation: ==
-sub_conds: []
-value_from: ""
 value: Online
 ```
 

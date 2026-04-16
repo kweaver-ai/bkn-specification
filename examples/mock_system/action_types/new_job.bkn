@@ -26,8 +26,6 @@ action_type: add
 object_type_id: employee
 field: status
 operation: ==
-sub_conds: []
-value_from: ""
 value: 0
 ```
 

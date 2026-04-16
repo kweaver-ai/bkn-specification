@@ -88,8 +88,6 @@ action_type: add
 object_type_id: recovery_job
 field: recovery_result
 operation: ==
-sub_conds: []
-value_from: ""
 value: 成功
 ```
 

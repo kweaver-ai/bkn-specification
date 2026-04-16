@@ -67,8 +67,6 @@ action_type: add
 object_type_id: agent
 field: initialized
 operation: ==
-sub_conds: []
-value_from: ""
 value: true
 ```
 

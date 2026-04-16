@@ -25,9 +25,9 @@ type BknNetworkFrontmatter struct {
 	Name string   `yaml:"name"`
 	Tags []string `yaml:"tags"`
 
-	Version        string `yaml:"version"`
-	Branch         string `yaml:"branch"`
-	BusinessDomain string `yaml:"business_domain"`
+	Version        string `yaml:"version,omitempty"`
+	Branch         string `yaml:"branch,omitempty"`
+	BusinessDomain string `yaml:"business_domain,omitempty"`
 }
 
 // BknDocument is a parsed network.bkn file: frontmatter + body definitions.
@@ -177,9 +177,9 @@ type FilteredCrossJoinMapping struct {
 type CondCfg struct {
 	Field     string     `yaml:"field"`
 	Operation string     `yaml:"operation"`
-	SubConds  []*CondCfg `yaml:"sub_conds"`
-	ValueFrom string     `yaml:"value_from"`
-	Value     any        `yaml:"value"`
+	SubConds  []*CondCfg `yaml:"sub_conds,omitempty"`
+	ValueFrom string     `yaml:"value_from,omitempty"`
+	Value     any        `yaml:"value,omitempty"`
 }
 
 // BknActionTypeFrontmatter is YAML frontmatter metadata for a .bkn file.
@@ -225,9 +225,9 @@ type ActionCondCfg struct {
 	ObjectTypeID string           `yaml:"object_type_id"`
 	Field        string           `yaml:"field"`
 	Operation    string           `yaml:"operation"`
-	SubConds     []*ActionCondCfg `yaml:"sub_conds"`
-	ValueFrom    string           `yaml:"value_from"`
-	Value        any              `yaml:"value"`
+	SubConds     []*ActionCondCfg `yaml:"sub_conds,omitempty"`
+	ValueFrom    string           `yaml:"value_from,omitempty"`
+	Value        any              `yaml:"value,omitempty"`
 }
 
 // PreCondition represents a pre-condition check.
