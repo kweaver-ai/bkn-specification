@@ -21,12 +21,12 @@ import (
 func TestWriteTarEntry_Success(t *testing.T) {
 	var buf bytes.Buffer
 	tw := tar.NewWriter(&buf)
-	defer tw.Close()
+	defer func() { _ = tw.Close() }()
 
 	content := []byte("test content")
 	err := writeTarEntry(tw, "test.bkn", content, time.Now())
 	require.NoError(t, err)
-	tw.Close()
+	_ = tw.Close()
 
 	// Verify tar can be read
 	tr := tar.NewReader(&buf)
@@ -103,9 +103,9 @@ func TestExtractTarToMemory_SingleNetworkFile(t *testing.T) {
 	tw := tar.NewWriter(&buf)
 
 	content := []byte("---\ntype: network\nid: test-network\nname: Test Network\n---\n")
-	tw.WriteHeader(&tar.Header{Name: "network.bkn", Size: int64(len(content)), Mode: 0644})
-	tw.Write(content)
-	tw.Close()
+	_ = tw.WriteHeader(&tar.Header{Name: "network.bkn", Size: int64(len(content)), Mode: 0644})
+	_, _ = tw.Write(content)
+	_ = tw.Close()
 
 	mfs, rootDir, err := ExtractTarToMemory(&buf)
 	require.NoError(t, err)
@@ -132,10 +132,10 @@ func TestExtractTarToMemory_WithSubdirectories(t *testing.T) {
 
 	for name, content := range files {
 		data := []byte(content)
-		tw.WriteHeader(&tar.Header{Name: name, Size: int64(len(data)), Mode: 0644})
-		tw.Write(data)
+		_ = tw.WriteHeader(&tar.Header{Name: name, Size: int64(len(data)), Mode: 0644})
+		_, _ = tw.Write(data)
 	}
-	tw.Close()
+	_ = tw.Close()
 
 	mfs, rootDir, err := ExtractTarToMemory(&buf)
 	require.NoError(t, err)
@@ -151,7 +151,7 @@ func TestExtractTarToMemory_WithSubdirectories(t *testing.T) {
 func TestExtractTarToMemory_EmptyTar(t *testing.T) {
 	var buf bytes.Buffer
 	tw := tar.NewWriter(&buf)
-	tw.Close()
+	_ = tw.Close()
 
 	_, _, err := ExtractTarToMemory(&buf)
 	assert.Error(t, err)
@@ -163,9 +163,9 @@ func TestExtractTarToMemory_NoNetworkFile(t *testing.T) {
 	tw := tar.NewWriter(&buf)
 
 	content := []byte("---\ntype: object_type\nid: pod\n---\n")
-	tw.WriteHeader(&tar.Header{Name: "object_types/pod.bkn", Size: int64(len(content)), Mode: 0644})
-	tw.Write(content)
-	tw.Close()
+	_ = tw.WriteHeader(&tar.Header{Name: "object_types/pod.bkn", Size: int64(len(content)), Mode: 0644})
+	_, _ = tw.Write(content)
+	_ = tw.Close()
 
 	_, _, err := ExtractTarToMemory(&buf)
 	assert.Error(t, err)
@@ -177,9 +177,9 @@ func TestExtractTarToMemory_NestedRoot(t *testing.T) {
 	tw := tar.NewWriter(&buf)
 
 	content := []byte("---\ntype: network\nid: test\n---\n")
-	tw.WriteHeader(&tar.Header{Name: "myapp/network.bkn", Size: int64(len(content)), Mode: 0644})
-	tw.Write(content)
-	tw.Close()
+	_ = tw.WriteHeader(&tar.Header{Name: "myapp/network.bkn", Size: int64(len(content)), Mode: 0644})
+	_, _ = tw.Write(content)
+	_ = tw.Close()
 
 	mfs, rootDir, err := ExtractTarToMemory(&buf)
 	require.NoError(t, err)
@@ -198,13 +198,13 @@ func TestExtractTarToMemory_SkipsAppleDouble(t *testing.T) {
 	podContent := []byte("---\ntype: object_type\nid: pod\nname: Pod\n---\n")
 	appleDoubleContent := []byte("invalid apple double")
 
-	tw.WriteHeader(&tar.Header{Name: "network.bkn", Size: int64(len(networkContent)), Mode: 0644})
-	tw.Write(networkContent)
-	tw.WriteHeader(&tar.Header{Name: "object_types/pod.bkn", Size: int64(len(podContent)), Mode: 0644})
-	tw.Write(podContent)
-	tw.WriteHeader(&tar.Header{Name: "object_types/._pod.bkn", Size: int64(len(appleDoubleContent)), Mode: 0644})
-	tw.Write(appleDoubleContent)
-	tw.Close()
+	_ = tw.WriteHeader(&tar.Header{Name: "network.bkn", Size: int64(len(networkContent)), Mode: 0644})
+	_, _ = tw.Write(networkContent)
+	_ = tw.WriteHeader(&tar.Header{Name: "object_types/pod.bkn", Size: int64(len(podContent)), Mode: 0644})
+	_, _ = tw.Write(podContent)
+	_ = tw.WriteHeader(&tar.Header{Name: "object_types/._pod.bkn", Size: int64(len(appleDoubleContent)), Mode: 0644})
+	_, _ = tw.Write(appleDoubleContent)
+	_ = tw.Close()
 
 	rawBytes := buf.Bytes()
 
@@ -435,13 +435,13 @@ func TestComputeChecksumFromTar_ValidTar(t *testing.T) {
 	tw := tar.NewWriter(&buf)
 
 	networkContent := []byte("---\ntype: network\nid: test\n---\n")
-	tw.WriteHeader(&tar.Header{Name: "network.bkn", Size: int64(len(networkContent)), Mode: 0644})
-	tw.Write(networkContent)
+	_ = tw.WriteHeader(&tar.Header{Name: "network.bkn", Size: int64(len(networkContent)), Mode: 0644})
+	_, _ = tw.Write(networkContent)
 
 	objContent := []byte("---\ntype: object_type\nid: pod\n---\n")
-	tw.WriteHeader(&tar.Header{Name: "object_types/pod.bkn", Size: int64(len(objContent)), Mode: 0644})
-	tw.Write(objContent)
-	tw.Close()
+	_ = tw.WriteHeader(&tar.Header{Name: "object_types/pod.bkn", Size: int64(len(objContent)), Mode: 0644})
+	_, _ = tw.Write(objContent)
+	_ = tw.Close()
 
 	checksumMap, err := ComputeChecksumFromTar(&buf)
 	require.NoError(t, err)
@@ -456,13 +456,13 @@ func TestGenerateChecksumFromTar_ValidTar(t *testing.T) {
 	tw := tar.NewWriter(&buf)
 
 	networkContent := []byte("---\ntype: network\nid: test\n---\n")
-	tw.WriteHeader(&tar.Header{Name: "network.bkn", Size: int64(len(networkContent)), Mode: 0644})
-	tw.Write(networkContent)
+	_ = tw.WriteHeader(&tar.Header{Name: "network.bkn", Size: int64(len(networkContent)), Mode: 0644})
+	_, _ = tw.Write(networkContent)
 
 	objContent := []byte("---\ntype: object_type\nid: pod\n---\n")
-	tw.WriteHeader(&tar.Header{Name: "object_types/pod.bkn", Size: int64(len(objContent)), Mode: 0644})
-	tw.Write(objContent)
-	tw.Close()
+	_ = tw.WriteHeader(&tar.Header{Name: "object_types/pod.bkn", Size: int64(len(objContent)), Mode: 0644})
+	_, _ = tw.Write(objContent)
+	_ = tw.Close()
 
 	checksum, err := GenerateChecksumFromTar(&buf)
 	require.NoError(t, err)
@@ -476,9 +476,9 @@ func TestComputeChecksumFromTar_NoNetworkFile(t *testing.T) {
 	tw := tar.NewWriter(&buf)
 
 	content := []byte("---\ntype: object_type\nid: pod\n---\n")
-	tw.WriteHeader(&tar.Header{Name: "object_types/pod.bkn", Size: int64(len(content)), Mode: 0644})
-	tw.Write(content)
-	tw.Close()
+	_ = tw.WriteHeader(&tar.Header{Name: "object_types/pod.bkn", Size: int64(len(content)), Mode: 0644})
+	_, _ = tw.Write(content)
+	_ = tw.Close()
 
 	_, err := ComputeChecksumFromTar(&buf)
 	assert.Error(t, err)
@@ -490,9 +490,9 @@ func TestVerifyChecksumFromTar_Valid(t *testing.T) {
 	tw := tar.NewWriter(&buf)
 
 	networkContent := []byte("---\ntype: network\nid: test\n---\n")
-	tw.WriteHeader(&tar.Header{Name: "network.bkn", Size: int64(len(networkContent)), Mode: 0644})
-	tw.Write(networkContent)
-	tw.Close()
+	_ = tw.WriteHeader(&tar.Header{Name: "network.bkn", Size: int64(len(networkContent)), Mode: 0644})
+	_, _ = tw.Write(networkContent)
+	_ = tw.Close()
 
 	checksum, err := GenerateChecksumFromTar(&buf)
 	require.NoError(t, err)
@@ -501,13 +501,13 @@ func TestVerifyChecksumFromTar_Valid(t *testing.T) {
 	var buf2 bytes.Buffer
 	tw2 := tar.NewWriter(&buf2)
 
-	tw2.WriteHeader(&tar.Header{Name: "network.bkn", Size: int64(len(networkContent)), Mode: 0644})
-	tw2.Write(networkContent)
+	_ = tw2.WriteHeader(&tar.Header{Name: "network.bkn", Size: int64(len(networkContent)), Mode: 0644})
+	_, _ = tw2.Write(networkContent)
 
 	checksumContent := []byte(checksum)
-	tw2.WriteHeader(&tar.Header{Name: "CHECKSUM", Size: int64(len(checksumContent)), Mode: 0644})
-	tw2.Write(checksumContent)
-	tw2.Close()
+	_ = tw2.WriteHeader(&tar.Header{Name: "CHECKSUM", Size: int64(len(checksumContent)), Mode: 0644})
+	_, _ = tw2.Write(checksumContent)
+	_ = tw2.Close()
 
 	// Verify
 	ok, errs := VerifyChecksumFromTar(&buf2)
@@ -520,14 +520,14 @@ func TestVerifyChecksumFromTar_InvalidChecksum(t *testing.T) {
 	tw := tar.NewWriter(&buf)
 
 	networkContent := []byte("---\ntype: network\nid: test\n---\n")
-	tw.WriteHeader(&tar.Header{Name: "network.bkn", Size: int64(len(networkContent)), Mode: 0644})
-	tw.Write(networkContent)
+	_ = tw.WriteHeader(&tar.Header{Name: "network.bkn", Size: int64(len(networkContent)), Mode: 0644})
+	_, _ = tw.Write(networkContent)
 
 	// Add invalid checksum
 	invalidChecksum := []byte("# Checksum\nnetwork  sha256:invalid123\n")
-	tw.WriteHeader(&tar.Header{Name: "CHECKSUM", Size: int64(len(invalidChecksum)), Mode: 0644})
-	tw.Write(invalidChecksum)
-	tw.Close()
+	_ = tw.WriteHeader(&tar.Header{Name: "CHECKSUM", Size: int64(len(invalidChecksum)), Mode: 0644})
+	_, _ = tw.Write(invalidChecksum)
+	_ = tw.Close()
 
 	ok, errs := VerifyChecksumFromTar(&buf)
 	assert.False(t, ok)
@@ -539,9 +539,9 @@ func TestVerifyChecksumFromTar_MissingChecksumFile(t *testing.T) {
 	tw := tar.NewWriter(&buf)
 
 	content := []byte("---\ntype: network\nid: test\n---\n")
-	tw.WriteHeader(&tar.Header{Name: "network.bkn", Size: int64(len(content)), Mode: 0644})
-	tw.Write(content)
-	tw.Close()
+	_ = tw.WriteHeader(&tar.Header{Name: "network.bkn", Size: int64(len(content)), Mode: 0644})
+	_, _ = tw.Write(content)
+	_ = tw.Close()
 
 	ok, errs := VerifyChecksumFromTar(&buf)
 	assert.False(t, ok)

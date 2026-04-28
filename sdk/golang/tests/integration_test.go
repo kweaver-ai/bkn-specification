@@ -50,7 +50,7 @@ func tempDir(t *testing.T) string {
 	t.Helper()
 	dir, err := os.MkdirTemp("", "bkn-test-*")
 	require.NoError(t, err, "create temp dir")
-	t.Cleanup(func() { os.RemoveAll(dir) })
+	t.Cleanup(func() { _ = os.RemoveAll(dir) })
 	return dir
 }
 
@@ -61,7 +61,7 @@ func buildTarFromDir(t *testing.T, dir string) *bytes.Buffer {
 	var buf bytes.Buffer
 	tw := tar.NewWriter(&buf)
 
-	filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+	_ = filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil || info.IsDir() {
 			return err
 		}
@@ -69,11 +69,11 @@ func buildTarFromDir(t *testing.T, dir string) *bytes.Buffer {
 		rel = filepath.ToSlash(rel)
 		data, err := os.ReadFile(path)
 		require.NoError(t, err, "read %s", path)
-		tw.WriteHeader(&tar.Header{Name: rel, Size: int64(len(data)), Mode: 0644})
-		tw.Write(data)
+		_ = tw.WriteHeader(&tar.Header{Name: rel, Size: int64(len(data)), Mode: 0644})
+		_, _ = tw.Write(data)
 		return nil
 	})
-	tw.Close()
+	_ = tw.Close()
 	return &buf
 }
 
@@ -161,8 +161,8 @@ func TestLoadFromFile(t *testing.T) {
 			doc, err := bkn.LoadNetwork(dir)
 			require.NoError(t, err, "LoadNetwork failed")
 
-			assert.NotEmpty(t, doc.BknNetworkFrontmatter.ID, "network id must not be empty")
-			assert.NotEmpty(t, doc.BknNetworkFrontmatter.Name, "network name must not be empty")
+			assert.NotEmpty(t, doc.ID, "network id must not be empty")
+			assert.NotEmpty(t, doc.Name, "network name must not be empty")
 
 			total := len(doc.ObjectTypes) + len(doc.RelationTypes) + len(doc.ActionTypes)
 			assert.Greater(t, total, 0, "expected at least one entity")
@@ -182,7 +182,7 @@ func TestLoadFromTar(t *testing.T) {
 			fileDoc, err := bkn.LoadNetwork(dir)
 			require.NoError(t, err, "load from file")
 
-			assert.Equal(t, fileDoc.BknNetworkFrontmatter.ID, tarDoc.BknNetworkFrontmatter.ID, "root ID mismatch")
+			assert.Equal(t, fileDoc.ID, tarDoc.ID, "root ID mismatch")
 			assert.Equal(t, len(fileDoc.ObjectTypes), len(tarDoc.ObjectTypes), "object count mismatch")
 			assert.Equal(t, len(fileDoc.RelationTypes), len(tarDoc.RelationTypes), "relation count mismatch")
 			assert.Equal(t, len(fileDoc.ActionTypes), len(tarDoc.ActionTypes), "action count mismatch")
@@ -208,7 +208,7 @@ func TestRoundTrip_FileContent(t *testing.T) {
 			f, err := os.Open(tarPath)
 			require.NoError(t, err, "open tar file")
 			doc, err := bkn.LoadNetworkFromTar(f)
-			f.Close()
+			_ = f.Close()
 			require.NoError(t, err, "LoadNetworkFromTar failed")
 
 			// Step 3: export the model back to a tar.
@@ -245,7 +245,7 @@ version: "1.0"
 
 	doc, err := bkn.LoadNetwork(dir)
 	require.NoError(t, err, "load empty network")
-	assert.Equal(t, "test-empty", doc.BknNetworkFrontmatter.ID)
+	assert.Equal(t, "test-empty", doc.ID)
 	assert.Empty(t, doc.ObjectTypes)
 	assert.Empty(t, doc.RelationTypes)
 	assert.Empty(t, doc.ActionTypes)
@@ -302,7 +302,7 @@ version: "1.0"
 
 	doc, err := bkn.LoadNetwork(dir)
 	require.NoError(t, err, "load network with missing subdirectories")
-	assert.Equal(t, "test-missing", doc.BknNetworkFrontmatter.ID)
+	assert.Equal(t, "test-missing", doc.ID)
 }
 
 // TestLargeNetwork: 大规模网络性能

@@ -26,7 +26,7 @@ import (
 // - CHECKSUM (auto-generated)
 func WriteNetworkToTar(doc *BknNetwork, w io.Writer) error {
 	tw := tar.NewWriter(w)
-	defer tw.Close()
+	defer func() { _ = tw.Close() }()
 
 	now := time.Now()
 	mfs := NewMemoryFileSystem()
@@ -123,113 +123,110 @@ func generateSkillMd(doc *BknNetwork) string {
 	var sb strings.Builder
 
 	// Header
-	sb.WriteString(fmt.Sprintf("# %s - Agent 使用指南\n\n", fm.Name))
-	sb.WriteString(fmt.Sprintf("> **网络ID**: %s  \n", fm.ID))
-	sb.WriteString(fmt.Sprintf("> **版本**: %s  \n", fm.Version))
+	_, _ = fmt.Fprintf(&sb, "# %s - Agent 使用指南\n\n", fm.Name)
+	_, _ = fmt.Fprintf(&sb, "> **网络ID**: %s  \n", fm.ID)
+	_, _ = fmt.Fprintf(&sb, "> **版本**: %s  \n", fm.Version)
 	if len(fm.Tags) > 0 {
-		sb.WriteString(fmt.Sprintf("> **标签**: %s  \n", strings.Join(fm.Tags, ", ")))
+		_, _ = fmt.Fprintf(&sb, "> **标签**: %s  \n", strings.Join(fm.Tags, ", "))
 	}
-	sb.WriteString("\n")
+	_, _ = fmt.Fprintf(&sb, "\n")
 
 	// Overview
-	sb.WriteString("## 网络概览\n\n")
+	_, _ = fmt.Fprintf(&sb, "## 网络概览\n\n")
 	if doc.Description != "" {
-		sb.WriteString(doc.Description)
-		sb.WriteString("\n\n")
+		_, _ = fmt.Fprintf(&sb, "%s\n\n", doc.Description)
 	}
 
 	// Objects table
 	if len(doc.ObjectTypes) > 0 {
-		sb.WriteString("### 核心对象\n\n")
-		sb.WriteString("| 对象 | 文件路径 | 说明 |\n")
-		sb.WriteString("|------|----------|------|\n")
+		_, _ = fmt.Fprintf(&sb, "### 核心对象\n\n")
+		_, _ = fmt.Fprintf(&sb, "| 对象 | 文件路径 | 说明 |\n")
+		_, _ = fmt.Fprintf(&sb, "|------|----------|------|\n")
 		ots := append([]*BknObjectType(nil), doc.ObjectTypes...)
 		sort.Slice(ots, func(i, j int) bool { return ots[i].ID < ots[j].ID })
 		for _, ot := range ots {
 			path := "object_types/" + ot.ID + ".bkn"
-			sb.WriteString(fmt.Sprintf("| %s | `%s` | %s |\n", ot.Name, path, ot.Description))
+			_, _ = fmt.Fprintf(&sb, "| %s | `%s` | %s |\n", ot.Name, path, ot.Description)
 		}
-		sb.WriteString("\n")
+		_, _ = fmt.Fprintf(&sb, "\n")
 	}
 
 	// Relations table
 	if len(doc.RelationTypes) > 0 {
-		sb.WriteString("### 核心关系\n\n")
-		sb.WriteString("| 关系 | 文件路径 | 说明 |\n")
-		sb.WriteString("|------|----------|------|\n")
+		_, _ = fmt.Fprintf(&sb, "### 核心关系\n\n")
+		_, _ = fmt.Fprintf(&sb, "| 关系 | 文件路径 | 说明 |\n")
+		_, _ = fmt.Fprintf(&sb, "|------|----------|------|\n")
 		rts := append([]*BknRelationType(nil), doc.RelationTypes...)
 		sort.Slice(rts, func(i, j int) bool { return rts[i].ID < rts[j].ID })
 		for _, rt := range rts {
 			path := "relation_types/" + rt.ID + ".bkn"
-			sb.WriteString(fmt.Sprintf("| %s | `%s` | %s |\n", rt.Name, path, rt.Description))
+			_, _ = fmt.Fprintf(&sb, "| %s | `%s` | %s |\n", rt.Name, path, rt.Description)
 		}
-		sb.WriteString("\n")
+		_, _ = fmt.Fprintf(&sb, "\n")
 	}
 
 	// Actions table
 	if len(doc.ActionTypes) > 0 {
-		sb.WriteString("### 可用行动\n\n")
-		sb.WriteString("| 行动 | 文件路径 | 说明 |\n")
-		sb.WriteString("|------|----------|------|\n")
+		_, _ = fmt.Fprintf(&sb, "### 可用行动\n\n")
+		_, _ = fmt.Fprintf(&sb, "| 行动 | 文件路径 | 说明 |\n")
+		_, _ = fmt.Fprintf(&sb, "|------|----------|------|\n")
 		ats := append([]*BknActionType(nil), doc.ActionTypes...)
 		sort.Slice(ats, func(i, j int) bool { return ats[i].ID < ats[j].ID })
 		for _, at := range ats {
 			path := "action_types/" + at.ID + ".bkn"
-			sb.WriteString(fmt.Sprintf("| %s | `%s` | %s |\n", at.Name, path, at.Description))
+			_, _ = fmt.Fprintf(&sb, "| %s | `%s` | %s |\n", at.Name, path, at.Description)
 		}
-		sb.WriteString("\n")
+		_, _ = fmt.Fprintf(&sb, "\n")
 	}
 
 	// Directory structure
-	sb.WriteString("## 目录结构\n\n")
-	sb.WriteString("```\n")
-	sb.WriteString(".\n")
-	sb.WriteString("├── network.bkn\n")
-	sb.WriteString("├── SKILL.md\n")
-	sb.WriteString("├── CHECKSUM\n")
+	_, _ = fmt.Fprintf(&sb, "## 目录结构\n\n")
+	_, _ = fmt.Fprintf(&sb, "```\n")
+	_, _ = fmt.Fprintf(&sb, ".\n")
+	_, _ = fmt.Fprintf(&sb, "├── network.bkn\n")
+	_, _ = fmt.Fprintf(&sb, "├── SKILL.md\n")
+	_, _ = fmt.Fprintf(&sb, "├── CHECKSUM\n")
 	if len(doc.ObjectTypes) > 0 {
-		sb.WriteString("├── object_types/\n")
+		_, _ = fmt.Fprintf(&sb, "├── object_types/\n")
 	}
 	if len(doc.RelationTypes) > 0 {
-		sb.WriteString("├── relation_types/\n")
+		_, _ = fmt.Fprintf(&sb, "├── relation_types/\n")
 	}
 	if len(doc.ActionTypes) > 0 {
-		sb.WriteString("└── action_types/\n")
+		_, _ = fmt.Fprintf(&sb, "└── action_types/\n")
 	}
-	sb.WriteString("```\n\n")
-
+	_, _ = fmt.Fprintf(&sb, "```\n\n")
 	// Usage suggestions
-	sb.WriteString("## 使用建议\n\n")
-	sb.WriteString("### 查询场景\n\n")
-	sb.WriteString("1. **获取所有对象定义**\n")
-	sb.WriteString("   - 查看 `object_types/` 目录下的文件\n\n")
-	sb.WriteString("2. **查找关系定义**\n")
-	sb.WriteString("   - 查看 `relation_types/` 目录下的文件\n\n")
+	_, _ = fmt.Fprintf(&sb, "## 使用建议\n\n")
+	_, _ = fmt.Fprintf(&sb, "### 查询场景\n\n")
+	_, _ = fmt.Fprintf(&sb, "1. **获取所有对象定义**\n")
+	_, _ = fmt.Fprintf(&sb, "   - 查看 `object_types/` 目录下的文件\n\n")
+	_, _ = fmt.Fprintf(&sb, "2. **查找关系定义**\n")
+	_, _ = fmt.Fprintf(&sb, "   - 查看 `relation_types/` 目录下的文件\n\n")
 	if len(doc.ActionTypes) > 0 {
-		sb.WriteString("### 运维场景\n\n")
-		sb.WriteString("1. **执行运维操作**\n")
-		sb.WriteString("   - 查看 `action_types/` 目录下的行动定义\n")
-		sb.WriteString("   - 了解触发条件和参数绑定\n\n")
+		_, _ = fmt.Fprintf(&sb, "### 运维场景\n\n")
+		_, _ = fmt.Fprintf(&sb, "1. **执行运维操作**\n")
+		_, _ = fmt.Fprintf(&sb, "   - 查看 `action_types/` 目录下的行动定义\n")
+		_, _ = fmt.Fprintf(&sb, "   - 了解触发条件和参数绑定\n\n")
 	}
 
 	// Index tables
-	sb.WriteString("## 索引表\n\n")
-	sb.WriteString("### 按类型索引\n\n")
+	_, _ = fmt.Fprintf(&sb, "## 索引表\n\n")
+	_, _ = fmt.Fprintf(&sb, "### 按类型索引\n\n")
 	if len(doc.ObjectTypes) > 0 {
-		sb.WriteString("- **对象定义**: `object_types/`\n")
+		_, _ = fmt.Fprintf(&sb, "- **对象定义**: `object_types/`\n")
 	}
 	if len(doc.RelationTypes) > 0 {
-		sb.WriteString("- **关系定义**: `relation_types/`\n")
+		_, _ = fmt.Fprintf(&sb, "- **关系定义**: `relation_types/`\n")
 	}
 	if len(doc.ActionTypes) > 0 {
-		sb.WriteString("- **行动定义**: `action_types/`\n")
+		_, _ = fmt.Fprintf(&sb, "- **行动定义**: `action_types/`\n")
 	}
-	sb.WriteString("\n")
+	_, _ = fmt.Fprintf(&sb, "\n")
 
-	sb.WriteString("## 注意事项\n\n")
-	sb.WriteString("1. 本网络由 BKN SDK 自动生成 SKILL.md\n")
-	sb.WriteString("2. 所有定义遵循 BKN 规范\n")
-	sb.WriteString("3. 使用 CHECKSUM 文件验证网络完整性\n")
+	_, _ = fmt.Fprintf(&sb, "1. 本网络由 BKN SDK 自动生成 SKILL.md\n")
+	_, _ = fmt.Fprintf(&sb, "2. 所有定义遵循 BKN 规范\n")
+	_, _ = fmt.Fprintf(&sb, "3. 使用 CHECKSUM 文件验证网络完整性\n")
 
 	return sb.String()
 }

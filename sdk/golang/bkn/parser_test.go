@@ -664,7 +664,7 @@ func TestParseFullNetwork(t *testing.T) {
 	// Create a temporary directory with full network structure
 	dir, err := os.MkdirTemp("", "bkn-full-network-*")
 	require.NoError(t, err)
-	defer os.RemoveAll(dir)
+	defer func() { _ = os.RemoveAll(dir) }()
 
 	// Create network.bkn
 	networkContent := `---

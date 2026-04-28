@@ -160,7 +160,7 @@ func VerifyChecksumFileWithFS(fsys FileSystem, root string) (bool, []string) {
 	}
 
 	var errors []string
-	fsys.Walk(abs, func(path string, info fs.FileInfo, err error) error {
+	_ = fsys.Walk(abs, func(path string, info fs.FileInfo, err error) error {
 		if err != nil || info.IsDir() || fsys.Base(path) == ChecksumFileName {
 			return nil
 		}
