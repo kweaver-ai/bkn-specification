@@ -1,3 +1,8 @@
+// Copyright The kweaver.ai Authors.
+//
+// Licensed under the Apache License, Version 2.0.
+// See the LICENSE file in the project root for details.
+
 /**
  * Validate .bknd DataTable rows against Object/Relation schema definitions,
  * and structural rules (IDs, cross-references, required sections).

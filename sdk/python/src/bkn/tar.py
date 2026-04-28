@@ -1,3 +1,8 @@
+# Copyright The kweaver.ai Authors.
+#
+# Licensed under the Apache License, Version 2.0.
+# See the LICENSE file in the project root for details.
+
 """Pack BKN directory into tar archive.
 
 macOS: Sets COPYFILE_DISABLE=1 when spawning tar to prevent AppleDouble

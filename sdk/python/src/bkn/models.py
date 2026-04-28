@@ -1,3 +1,8 @@
+# Copyright The kweaver.ai Authors.
+#
+# Licensed under the Apache License, Version 2.0.
+# See the LICENSE file in the project root for details.
+
 """Data models for BKN documents, aligned with SPECIFICATION.md sections and table columns."""
 
 from __future__ import annotations

@@ -1,3 +1,8 @@
+# Copyright The kweaver.ai Authors.
+#
+# Licensed under the Apache License, Version 2.0.
+# See the LICENSE file in the project root for details.
+
 """Base transformer for converting BKN models to platform-specific formats."""
 
 from __future__ import annotations

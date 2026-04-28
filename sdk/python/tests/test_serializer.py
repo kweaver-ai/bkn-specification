@@ -1,3 +1,8 @@
+# Copyright The kweaver.ai Authors.
+#
+# Licensed under the Apache License, Version 2.0.
+# See the LICENSE file in the project root for details.
+
 """Tests for .bknd serialization (to_bknd, to_bknd_from_table)."""
 
 from __future__ import annotations

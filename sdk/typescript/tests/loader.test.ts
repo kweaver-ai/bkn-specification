@@ -1,3 +1,8 @@
+// Copyright The kweaver.ai Authors.
+//
+// Licensed under the Apache License, Version 2.0.
+// See the LICENSE file in the project root for details.
+
 import { describe, it, expect } from "vitest";
 import { loadBknFile, loadNetwork, discoverRootFile } from "../src/loader/index.js";
 import { join, dirname } from "node:path";

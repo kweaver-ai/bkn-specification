@@ -1,3 +1,8 @@
+# Copyright The kweaver.ai Authors.
+#
+# Licensed under the Apache License, Version 2.0.
+# See the LICENSE file in the project root for details.
+
 """Verify all examples/*.bkn files load successfully with the SDK."""
 
 from __future__ import annotations
@@ -71,4 +76,3 @@ class TestLoadNetworks:
         assert len(net.all_objects) == 3
         assert len(net.all_relations) == 2
         assert len(net.all_actions) == 2
-

@@ -16,6 +16,7 @@ business_domain: supplychain
 4. 采购申请转化为采购订单并由供应商执行，生产计划指导工厂生产；
 5. 最终输出缺口数量及补货建议，支撑供应链决策。
 
+
 ## Network Overview
 
 ### Object Types
