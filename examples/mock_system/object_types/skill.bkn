@@ -27,9 +27,6 @@ tags: []
 | update_user | 更新人 | string | 更新人 | update_user |
 | update_time | 更新时间 | datetime | 更新时间 | update_time |
 
-### Logic Properties
-
-
 ### Keys
 
 Primary Keys: id

@@ -13,7 +13,7 @@
 - **目录输入**：`load_network(dir)` 支持传入目录，自动发现根文件
 - **无 includes**：当根文件为 `type: knowledge_network` 且未声明 `includes` 时：
   - 同目录下所有 BKN 文件视为同一网络输入
-  - **子目录隐式加载**：`object_types/`、`relation_types/`、`action_types/`、`risk_types/`、`concept_groups/` 下的 `.bkn`/`.bknd`/`.md` 文件也会被自动加载
+  - **子目录隐式加载**：`object_types/`、`relation_types/`、`action_types/`、`risk_types/`、`concept_groups/`、`metrics/` 下的 `.bkn`/`.bknd`/`.md` 文件也会被自动加载
 - **有 includes**：则仅按 `includes` 加载
 
 ## 文件结构
@@ -32,6 +32,7 @@
 | `action_type` | 单个行动类型定义 |
 | `risk_type` | 单个风险类型定义 |
 | `concept_group` | 概念分组 |
+| `metric` | 网络级指标（推荐 `metrics/*.bkn`） |
 | `fragment` | 混合片段（多定义合一） |
 | `data` | 数据文件（建议 `.bknd`，承载对象/关系实例行） |
 
@@ -155,6 +156,28 @@ tags: [tag1, tag2]     # 可选
 - `## ConceptGroup: {显示名称}` + 简短描述
 - `### Object Types`（必须）：表格 ID | Name | Description
 
+## 网络级指标 (metric)
+
+```yaml
+---
+type: metric
+id: {metric_id}
+name: {显示名称}
+tags: [tag1, tag2]     # 可选
+metric_type: atomic    # atomic | derived | composite；须与正文公式根级 kind 一致；推荐与 kind 同步或由工具回填
+unit_type: count       # 可选
+unit: 个               # 可选
+---
+```
+
+正文：
+- `## Metric: {显示名称}` + 简短描述
+- `### Scope`：表格 Scope Type | Scope Ref
+- `### Calculation Formula`：围栏内 YAML，根级 `version` 与 **`kind`**（权威）；`atomic` / `derived` / `composite` 子树互斥
+- `### Time Dimension`、`### Analysis Dimensions`（可选）
+
+详见 `docs/DESIGN_BKN_METRIC.md` 与 `docs/templates/metric.bkn.template`。
+
 ## 更新与删除（无 patch 模型）
 
 - 定义文件导入 = add/modify（upsert）；修改即编辑文件后重新导入
@@ -174,3 +197,4 @@ tags: [tag1, tag2]     # 可选
    - ActionType：Bound Object、Parameter Binding（或 Tool Configuration）
    - RiskType：Control Scope、Control Policy
    - ConceptGroup：Object Types
+   - Metric：Scope、Calculation Formula（须与 frontmatter `metric_type` 及根级 `kind` 一致）

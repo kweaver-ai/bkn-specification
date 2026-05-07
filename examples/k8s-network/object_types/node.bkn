@@ -29,9 +29,6 @@ Kubernetes 集群中的工作节点，承载 Pod 运行。
 | node_kubelet_version | Kubelet版本 | string | Kubelet版本 | node_kubelet_version |
 | node_os_image | 操作系统 | string | 操作系统镜像 | node_os_image |
 
-### Logic Properties
-
-
 ### Keys
 
 Primary Keys: id

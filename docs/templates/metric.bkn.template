@@ -1,0 +1,110 @@
+---
+type: metric
+id: {metric_id}
+name: {指标显示名称}
+tags: [{标签1}, {标签2}]
+metric_type: {atomic|derived|composite}
+unit_type: {单位类型}
+unit: {度量单位}
+---
+
+## Metric: {指标显示名称}
+
+{详细描述}
+
+### Scope
+
+| Scope Type | Scope Ref |
+|------------|-----------|
+| object_type | {object_type_id} |
+
+<!-- scope_type 为 subgraph 时示例：
+| subgraph | {subgraph_id} |
+-->
+
+### Calculation Formula
+
+**类型与结构（扩展约定）**
+
+- **单一事实来源**：校验、导入与语义解释**仅以正文 YAML 根级的 `kind` 为准**（`atomic` | `derived` | `composite`）。
+- **`frontmatter.metric_type`（规范保留）**：与后端/API DTO 对齐的**标准前置字段**，取值与 `kind` 同属 `atomic` | `derived` | `composite`。**推荐与正文 `kind` 保持一致**；宜由编辑器/序列化器/生成器据 `kind` **自动写入或回填**，减少手填漂移。若二者并存且不一致，实现侧以 **`kind` 为唯一权威**，并对 frontmatter **修正或告警**。
+- 根级固定包含 `version`（正文本范式版本，与网络 SPEC 版本独立）与 `kind`；**同一时间仅允许与被 `kind` 选中子键对应的一种子结构**（`atomic` / `derived` / `composite` 三者互斥）。
+- **后端与 endpoint**：原子 / 衍生 / 复合指标**共用同一套 Metric 资源与 endpoint**；`kind` 只影响计算公式子结构的校验与持久化形态，**不区分 API 路由**。
+- 未来新增指标形态时：递增 `version`、扩展 `kind` 枚举或子树字段；旧版本解析器可对未知 `kind` 降级为警告或拒绝导入。
+
+| YAML `kind`（权威） | `metric_type`（回填，与 kind 同值） | 子结构根键 | 说明 |
+|---------------------|-------------------------------------|------------|------|
+| `atomic` | `atomic` | `atomic` | 基于 scope 内对象属性的过滤、聚合、分组与后置过滤 |
+| `derived` | `derived` | `derived` | 基于**其它指标**（`metric.id`）经表达式或声明式规则派生 |
+| `composite` | `composite` | `composite` | **多指标**按权重或规则组合为单一网络级指标 |
+
+以下为 **`kind: atomic`（原子指标）** 的完整示例；`derived` / `composite` 的结构见本节末尾 HTML 注释中的占位骨架，待与 `bkn-metrics.yaml` / `CreateMetricRequest` 对齐后收敛为正式 schema。
+
+**属性名**：`atomic` 内 `condition.field`、`aggregation.property`、`group_by` / `order_by` 等涉及的字段名，**须与该指标 Scope 所指 `object_type` 的 Data Properties 表中 Name 列一致**，勿写 Mapped Field（运行时由平台将 Name 映射到物理列）。详见 `docs/DESIGN_BKN_METRIC.md` §4.6。
+
+~~~yaml
+version: 1
+kind: atomic
+
+atomic:
+  # 可选：行级条件；field 在 scope 内解释；禁止出现 object_type_id
+  # condition:
+  #   field: {property_name}
+  #   operation: ==
+  #   value: {value}
+  aggregation:
+    property: {语义字段名}
+    aggr: sum
+  # aggr 可取：count_distinct | sum | max | min | avg | count
+
+  # 可选：分组、排序、聚合结果过滤（结构与后端 MetricCalculationFormula 对齐）
+  # group_by:
+  #   - property: {field}
+  #     description: {说明}
+  # order_by:
+  #   - property: {field}
+  #     direction: desc
+  # having:
+  #   field: __value
+  #   operation: ">="
+  #   value: 0
+~~~
+
+<!--
+================================================================================
+衍生指标（kind: derived）—— 与 atomic、composite 互斥；metric_type 由生成器填 derived
+字段名与嵌套结构以最终实现为准；以下为可读占位，便于作者与解析器预留扩展点。
+
+~~~yaml
+version: 1
+kind: derived
+
+~~~
+
+================================================================================
+复合指标（kind: composite）—— 与 atomic、derived 互斥；metric_type 由生成器填 composite
+
+~~~yaml
+version: 1
+kind: composite
+
+~~~
+-->
+
+### Time Dimension
+
+<!-- 可选：无时间维度时删除本节或留空表 -->
+
+| Property | Default Range Policy |
+|----------|----------------------|
+| {时间字段名} | last_24h |
+
+<!-- Default Range Policy：last_1h | last_24h | calendar_day | none -->
+
+### Analysis Dimensions
+
+<!-- 可选：无维度时删除本节或留空表 -->
+
+| Name | Display Name |
+|------|--------------|
+| {维度名} | {维度显示名} |

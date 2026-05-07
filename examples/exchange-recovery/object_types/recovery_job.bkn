@@ -28,9 +28,6 @@ tags: [作业管理, 恢复作业, 灾备]
 | recovery_result | 恢复结果 | string | 恢复结果（成功/失败/部分成功） | recovery_result |
 | error_message | 错误信息 | string | 错误信息（如果恢复失败） | error_message |
 
-### Logic Properties
-
-
 ### Keys
 
 Primary Keys: id

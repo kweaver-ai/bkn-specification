@@ -29,9 +29,6 @@ tags: [供应链, 生产, 已审核, 手工表]
 | order_type | 工单类型 | string |  | order_type |
 | seq_no | 生产序号 | integer |  | seq_no |
 
-### Logic Properties
-
-
 ### Keys
 
 Primary Keys: seq_no

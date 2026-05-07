@@ -50,6 +50,9 @@ class TestSupplychainNetwork:
     def test_relation_count(self, network: BknNetwork):
         assert len(network.all_relations) == 14
 
+    def test_metric_count(self, network: BknNetwork):
+        assert len(network.all_metrics) == 5
+
     def test_object_po_parsed(self, network: BknNetwork):
         po = next((e for e in network.all_objects if e.id == "po"), None)
         assert po is not None
@@ -124,6 +127,9 @@ class TestK8sNetwork:
         assert "node" in object_ids
         assert "service" in object_ids
 
+    def test_metrics_loaded(self, network: BknNetwork):
+        assert len(network.all_metrics) == 5
+
     def test_has_relations(self, network: BknNetwork):
         assert len(network.all_relations) == 2
 
@@ -194,7 +200,7 @@ id: test
 | id | ID | int64 | | Primary key | YES | | YES |
 | name | Name | VARCHAR | not_null | Object name | | YES | YES |
 """
-        objects, relations, actions, risks, connections = parse_body(text)
+        objects, relations, actions, risks, connections, _metrics = parse_body(text)
         assert len(objects) == 1
         assert len(risks) == 0
         e = objects[0]
@@ -232,7 +238,7 @@ id: test
 |-----------------|-----------------|
 | a_id | b_ref_id |
 """
-        _, relations, _, _, _ = parse_body(text)
+        _, relations, _, _, _, _ = parse_body(text)
         assert len(relations) == 1
         r = relations[0]
         assert r.id == "a_to_b"
@@ -393,6 +399,27 @@ Record operator and scenario.
         assert risk.pre_checks[0].check_item == "can_i_restart"
         assert "original replicas" in risk.rollback_plan
         assert "operator" in risk.audit_requirements
+
+    def test_parse_metric_mock_employee_onboarded(self):
+        path = EXAMPLES_DIR / "mock_system" / "metrics" / "mock_employee_onboarded_count.bkn"
+        if not path.exists():
+            pytest.skip("mock_system metric example not found")
+        doc = load(path)
+        assert doc.frontmatter.type == "metric"
+        assert doc.frontmatter.metric_type == "atomic"
+        assert len(doc.metrics) == 1
+        m = doc.metrics[0]
+        assert m.id == "mock_employee_onboarded_count"
+        assert m.scope_type == "object_type"
+        assert m.scope_ref == "employee"
+        assert m.formula is not None
+        assert m.formula.kind == "atomic"
+        assert m.formula.atomic is not None
+        assert m.formula.atomic.aggregation is not None
+        assert m.formula.atomic.aggregation.property == "id"
+        assert m.formula.atomic.aggregation.aggr == "count"
+        assert len(m.time_dimensions) == 1
+        assert m.time_dimensions[0].property == "hire_date"
 
 
 if __name__ == "__main__":

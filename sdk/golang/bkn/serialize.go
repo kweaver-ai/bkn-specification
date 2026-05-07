@@ -14,6 +14,75 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// encodeMetricFormulaYAML encodes a metric formula using the same fence style as on-disk examples (~~~yaml).
+func encodeMetricFormulaYAML(m *MetricFormula) string {
+	var buf bytes.Buffer
+	enc := yaml.NewEncoder(&buf)
+	enc.SetIndent(2)
+	_ = enc.Encode(m)
+	_ = enc.Close()
+	s := strings.TrimSuffix(buf.String(), "\n")
+	return "~~~yaml\n" + s + "\n~~~\n"
+}
+
+// SerializeMetric serializes BknMetric to BKN markdown.
+func SerializeMetric(m *BknMetric) string {
+	var sb strings.Builder
+	sb.WriteString("---\n")
+	sb.WriteString("type: metric\n")
+	sb.WriteString(fmt.Sprintf("id: %s\n", m.ID))
+	sb.WriteString(fmt.Sprintf("name: %s\n", m.Name))
+	sb.WriteString(fmt.Sprintf("tags: [%s]\n", strings.Join(m.Tags, ", ")))
+	mtOut := strings.TrimSpace(m.MetricType)
+	if mtOut == "" && m.Formula != nil {
+		mtOut = strings.TrimSpace(m.Formula.Kind)
+	}
+	if mtOut != "" {
+		sb.WriteString(fmt.Sprintf("metric_type: %s\n", mtOut))
+	}
+	if strings.TrimSpace(m.UnitType) != "" {
+		sb.WriteString(fmt.Sprintf("unit_type: %s\n", m.UnitType))
+	}
+	if strings.TrimSpace(m.Unit) != "" {
+		sb.WriteString(fmt.Sprintf("unit: %s\n", m.Unit))
+	}
+	sb.WriteString("---\n\n")
+
+	sb.WriteString(fmt.Sprintf("## Metric: %s\n\n", m.Name))
+	if m.Description != "" {
+		sb.WriteString(m.Description + "\n\n")
+	}
+
+	sb.WriteString("### Scope\n\n")
+	sb.WriteString("| Scope Type | Scope Ref |\n")
+	sb.WriteString("|------------|-----------|\n")
+	sb.WriteString(fmt.Sprintf("| %s | %s |\n\n", m.ScopeType, m.ScopeRef))
+
+	sb.WriteString("### Calculation Formula\n\n")
+	if m.Formula != nil {
+		sb.WriteString(encodeMetricFormulaYAML(m.Formula))
+		sb.WriteString("\n")
+	}
+
+	sb.WriteString("### Time Dimension\n\n")
+	sb.WriteString("| Property | Default Range Policy |\n")
+	sb.WriteString("|----------|------------------------|\n")
+	for _, row := range m.TimeDimensions {
+		sb.WriteString(fmt.Sprintf("| %s | %s |\n", row.Property, row.Policy))
+	}
+	sb.WriteString("\n")
+
+	sb.WriteString("### Analysis Dimensions\n\n")
+	sb.WriteString("| Name | Display Name |\n")
+	sb.WriteString("|------|--------------|\n")
+	for _, row := range m.AnalysisDimensions {
+		sb.WriteString(fmt.Sprintf("| %s | %s |\n", row.Name, row.DisplayName))
+	}
+	sb.WriteString("\n")
+
+	return sb.String()
+}
+
 // encodeYAMLBlock encodes v to YAML and wraps it in a ```yaml code fence.
 func encodeYAMLBlock(v any) string {
 	var buf bytes.Buffer
@@ -102,6 +171,16 @@ func SerializeBknNetwork(doc *BknNetwork) string {
 		}
 	}
 
+	sb.WriteString("\n### Metrics\n\n")
+	sb.WriteString("| ID | Name | File Path | Description |\n")
+	sb.WriteString("|----|------|-----------|-------------|\n")
+	if len(doc.Metrics) > 0 {
+		sort.Slice(doc.Metrics, func(i, j int) bool { return doc.Metrics[i].ID < doc.Metrics[j].ID })
+		for _, met := range doc.Metrics {
+			fmt.Fprintf(&sb, "| %s | %s | `metrics/%s.bkn` | %s |\n", met.ID, met.Name, met.ID, met.Summary)
+		}
+	}
+
 	// Directory Structure — full tree with file listings
 	type dirEntry struct {
 		dir   string
@@ -142,6 +221,13 @@ func SerializeBknNetwork(doc *BknNetwork) string {
 			files[i] = cg.ID + ".bkn"
 		}
 		dirs = append(dirs, dirEntry{"concept_groups", files})
+	}
+	if len(doc.Metrics) > 0 {
+		files := make([]string, len(doc.Metrics))
+		for i, met := range doc.Metrics {
+			files[i] = met.ID + ".bkn"
+		}
+		dirs = append(dirs, dirEntry{"metrics", files})
 	}
 
 	_, _ = fmt.Fprintf(&sb, "\n## Directory Structure\n\n```\n.\n├── network.bkn\n├── SKILL.md\n├── CHECKSUM\n")
@@ -202,50 +288,61 @@ func SerializeObjectType(ot *BknObjectType) string {
 	}
 	_, _ = fmt.Fprintf(&sb, "\n")
 
-	// Logic Properties
-	_, _ = fmt.Fprintf(&sb, "### Logic Properties\n\n")
-	for _, lp := range ot.LogicProperties {
-		_, _ = fmt.Fprintf(&sb, "#### %s\n\n", lp.Name)
-
-		// Meta table
-		_, _ = fmt.Fprintf(&sb, "**Meta**\n\n")
-		_, _ = fmt.Fprintf(&sb, "| Display Name | Type | Description |\n")
-		_, _ = fmt.Fprintf(&sb, "|--------------|------|-------------|\n")
-		_, _ = fmt.Fprintf(&sb, "| %s | %s | %s |\n\n", lp.DisplayName, lp.Type, lp.Description)
-
-		// Source table
-		_, _ = fmt.Fprintf(&sb, "**Source**\n\n")
-		_, _ = fmt.Fprintf(&sb, "| Source Type | Source ID | Source Name |\n")
-		_, _ = fmt.Fprintf(&sb, "|-------------|-----------|-------------|\n")
-		if lp.DataSource != nil {
-			_, _ = fmt.Fprintf(&sb, "| %s | %s | %s |\n", lp.DataSource.Type, lp.DataSource.ID, lp.DataSource.Name)
+	// Logic Properties: emit heading when there are entries, or when the source file had an explicit
+	// (possibly empty) section so byte-wise round-trip matches examples like mock_system.
+	if len(ot.LogicProperties) > 0 || ot.HasLogicPropertiesSection {
+		_, _ = fmt.Fprintf(&sb, "### Logic Properties\n\n")
+		if len(ot.LogicProperties) == 0 {
+			// Match on-disk examples: empty section leaves an extra blank line before ### Keys
+			_, _ = fmt.Fprintf(&sb, "\n")
 		}
-		_, _ = fmt.Fprintf(&sb, "\n")
+	}
+	if len(ot.LogicProperties) > 0 {
+		for _, lp := range ot.LogicProperties {
+			_, _ = fmt.Fprintf(&sb, "#### %s\n\n", lp.Name)
 
-		// Parameter table
-		_, _ = fmt.Fprintf(&sb, "**Parameters**\n\n")
-		_, _ = fmt.Fprintf(&sb, "| Name | Type | Source | Operation | ValueFrom | Value | Description |\n")
-		_, _ = fmt.Fprintf(&sb, "|------|------|--------|-----------|-----------|-------|-------------|\n")
-		for _, p := range lp.Parameters {
-			v := ""
-			if p.Value != nil {
-				v = fmt.Sprintf("%v", p.Value)
+			// Meta table
+			_, _ = fmt.Fprintf(&sb, "**Meta**\n\n")
+			_, _ = fmt.Fprintf(&sb, "| Display Name | Type | Description |\n")
+			_, _ = fmt.Fprintf(&sb, "|--------------|------|-------------|\n")
+			_, _ = fmt.Fprintf(&sb, "| %s | %s | %s |\n\n", lp.DisplayName, lp.Type, lp.Description)
+
+			// Source table
+			_, _ = fmt.Fprintf(&sb, "**Source**\n\n")
+			_, _ = fmt.Fprintf(&sb, "| Source Type | Source ID | Source Name |\n")
+			_, _ = fmt.Fprintf(&sb, "|-------------|-----------|-------------|\n")
+			if lp.DataSource != nil {
+				_, _ = fmt.Fprintf(&sb, "| %s | %s | %s |\n", lp.DataSource.Type, lp.DataSource.ID, lp.DataSource.Name)
 			}
-			_, _ = fmt.Fprintf(&sb, "| %s | %s | %s | %s | %s | %s | %s |\n",
-				p.Name, p.Type, p.Source, p.Operation, p.ValueFrom, v, p.Description)
-		}
-		_, _ = fmt.Fprintf(&sb, "\n")
+			_, _ = fmt.Fprintf(&sb, "\n")
 
-		// Analysis Dims table
-		_, _ = fmt.Fprintf(&sb, "**Analysis Dimensions**\n\n")
-		_, _ = fmt.Fprintf(&sb, "| Name | Display Name | Type | Description |\n")
-		_, _ = fmt.Fprintf(&sb, "|------|--------------|------|-------------|\n")
-		for _, d := range lp.AnalysisDims {
-			_, _ = fmt.Fprintf(&sb, "| %s | %s | %s | %s |\n", d.Name, d.DisplayName, d.Type, d.Description)
+			// Parameter table
+			_, _ = fmt.Fprintf(&sb, "**Parameters**\n\n")
+			_, _ = fmt.Fprintf(&sb, "| Name | Type | Source | Operation | ValueFrom | Value | Description |\n")
+			_, _ = fmt.Fprintf(&sb, "|------|------|--------|-----------|-----------|-------|-------------|\n")
+			for _, p := range lp.Parameters {
+				v := ""
+				if p.Value != nil {
+					v = fmt.Sprintf("%v", p.Value)
+				}
+				_, _ = fmt.Fprintf(&sb, "| %s | %s | %s | %s | %s | %s | %s |\n",
+					p.Name, p.Type, p.Source, p.Operation, p.ValueFrom, v, p.Description)
+			}
+			_, _ = fmt.Fprintf(&sb, "\n")
+
+			// Analysis Dims table
+			_, _ = fmt.Fprintf(&sb, "**Analysis Dimensions**\n\n")
+			_, _ = fmt.Fprintf(&sb, "| Name | Display Name | Type | Description |\n")
+			_, _ = fmt.Fprintf(&sb, "|------|--------------|------|-------------|\n")
+			for _, d := range lp.AnalysisDims {
+				_, _ = fmt.Fprintf(&sb, "| %s | %s | %s | %s |\n", d.Name, d.DisplayName, d.Type, d.Description)
+			}
+			_, _ = fmt.Fprintf(&sb, "\n")
 		}
+	}
+	if len(ot.LogicProperties) > 0 {
 		_, _ = fmt.Fprintf(&sb, "\n")
 	}
-	_, _ = fmt.Fprintf(&sb, "\n")
 
 	// Keys section
 	_, _ = fmt.Fprintf(&sb, "### Keys\n\n")

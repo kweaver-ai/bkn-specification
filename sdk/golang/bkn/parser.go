@@ -48,6 +48,16 @@ var knownConceptGroupSections = map[string]bool{
 	"Object Types": true,
 }
 
+var knownMetricSections = map[string]bool{
+	"Scope":               true,
+	"Calculation Formula": true,
+	"Time Dimension":      true,
+	"Analysis Dimensions": true,
+}
+
+// metricYamlFenceRE matches the first fenced YAML block in Calculation Formula (~~~yaml or ```yaml).
+var metricYamlFenceRE = regexp.MustCompile("(?s)(?:~~~yaml\\s*\\n(.*?)~~~|```yaml\\s*\\n(.*?)```)")
+
 var h1HeadingRE = regexp.MustCompile(`(?m)^#\s+(.+)$`)
 var h2HeadingRE = regexp.MustCompile(`(?m)^##\s+(.+)$`)
 var tableSepRE = regexp.MustCompile(`^\|?[\s:*-]+(\|[\s:*-]+)*\|?$`)
@@ -503,6 +513,7 @@ func ParseObjectTypeFile(text string, sourcePath string) (*BknObjectType, error)
 		obj.DataProperties = parseDataProperties(s)
 	}
 	if s, ok := sections["Logic Properties"]; ok {
+		obj.HasLogicPropertiesSection = true
 		obj.LogicProperties = parseLogicProperties(s)
 	}
 	if s, ok := sections["Keys"]; ok {
@@ -828,6 +839,120 @@ func ParseRiskTypeFile(text string, sourcePath string) (*BknRiskType, error) {
 	risk.Summary = ExtractSummary(risk.Description)
 
 	return risk, nil
+}
+
+// extractFirstMetricFormulaYAML returns the inner YAML of the first ~~~yaml or ```yaml fence in Calculation Formula body.
+func extractFirstMetricFormulaYAML(sectionText string) []byte {
+	m := metricYamlFenceRE.FindStringSubmatch(sectionText)
+	if len(m) == 0 {
+		return nil
+	}
+	var inner string
+	if m[1] != "" {
+		inner = m[1]
+	} else if len(m) > 2 {
+		inner = m[2]
+	}
+	if inner == "" {
+		return nil
+	}
+	return []byte(strings.TrimSpace(inner))
+}
+
+func parseMetricScope(sectionText string) (scopeType, scopeRef string) {
+	rows := parseTable(strings.Split(sectionText, "\n"))
+	if len(rows) == 0 {
+		return "", ""
+	}
+	r := rows[0]
+	return strings.TrimSpace(r["Scope Type"]), strings.TrimSpace(r["Scope Ref"])
+}
+
+func parseMetricTimeDimensions(sectionText string) []MetricTimeDimRow {
+	rows := parseTable(strings.Split(sectionText, "\n"))
+	var out []MetricTimeDimRow
+	for _, row := range rows {
+		prop := firstNonEmpty(row, "Property")
+		pol := firstNonEmpty(row, "Default Range Policy")
+		if prop != "" || pol != "" {
+			out = append(out, MetricTimeDimRow{Property: prop, Policy: pol})
+		}
+	}
+	return out
+}
+
+func parseMetricAnalysisDimensions(sectionText string) []MetricAnalysisDimRow {
+	rows := parseTable(strings.Split(sectionText, "\n"))
+	var out []MetricAnalysisDimRow
+	for _, row := range rows {
+		n := row["Name"]
+		dn := firstNonEmpty(row, "Display Name", "DisplayName")
+		if n != "" || dn != "" {
+			out = append(out, MetricAnalysisDimRow{Name: n, DisplayName: dn})
+		}
+	}
+	return out
+}
+
+// ParseMetricFile parses a network-level metric file (metrics/*.bkn).
+func ParseMetricFile(text string, sourcePath string) (*BknMetric, error) {
+	fmData, err := ParseFrontmatter(text)
+	if err != nil {
+		return nil, err
+	}
+
+	desc, sections, order := extractSectionsWithDesc(text)
+
+	m := &BknMetric{
+		BknMetricFrontmatter: BknMetricFrontmatter{
+			Type:       strVal(fmData, "type"),
+			ID:         strVal(fmData, "id"),
+			Name:       strVal(fmData, "name"),
+			Tags:       strSliceVal(fmData, "tags"),
+			MetricType: strVal(fmData, "metric_type"),
+			UnitType:   strVal(fmData, "unit_type"),
+			Unit:       strVal(fmData, "unit"),
+		},
+		Description: buildDescription(desc, sections, order, knownMetricSections),
+		RawContent:  text,
+	}
+	if strings.TrimSpace(m.Type) == "" {
+		m.Type = "metric"
+	}
+	m.Summary = ExtractSummary(m.Description)
+
+	_, m.HasScopeSection = sections["Scope"]
+	_, m.HasCalculationFormulaSection = sections["Calculation Formula"]
+	_, m.HasTimeDimensionSection = sections["Time Dimension"]
+	_, m.HasAnalysisDimensionsSection = sections["Analysis Dimensions"]
+
+	if s, ok := sections["Scope"]; ok {
+		st, sr := parseMetricScope(s)
+		m.ScopeType, m.ScopeRef = st, sr
+	}
+	if s, ok := sections["Calculation Formula"]; ok {
+		yamlBytes := extractFirstMetricFormulaYAML(s)
+		if len(yamlBytes) > 0 {
+			var f MetricFormula
+			if err := yaml.Unmarshal(yamlBytes, &f); err != nil {
+				return nil, fmt.Errorf("calculation formula yaml: %w", err)
+			}
+			m.Formula = &f
+		}
+	}
+	if s, ok := sections["Time Dimension"]; ok {
+		m.TimeDimensions = parseMetricTimeDimensions(s)
+	}
+	if s, ok := sections["Analysis Dimensions"]; ok {
+		m.AnalysisDimensions = parseMetricAnalysisDimensions(s)
+	}
+
+	// If frontmatter omits metric_type, derive from authoritative formula kind.
+	if strings.TrimSpace(m.MetricType) == "" && m.Formula != nil && strings.TrimSpace(m.Formula.Kind) != "" {
+		m.MetricType = strings.TrimSpace(m.Formula.Kind)
+	}
+
+	return m, nil
 }
 
 func ParseConceptGroupFile(text string, sourcePath string) (*BknConceptGroup, error) {

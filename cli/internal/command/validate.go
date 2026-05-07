@@ -52,7 +52,6 @@ func newValidateNetworkCommand(opts *Options) *cobra.Command {
 		},
 	}
 }
-
 func newValidateTableCommand(opts *Options) *cobra.Command {
 	var networkPath string
 	cmd := &cobra.Command{

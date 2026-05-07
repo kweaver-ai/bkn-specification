@@ -28,6 +28,7 @@
 | `action_type` | 单个行动类型定义 |
 | `risk_type` | 单个风险类型定义 |
 | `concept_group` | 概念分组 |
+| `metric` | 网络级指标（推荐 `metrics/*.bkn`） |
 
 ## 目录结构
 
@@ -43,8 +44,10 @@
 │   └── {action}.bkn
 ├── risk_types/
 │   └── {risk}.bkn
-└── concept_groups/
-    └── {group}.bkn
+├── concept_groups/
+│   └── {group}.bkn
+└── metrics/                     # 可选
+    └── {metric}.bkn
 ```
 
 ## 网络 (Knowledge network)
@@ -81,7 +84,7 @@ tags: [tag1, tag2]               # 可选
   - `Primary Keys: {key_name}`（至少一个）
   - `Display Key: {key_name}`（一个）
   - `Incremental Key: {key_name}`（可选，可为空）
-- `### Logic Properties`（可选）：无内容时保留空小节；有内容时 `#### {property_name}`，含 Display/Type/Source/Description，以及 Parameter 表（列 Parameter | Type | Source | Binding | Description）
+- `### Logic Properties`（可选）：**无算子时可整节省略**（与 SDK 序列化一致）；有内容时 `#### {property_name}`，**Type 仅 `operator`**（禁止 `metric`；网络级指标用独立 `type: metric` 文件、`metrics/*.bkn`，见 `DESIGN_BKN_METRIC.md`），含 Meta/Source/Parameters/Analysis Dimensions 等子表（以 `SPECIFICATION.md` 为准）
   - Source 值：`property`（对象属性）/ `input`（用户输入）/ `const`（常量）
   - Binding：Source 为 property 时填属性名，const 时填常量值，input 时填 `-`
 - `### Data Source`（可选）：表格，列 Type | ID | Name，行 `data_view | {view_id} | {view_name}`
@@ -209,6 +212,22 @@ tags: [tag1, tag2]               # 可选
 - `## ConceptGroup: {显示名称}` + 简短描述
 - `### Object Types`（必须）：表格 ID | Name | Description
 
+## 网络级指标 (metric)
+
+```yaml
+---
+type: metric
+id: {metric_id}
+name: {显示名称}
+tags: [tag1, tag2]               # 可选
+metric_type: atomic              # atomic | derived | composite；须与正文公式根级 kind 一致
+unit_type: count                 # 可选
+unit: 个                         # 可选
+---
+```
+
+正文以 `DESIGN_BKN_METRIC.md` 为准；要点：`### Calculation Formula` 内 fenced YAML 的 **`kind` 为权威**；`metric_type` 规范保留并与 `kind` 对齐。
+
 ## 更新与删除（无 patch 模型）
 
 - 定义文件导入 = add/modify（upsert）；修改即编辑文件后重新导入
@@ -229,6 +248,7 @@ tags: [tag1, tag2]               # 可选
    - ActionType：Bound Object、Tool Configuration、Parameter Binding
    - RiskType：Control Scope、Control Policy
    - ConceptGroup：Object Types
+   - Metric：Scope、Calculation Formula（`metric_type` 与根级 `kind` 一致）
 7. **标题层级**：`#` 网络标题、`##` 类型定义、`###` 定义内 section、`####` 子项（逻辑属性名）
 8. **业务规则放置**：
    - 网络级规则 → `network.bkn` 的 `# {name}` 后描述区

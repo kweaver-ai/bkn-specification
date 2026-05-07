@@ -35,9 +35,6 @@ BOM结构：4层(成品→半成品→PCBA→元器件)；含自制、委外、�
 | material_name | 物料名称 | string |  | material_name |
 | parent_material_code | 父级物料编码 | string | 注意：最终产品/产成品是没有父级物料编码的； | parent_material_code |
 
-### Logic Properties
-
-
 ### Keys
 
 Primary Keys: bom_material_code, bom_version, material_name

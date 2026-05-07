@@ -44,6 +44,7 @@ type BknNetwork struct {
 	ActionTypes   []*BknActionType
 	RiskTypes     []*BknRiskType
 	ConceptGroups []*BknConceptGroup
+	Metrics       []*BknMetric
 }
 
 // BknObjectTypeFrontmatter is YAML frontmatter metadata for a .bkn file.
@@ -72,9 +73,104 @@ type BknObjectType struct {
 	DisplayKey     string
 	IncrementalKey string
 
-	// Set during parse; used by ValidateNetwork
-	HasDataPropertiesSection bool
-	HasKeysSection           bool
+	// Set during parse; used by ValidateNetwork and SerializeObjectType
+	HasDataPropertiesSection  bool
+	HasLogicPropertiesSection bool
+	HasKeysSection            bool
+}
+
+// BknMetricFrontmatter is YAML frontmatter for a type: metric file.
+type BknMetricFrontmatter struct {
+	Type       string   `yaml:"type"`
+	ID         string   `yaml:"id"`
+	Name       string   `yaml:"name"`
+	Tags       []string `yaml:"tags"`
+	MetricType string   `yaml:"metric_type,omitempty"` // 与 API 对齐；与 Formula.Kind 一致；解析时若缺省则从 kind 回填
+	UnitType   string   `yaml:"unit_type,omitempty"`
+	Unit       string   `yaml:"unit,omitempty"`
+}
+
+// BknMetric is a network-level metric definition (metrics/*.bkn).
+type BknMetric struct {
+	BknMetricFrontmatter
+
+	Summary     string
+	Description string
+	RawContent  string
+
+	ScopeType string
+	ScopeRef  string
+
+	Formula *MetricFormula
+
+	// Optional tables (parsed from body)
+	TimeDimensions     []MetricTimeDimRow
+	AnalysisDimensions []MetricAnalysisDimRow
+
+	HasScopeSection              bool
+	HasCalculationFormulaSection bool
+	HasTimeDimensionSection      bool
+	HasAnalysisDimensionsSection bool
+}
+
+// MetricFormula is the in-memory shape of the Calculation Formula YAML (version 1).
+type MetricFormula struct {
+	Version int           `yaml:"version"`
+	Kind    string        `yaml:"kind"`
+	Atomic  *MetricAtomic `yaml:"atomic,omitempty"`
+}
+
+// MetricAtomic is the atomic metric calculation subtree.
+type MetricAtomic struct {
+	Condition   *MetricCondition   `yaml:"condition,omitempty"`
+	Aggregation *MetricAggregation `yaml:"aggregation,omitempty"`
+	GroupBy     []MetricGroupBy    `yaml:"group_by,omitempty"`
+	OrderBy     []MetricOrderBy    `yaml:"order_by,omitempty"`
+	Having      *MetricHaving      `yaml:"having,omitempty"`
+}
+
+// MetricCondition is a row-level filter (no object_type_id).
+type MetricCondition struct {
+	Field     string `yaml:"field"`
+	Operation string `yaml:"operation"`
+	Value     any    `yaml:"value,omitempty"`
+}
+
+// MetricAggregation is required for atomic metrics.
+type MetricAggregation struct {
+	Property string `yaml:"property"`
+	Aggr     string `yaml:"aggr"`
+}
+
+// MetricGroupBy is a grouping dimension.
+type MetricGroupBy struct {
+	Property    string `yaml:"property"`
+	Description string `yaml:"description,omitempty"`
+}
+
+// MetricOrderBy orders grouped or aggregated rows.
+type MetricOrderBy struct {
+	Property  string `yaml:"property"`
+	Direction string `yaml:"direction,omitempty"`
+}
+
+// MetricHaving filters on aggregated values.
+type MetricHaving struct {
+	Field     string `yaml:"field"`
+	Operation string `yaml:"operation"`
+	Value     any    `yaml:"value,omitempty"`
+}
+
+// MetricTimeDimRow is one row under ### Time Dimension.
+type MetricTimeDimRow struct {
+	Property string
+	Policy   string
+}
+
+// MetricAnalysisDimRow is one row under ### Analysis Dimensions.
+type MetricAnalysisDimRow struct {
+	Name        string
+	DisplayName string
 }
 
 // ResourceInfo represents a data source reference.

@@ -76,3 +76,5 @@ class TestLoadNetworks:
         assert len(net.all_objects) == 3
         assert len(net.all_relations) == 2
         assert len(net.all_actions) == 2
+        assert len(net.all_metrics) == 5
+

@@ -27,9 +27,6 @@ Microsoft Exchange邮件服务器，托管用户邮箱和邮件数据，是生�
 | status | 状态 | string | 服务器状态 (Online/Offline/Maintenance) | status |
 | created_at | 创建时间 | datetime | 服务器创建时间 | created_at |
 
-### Logic Properties
-
-
 ### Keys
 
 Primary Keys: id

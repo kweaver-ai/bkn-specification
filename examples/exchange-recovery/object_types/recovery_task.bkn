@@ -30,9 +30,6 @@ Exchange邮件恢复任务，包含恢复策略的所有信息。
 | completed_at | 完成时间 | datetime | 任务完成时间 | completed_at |
 | recovery_result | 恢复结果 | string | 恢复结果（成功/失败/部分成功） | recovery_result |
 
-### Logic Properties
-
-
 ### Keys
 
 Primary Keys: id

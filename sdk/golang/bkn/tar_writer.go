@@ -22,6 +22,7 @@ import (
 // - action_types/*.bkn for each ActionType
 // - risk_types/*.bkn for each RiskType
 // - concept_groups/*.bkn for each ConceptGroup
+// - metrics/*.bkn for each Metric
 // - SKILL.md (auto-generated)
 // - CHECKSUM (auto-generated)
 func WriteNetworkToTar(doc *BknNetwork, w io.Writer) error {
@@ -88,6 +89,16 @@ func WriteNetworkToTar(doc *BknNetwork, w io.Writer) error {
 	for _, cg := range doc.ConceptGroups {
 		content := SerializeConceptGroup(cg, otIndex)
 		path := "concept_groups/" + cg.ID + ".bkn"
+		mfs.AddFile(path, []byte(content))
+		if err := writeTarEntry(tw, path, []byte(content), now); err != nil {
+			return err
+		}
+	}
+
+	// Write Metrics
+	for _, met := range doc.Metrics {
+		content := SerializeMetric(met)
+		path := "metrics/" + met.ID + ".bkn"
 		mfs.AddFile(path, []byte(content))
 		if err := writeTarEntry(tw, path, []byte(content), now); err != nil {
 			return err
@@ -179,6 +190,20 @@ func generateSkillMd(doc *BknNetwork) string {
 		_, _ = fmt.Fprintf(&sb, "\n")
 	}
 
+	// Metrics table
+	if len(doc.Metrics) > 0 {
+		sb.WriteString("### 指标（Metrics）\n\n")
+		sb.WriteString("| 指标 | 文件路径 | 说明 |\n")
+		sb.WriteString("|------|----------|------|\n")
+		mts := append([]*BknMetric(nil), doc.Metrics...)
+		sort.Slice(mts, func(i, j int) bool { return mts[i].ID < mts[j].ID })
+		for _, met := range mts {
+			path := "metrics/" + met.ID + ".bkn"
+			sb.WriteString(fmt.Sprintf("| %s | `%s` | %s |\n", met.Name, path, met.Description))
+		}
+		sb.WriteString("\n")
+	}
+
 	// Directory structure
 	_, _ = fmt.Fprintf(&sb, "## 目录结构\n\n")
 	_, _ = fmt.Fprintf(&sb, "```\n")
@@ -195,7 +220,17 @@ func generateSkillMd(doc *BknNetwork) string {
 	if len(doc.ActionTypes) > 0 {
 		_, _ = fmt.Fprintf(&sb, "└── action_types/\n")
 	}
+	if len(doc.ConceptGroups) > 0 {
+		_, _ = fmt.Fprintf(&sb, "├── concept_groups/\n")
+	}
+	if len(doc.RiskTypes) > 0 {
+		_, _ = fmt.Fprintf(&sb, "├── risk_types/\n")
+	}
+	if len(doc.Metrics) > 0 {
+		_, _ = fmt.Fprintf(&sb, "├── metrics/\n")
+	}
 	_, _ = fmt.Fprintf(&sb, "```\n\n")
+
 	// Usage suggestions
 	_, _ = fmt.Fprintf(&sb, "## 使用建议\n\n")
 	_, _ = fmt.Fprintf(&sb, "### 查询场景\n\n")
@@ -221,6 +256,15 @@ func generateSkillMd(doc *BknNetwork) string {
 	}
 	if len(doc.ActionTypes) > 0 {
 		_, _ = fmt.Fprintf(&sb, "- **行动定义**: `action_types/`\n")
+	}
+	if len(doc.ConceptGroups) > 0 {
+		_, _ = fmt.Fprintf(&sb, "- **概念分组**: `concept_groups/`\n")
+	}
+	if len(doc.RiskTypes) > 0 {
+		_, _ = fmt.Fprintf(&sb, "- **风险定义**: `risk_types/`\n")
+	}
+	if len(doc.Metrics) > 0 {
+		_, _ = fmt.Fprintf(&sb, "- **指标定义**: `metrics/`\n")
 	}
 	_, _ = fmt.Fprintf(&sb, "\n")
 

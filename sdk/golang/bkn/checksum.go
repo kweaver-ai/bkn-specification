@@ -276,6 +276,8 @@ func computeBknChecksumWithFS(fsys FileSystem, path string) []string {
 		results = append(results, "risk_type:"+id+"  sha256:"+hashHex([]byte(norm)))
 	case "concept_group":
 		results = append(results, "concept_group:"+id+"  sha256:"+hashHex([]byte(norm)))
+	case "metric":
+		results = append(results, "metric:"+id+"  sha256:"+hashHex([]byte(norm)))
 	}
 
 	return results

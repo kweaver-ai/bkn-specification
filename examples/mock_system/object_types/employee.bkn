@@ -29,19 +29,19 @@ d7blk86fmoj81ili0q3g
 
 ### Logic Properties
 
-#### 111
+#### employee_timeseries_query
 
 **Meta**
 
 | Display Name | Type | Description |
 |--------------|------|-------------|
-| 111 | metric |  |
+| 员工时序查询 | operator | 示例算子：按时间参数拉取与员工相关的时序/统计数据（原「逻辑属性-指标」已废止，改为 operator） |
 
 **Source**
 
 | Source Type | Source ID | Source Name |
 |-------------|-----------|-------------|
-| metric | 2 | 1 |
+| operator | employee_timeseries_stub | employee_timeseries_stub |
 
 **Parameters**
 
@@ -49,8 +49,8 @@ d7blk86fmoj81ili0q3g
 |------|------|--------|-----------|-----------|-------|-------------|
 | node_id | timestamp |  | != | property | create_time |  |
 | instant | boolean |  | == | input |  | 是否是即时查询。可选，默认为 false。当 instant = true 时，表示即时查询；当 instant = false 时，表示范围查询。 |
-| start | integer |  | == | input |  | 指标查询的开始时间。 start=<unix_timestamp>，单位到毫秒。 例如: 1646360670123 |
-| end | integer |  | == | input |  | 指标查询的结束时间。end=<unix_timestamp>，单位到毫秒。例如: 1646471470123 |
+| start | integer |  | == | input |  | 查询窗口开始时间。 start=<unix_timestamp>，单位到毫秒。 例如: 1646360670123 |
+| end | integer |  | == | input |  | 查询窗口结束时间。end=<unix_timestamp>，单位到毫秒。例如: 1646471470123 |
 | step | string |  | == | input |  | 范围查询的步长。当 instant 为 false 时, 必须。step=<time_durations>，用一个数字，后面跟时间单位来定义。 |
 
 **Analysis Dimensions**

@@ -33,12 +33,13 @@ var (
 		"action_types":   true,
 		"risk_types":     true,
 		"concept_groups": true,
+		"metrics":        true,
 	}
 )
 
 // LoadNetwork loads a BKN network from a directory.
 // It reads network.bkn and SKILL.md from the root, then traverses
-// object_types/, relation_types/, action_types/, risk_types/ subdirectories
+// object_types/, relation_types/, action_types/, risk_types/, concept_groups/, metrics/
 // to build a complete BknNetwork.
 func LoadNetwork(rootPath string) (*BknNetwork, error) {
 	fsys := NewOSFileSystem()
@@ -174,6 +175,13 @@ func loadSubdirWithFS(fsys FileSystem, subdirPath, subdirName string, result *Bk
 				return fmt.Errorf("parse %s: %w", name, err)
 			}
 			result.ConceptGroups = append(result.ConceptGroups, grp)
+
+		case "metrics":
+			me, err := ParseMetricFile(string(data), filePath)
+			if err != nil {
+				return fmt.Errorf("parse %s: %w", name, err)
+			}
+			result.Metrics = append(result.Metrics, me)
 
 		default:
 			// Fallback to generic Parse for unknown subdirectories

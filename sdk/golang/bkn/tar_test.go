@@ -399,6 +399,28 @@ func TestRoundTrip_NetworkWithAllTypes(t *testing.T) {
 				BoundObject: "obj1",
 			},
 		},
+		Metrics: []*BknMetric{
+			{
+				BknMetricFrontmatter: BknMetricFrontmatter{
+					Type: "metric",
+					ID:   "met1",
+					Name: "Metric One",
+					Tags: []string{"t"},
+				},
+				Description:                  "roundtrip metric",
+				ScopeType:                    "object_type",
+				ScopeRef:                     "obj1",
+				HasScopeSection:              true,
+				HasCalculationFormulaSection: true,
+				Formula: &MetricFormula{
+					Version: 1,
+					Kind:    "atomic",
+					Atomic: &MetricAtomic{
+						Aggregation: &MetricAggregation{Property: "prop1", Aggr: "count"},
+					},
+				},
+			},
+		},
 	}
 
 	// Write to tar
@@ -425,6 +447,11 @@ func TestRoundTrip_NetworkWithAllTypes(t *testing.T) {
 
 	require.Len(t, loaded.ActionTypes, 1)
 	assert.Equal(t, original.ActionTypes[0].ID, loaded.ActionTypes[0].ID)
+
+	require.Len(t, loaded.Metrics, 1)
+	assert.Equal(t, original.Metrics[0].ID, loaded.Metrics[0].ID)
+	require.NotNil(t, loaded.Metrics[0].Formula)
+	assert.Equal(t, "atomic", loaded.Metrics[0].Formula.Kind)
 }
 
 // === Checksum Tests ===

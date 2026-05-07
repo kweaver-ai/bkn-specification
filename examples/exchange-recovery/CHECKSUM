@@ -1,5 +1,5 @@
 # BKN Directory Checksum
-# generated: 2026-04-28T16:11:51+08:00
+# generated: 2026-05-07T10:32:34+08:00
 SKILL.md  sha256:84b912d3c20e2382
 action_type:browse_backup_emails  sha256:50962f766a0c52c9
 action_type:execute_recovery_task  sha256:517def154f74ca7f
@@ -9,14 +9,22 @@ action_type:list_data_domains  sha256:c71016b013e56498
 action_type:list_exchange_servers  sha256:32fb7cae1af03711
 action_type:verify_exchange_availability  sha256:7126ab9f2eaebbbd
 concept_group:exchange  sha256:7a530fe32554fffb
+metric:backup_timepoint_count  sha256:9705da4ba104d500
+metric:backup_timepoint_total_size_mb  sha256:bd9a6f427be7e8ea
+metric:backup_timepoint_verified_count  sha256:87989a599c74eb64
+metric:exchange_server_mailbox_sum  sha256:33d18d367843c095
+metric:recovery_job_avg_duration_seconds  sha256:240d922f8667624a
+metric:recovery_job_count  sha256:0dc613ebf63ff3a9
+metric:recovery_task_count  sha256:206f21429cf9a0b5
+metric:recovery_verification_failure_count  sha256:d126baa4d49ab129
 object_type:backup_timepoint  sha256:356e3c316fca6695
-object_type:data_domain  sha256:1c1f68b553a419a4
+object_type:data_domain  sha256:e3194e82856d8f31
 object_type:email  sha256:2c0689a5a554c429
-object_type:exchange_server  sha256:ce484097bbe6d2a1
-object_type:recovery_job  sha256:91d2df336f9f5421
-object_type:recovery_job_verification  sha256:be2c052f4fd0ca24
-object_type:recovery_server  sha256:1e8455bddd0504bc
-object_type:recovery_task  sha256:63a3bfe61b939425
+object_type:exchange_server  sha256:6496c0378a097d67
+object_type:recovery_job  sha256:0cb737efd3c5503d
+object_type:recovery_job_verification  sha256:27c760334a0db7d1
+object_type:recovery_server  sha256:fc1a8596c6b7a450
+object_type:recovery_task  sha256:049e04d35d89a8d0
 relation_type:backup_timepoint_contains_email  sha256:7cc38a210194f940
 relation_type:browse_backup_emails  sha256:9d799916739e53be
 relation_type:create_recovery_task  sha256:58cd02144b35f44a

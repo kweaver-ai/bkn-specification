@@ -26,6 +26,16 @@ from bkn.models import (
     LogicProperty,
     LogicPropertyParameter,
     MappingRule,
+    Metric,
+    MetricAggregation,
+    MetricAnalysisDimRow,
+    MetricAtomic,
+    MetricCondition,
+    MetricFormula,
+    MetricGroupBy,
+    MetricHaving,
+    MetricOrderBy,
+    MetricTimeDimRow,
     PreCondition,
     PropertyOverride,
     Relation,
@@ -595,12 +605,113 @@ def _parse_risk_block(block_id: str, block_text: str) -> Risk:
     return risk
 
 
+_METRIC_YAML_FENCE_RE = re.compile(
+    r"(?:~~~yaml\s*\n(.*?)~~~|```yaml\s*\n(.*?)```)",
+    re.DOTALL,
+)
+
+
+def _extract_first_metric_formula_yaml(section_text: str) -> str:
+    m = _METRIC_YAML_FENCE_RE.search(section_text)
+    if not m:
+        return ""
+    return (m.group(1) or m.group(2) or "").strip()
+
+
+def _metric_formula_from_dict(data: dict[str, Any] | None) -> MetricFormula | None:
+    if not data or not isinstance(data, dict):
+        return None
+    f = MetricFormula(
+        version=int(data.get("version") or 0),
+        kind=str(data.get("kind") or ""),
+    )
+    at_raw = data.get("atomic")
+    if not isinstance(at_raw, dict):
+        return f
+    at = at_raw
+    atomic = MetricAtomic()
+    cond = at.get("condition")
+    if isinstance(cond, dict):
+        atomic.condition = MetricCondition(
+            field=str(cond.get("field") or ""),
+            operation=str(cond.get("operation") or ""),
+            value=cond.get("value"),
+        )
+    ag = at.get("aggregation")
+    if isinstance(ag, dict):
+        atomic.aggregation = MetricAggregation(
+            property=str(ag.get("property") or ""),
+            aggr=str(ag.get("aggr") or ""),
+        )
+    for gb in at.get("group_by") or []:
+        if isinstance(gb, dict):
+            atomic.group_by.append(MetricGroupBy(
+                property=str(gb.get("property") or ""),
+                description=str(gb.get("description") or ""),
+            ))
+    for ob in at.get("order_by") or []:
+        if isinstance(ob, dict):
+            atomic.order_by.append(MetricOrderBy(
+                property=str(ob.get("property") or ""),
+                direction=str(ob.get("direction") or ""),
+            ))
+    hv = at.get("having")
+    if isinstance(hv, dict):
+        atomic.having = MetricHaving(
+            field=str(hv.get("field") or ""),
+            operation=str(hv.get("operation") or ""),
+            value=hv.get("value"),
+        )
+    f.atomic = atomic
+    return f
+
+
+def _parse_metric_block(block_id: str, block_text: str) -> Metric:
+    """Parse a ## Metric: {title} block (type: metric file body)."""
+    first_sec = re.search(r"^###\s+", block_text, re.MULTILINE)
+    if first_sec:
+        description = block_text[: first_sec.start()].strip()
+    else:
+        description = block_text.strip()
+    m = Metric(name=block_id.strip(), description=description)
+    sections = _extract_sections(block_text)
+    m.has_scope_section = "Scope" in sections
+    m.has_calculation_formula_section = "Calculation Formula" in sections
+    m.has_time_dimension_section = "Time Dimension" in sections
+    m.has_analysis_dimensions_section = "Analysis Dimensions" in sections
+    if "Scope" in sections:
+        rows = _parse_table(sections["Scope"].splitlines())
+        if rows:
+            m.scope_type = (rows[0].get("Scope Type") or "").strip()
+            m.scope_ref = (rows[0].get("Scope Ref") or "").strip()
+    if "Calculation Formula" in sections:
+        yaml_raw = _extract_first_metric_formula_yaml(sections["Calculation Formula"])
+        if yaml_raw:
+            loaded = yaml.safe_load(yaml_raw)
+            m.formula = _metric_formula_from_dict(loaded) if isinstance(loaded, dict) else None
+    if "Time Dimension" in sections:
+        rows = _parse_table(sections["Time Dimension"].splitlines())
+        for row in rows:
+            prop = (row.get("Property") or "").strip()
+            pol = (row.get("Default Range Policy") or "").strip()
+            if prop or pol:
+                m.time_dimensions.append(MetricTimeDimRow(property=prop, policy=pol))
+    if "Analysis Dimensions" in sections:
+        rows = _parse_table(sections["Analysis Dimensions"].splitlines())
+        for row in rows:
+            n = (row.get("Name") or "").strip()
+            dn = (row.get("Display Name") or row.get("DisplayName") or "").strip()
+            if n or dn:
+                m.analysis_dimensions.append(MetricAnalysisDimRow(name=n, display_name=dn))
+    return m
+
+
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
 
 _DEFINITION_RE = re.compile(
-    r"^##\s+(Object(?:Type)?|Relation(?:Type)?|Action(?:Type)?|Risk(?:Type)?|Connection|ConceptGroup):\s*(.+?)\s*$",
+    r"^##\s+(Object(?:Type)?|Relation(?:Type)?|Action(?:Type)?|Risk(?:Type)?|Connection|ConceptGroup|Metric):\s*(.+?)\s*$",
     re.MULTILINE,
 )
 
@@ -610,7 +721,7 @@ _VALID_BKN_TYPES = frozenset({
     "relation", "relation_type",
     "action", "action_type",
     "risk", "risk_type",
-    "concept_group",
+    "concept_group", "metric",
     "fragment", "data", "connection",
 })
 
@@ -627,6 +738,7 @@ _HEADING_CATEGORY: dict[str, str] = {
     "RiskType": "Risk",
     "Connection": "Connection",
     "ConceptGroup": "ConceptGroup",
+    "Metric": "Metric",
 }
 
 
@@ -648,6 +760,9 @@ def parse_frontmatter(text: str) -> Frontmatter:
         namespace=str(data.get("namespace", "")),
         owner=str(data.get("owner", "")),
         spec_version=str(data.get("spec_version", "")),
+        metric_type=str(data.get("metric_type", "")),
+        unit_type=str(data.get("unit_type", "")),
+        unit=str(data.get("unit", "")),
         risk_level=str(data.get("risk_level", "")),
         object=str(data.get("object", "")),
         relation=str(data.get("relation", "")),
@@ -666,6 +781,7 @@ def parse_frontmatter(text: str) -> Frontmatter:
     known_keys = {
         "type", "id", "name", "version", "tags", "description",
         "includes", "network", "namespace", "owner", "spec_version",
+        "metric_type", "unit_type", "unit",
         "enabled", "risk_level", "requires_approval",
         "object", "relation", "source",
     }
@@ -674,7 +790,14 @@ def parse_frontmatter(text: str) -> Frontmatter:
     return fm
 
 
-def parse_body(text: str) -> tuple[list[BknObject], list[Relation], list[Action], list[Risk], list[Connection]]:
+def parse_body(text: str) -> tuple[
+    list[BknObject],
+    list[Relation],
+    list[Action],
+    list[Risk],
+    list[Connection],
+    list[Metric],
+]:
     """Parse the Markdown body of a .bkn file into lists of definitions."""
     _, body = _split_frontmatter(text)
 
@@ -684,6 +807,7 @@ def parse_body(text: str) -> tuple[list[BknObject], list[Relation], list[Action]
     actions: list[Action] = []
     risks: list[Risk] = []
     connections: list[Connection] = []
+    metrics: list[Metric] = []
 
     for i, m in enumerate(matches):
         def_type = _HEADING_CATEGORY.get(m.group(1), m.group(1))
@@ -705,8 +829,10 @@ def parse_body(text: str) -> tuple[list[BknObject], list[Relation], list[Action]
             risks.append(_parse_risk_block(def_id, block_text))
         elif def_type == "Connection":
             connections.append(_parse_connection_block(def_id, block_text))
+        elif def_type == "Metric":
+            metrics.append(_parse_metric_block(def_id, block_text))
 
-    return objects, relations, actions, risks, connections
+    return objects, relations, actions, risks, connections, metrics
 
 
 def parse_data_tables(
@@ -788,7 +914,8 @@ def parse(text: str, source_path: str = "") -> BknDocument:
         raise ValueError(
             "BKN frontmatter must include a valid 'type' field "
             "(network, object, relation, action, fragment, data, risk, connection, "
-            "knowledge_network, object_type, relation_type, action_type, risk_type, concept_group)."
+            "knowledge_network, object_type, relation_type, action_type, risk_type, "
+            "concept_group, metric)."
         )
     if type_val not in _VALID_BKN_TYPES:
         raise ValueError(
@@ -801,11 +928,12 @@ def parse(text: str, source_path: str = "") -> BknDocument:
     actions: list[Action] = []
     risks: list[Risk] = []
     connections: list[Connection] = []
+    metrics: list[Metric] = []
     data_tables: list[DataTable] = []
     if frontmatter.type == "data":
         data_tables = parse_data_tables(text, frontmatter=frontmatter, source_path=source_path)
     else:
-        objects, relations, actions, risks, connections = parse_body(text)
+        objects, relations, actions, risks, connections, metrics = parse_body(text)
 
     # For single-definition types, override ID/name/tags from frontmatter
     _SINGLE_DEF_MAP = {
@@ -825,6 +953,27 @@ def parse(text: str, source_path: str = "") -> BknDocument:
             if hasattr(item, "tags") and not item.tags and frontmatter.tags:
                 item.tags = frontmatter.tags
 
+    if type_val == "metric" and len(metrics) == 1:
+        met = metrics[0]
+        if frontmatter.id:
+            met.id = frontmatter.id
+        if frontmatter.name:
+            met.name = frontmatter.name
+        if frontmatter.tags:
+            met.tags = list(frontmatter.tags)
+        if frontmatter.metric_type:
+            met.metric_type = frontmatter.metric_type
+        if frontmatter.unit_type:
+            met.unit_type = frontmatter.unit_type
+        if frontmatter.unit:
+            met.unit = frontmatter.unit
+        if not (met.metric_type or "").strip() and met.formula and (met.formula.kind or "").strip():
+            met.metric_type = (met.formula.kind or "").strip()
+
+    if source_path:
+        for met in metrics:
+            met.source_path = source_path
+
     return BknDocument(
         frontmatter=frontmatter,
         objects=objects,
@@ -832,6 +981,7 @@ def parse(text: str, source_path: str = "") -> BknDocument:
         actions=actions,
         risks=risks,
         connections=connections,
+        metrics=metrics,
         data_tables=data_tables,
         source_path=source_path,
     )

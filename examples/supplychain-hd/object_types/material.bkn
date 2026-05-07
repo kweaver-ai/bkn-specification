@@ -32,9 +32,6 @@ tags: [供应链, 物料, 已审核]
 | materialattr | 物料属性 | string | 物料属性 (如: 外购) | materialattr |
 | purchase_fixedleadtime | 采购固定提前期 | decimal | 采购交货提前期 (天) | purchase_fixedleadtime |
 
-### Logic Properties
-
-
 ### Keys
 
 Primary Keys: material_code

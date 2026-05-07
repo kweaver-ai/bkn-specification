@@ -29,10 +29,9 @@ BKN (Business Knowledge Network) 是一种基于 Markdown 的声明式建模语�
 | data_view | 数据视图，对象/关系可直接映射的数据来源 |
 | data_properties | 对象的属性定义表，声明字段名称、类型、描述 |
 | keys | 键定义，声明主键、展示键、增量键 |
-| logic_properties | 逻辑属性，基于其他数据源的派生字段（metric / operator） |
+| logic_properties | 逻辑属性，基于其他数据源的派生字段（**仅 operator**；历史 `metric` 类型已废弃） |
 | primary_key | 主键字段，用于唯一定位实例（Keys 小节中声明） |
 | display_key | 展示字段，用于 UI 显示和检索（Keys 小节中声明） |
-| metric | 逻辑属性类型：指标，从外部数据源获取的度量值 |
 | operator | 逻辑属性类型：算子，基于输入参数的计算逻辑 |
 
 **行动结构**
@@ -71,7 +70,7 @@ Section 标题和表格列名的规范形式，建议使用英文。解析器应
 | `###` | Data Source | The data view this object maps from | 数据来源 | `### Data Source` |
 | `###` | Data Properties | Explicit list of fields (name, type, description) | 数据属性 | `### Data Properties` |
 | `###` | Keys | Primary key, display key, incremental key | 键定义 | `### Keys` |
-| `###` | Logic Properties | Derived fields: metric, operator | 逻辑属性 | `### Logic Properties` |
+| `###` | Logic Properties | Derived fields: operator only | 逻辑属性 | `### Logic Properties` |
 | `###` | Endpoint | Relation endpoint: source, target, type | 关联定义 | `### Endpoint` |
 | `###` | Mapping Rules | How source/target properties map | 映射规则 | `### Mapping Rules` |
 | `###` | Mapping View | For data_view relations: the join view | 映射视图 | `### Mapping View` |
@@ -245,8 +244,8 @@ Incremental Key: {key_name}
 #### {property_name}
 
 - **Display**: {display_name}
-- **Type**: metric | operator
-- **Source**: {source_id} ({source_type})
+- **Type**: `operator`（**禁止** `metric`；网络级指标请使用独立文件 `type: metric`，见 `docs/DESIGN_BKN_METRIC.md`）
+- **Source**: {source_id} (`operator` 及对应算子来源)
 - **Description**: {description}
 
 | Parameter | Type | Source | Binding | Description |
@@ -273,7 +272,7 @@ Incremental Key: {key_name}
 | {name} | YES | 对象类型显示名称 |
 | Data Properties | YES | 属性定义表 |
 | Keys | YES | 主键、展示键声明 |
-| Logic Properties | NO | 指标、算子等扩展属性 |
+| Logic Properties | NO | **仅算子（operator）** 等扩展属性；指标请用 `metrics/*.bkn` |
 | Data Source | NO | 映射的数据视图，未设定时由平台自动管理 |
 
 ### 数据类型
@@ -713,9 +712,14 @@ graph LR
 │   └── inventory_adjustment_risk.bkn  # type: risk_type
 ├── concept_groups/
 │   └── supply_chain.bkn         # type: concept_group
+├── metrics/                     # 可选，网络级指标；缺省不视为错误，亦非对旧 CHECKSUM 的破坏性变更
+│   └── example_count.bkn        # type: metric
 └── data/                        # 可选，.csv 实例数据
     └── scenario.csv
 ```
+
+- **`metrics/` 可选**：未包含该子目录或未将其中文件纳入 `CHECKSUM` 的历史网络包仍有效；指标非定义知识网络的必要条件。
+- **`type: metric` 文件**（`metrics/*.bkn`）：YAML frontmatter 除 `type`、`id`、`name`、`tags` 外，**规范保留 `metric_type`**（`atomic` \| `derived` \| `composite`），与平台 Metric DTO 对齐；**须与正文 `### Calculation Formula` 代码块根级 `kind` 一致**，权威来源为 `kind`，详见 `docs/DESIGN_BKN_METRIC.md`。另可选用 `unit_type`、`unit` 等。
 
 ### 数据文件（CSV）
 
