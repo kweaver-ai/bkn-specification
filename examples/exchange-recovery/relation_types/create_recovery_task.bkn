@@ -13,7 +13,7 @@ tags: [to, 流程关系, 灾备]
 
 | Source | Target | Type |
 |--------|--------|------|
-| create_recovery_task | execute_recovery_task | direct |
+| recovery_task | recovery_task | direct |
 
 ### Mapping Rules
 

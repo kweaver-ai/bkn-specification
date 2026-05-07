@@ -3,14 +3,17 @@ type: metric
 id: {metric_id}
 name: {指标显示名称}
 tags: [{标签1}, {标签2}]
-metric_type: {atomic|derived|composite}
-unit_type: {单位类型}
-unit: {度量单位}
 ---
 
 ## Metric: {指标显示名称}
 
 {详细描述}
+
+### Metric attributes
+
+| Metric Type | Unit Type | Unit |
+|-------------|-----------|------|
+| `atomic`、`derived`、`composite` 之一 | {单位类型} | {度量单位} |
 
 ### Scope
 
@@ -26,11 +29,11 @@ unit: {度量单位}
 
 **类型与结构（扩展约定）**
 
-- **单一事实来源**：校验、导入与语义解释**仅以正文 YAML 根级的 `kind` 为准**（`atomic` | `derived` | `composite`）。
-- **`frontmatter.metric_type`（规范保留）**：与后端/API DTO 对齐的**标准前置字段**，取值与 `kind` 同属 `atomic` | `derived` | `composite`。**推荐与正文 `kind` 保持一致**；宜由编辑器/序列化器/生成器据 `kind` **自动写入或回填**，减少手填漂移。若二者并存且不一致，实现侧以 **`kind` 为唯一权威**，并对 frontmatter **修正或告警**。
-- 根级固定包含 `version`（正文本范式版本，与网络 SPEC 版本独立）与 `kind`；**同一时间仅允许与被 `kind` 选中子键对应的一种子结构**（`atomic` / `derived` / `composite` 三者互斥）。
+- **单一事实来源**：校验、导入与语义解释**仅以 `### Calculation Formula` 围栏内 YAML 根级的 `kind` 为准**（`atomic` | `derived` | `composite`）。
+- **`### Metric attributes` 表**：单列数据行，`Metric Type` \| `Unit Type` \| `Unit` 三列对应 DTO `metric_type` / `unit_type` / `unit`。
+- 根级**必须**包含 `kind`；**不得**使用正文 YAML 顶层的 `version` 字段（正文本范式由规范与实现对齐演进）；**同一时间仅允许与被 `kind` 选中子键对应的一种子结构**（`atomic` / `derived` / `composite` 三者互斥）。
 - **后端与 endpoint**：原子 / 衍生 / 复合指标**共用同一套 Metric 资源与 endpoint**；`kind` 只影响计算公式子结构的校验与持久化形态，**不区分 API 路由**。
-- 未来新增指标形态时：递增 `version`、扩展 `kind` 枚举或子树字段；旧版本解析器可对未知 `kind` 降级为警告或拒绝导入。
+- 未来新增指标形态时：扩展 `kind` 枚举或子树字段；旧版本解析器可对未知 `kind` 降级为警告或拒绝导入。
 
 | YAML `kind`（权威） | `metric_type`（回填，与 kind 同值） | 子结构根键 | 说明 |
 |---------------------|-------------------------------------|------------|------|
@@ -42,8 +45,7 @@ unit: {度量单位}
 
 **属性名**：`atomic` 内 `condition.field`、`aggregation.property`、`group_by` / `order_by` 等涉及的字段名，**须与该指标 Scope 所指 `object_type` 的 Data Properties 表中 Name 列一致**，勿写 Mapped Field（运行时由平台将 Name 映射到物理列）。详见 `docs/DESIGN_BKN_METRIC.md` §4.6。
 
-~~~yaml
-version: 1
+```yaml
 kind: atomic
 
 atomic:
@@ -68,27 +70,25 @@ atomic:
   #   field: __value
   #   operation: ">="
   #   value: 0
-~~~
+```
 
 <!--
 ================================================================================
 衍生指标（kind: derived）—— 与 atomic、composite 互斥；metric_type 由生成器填 derived
 字段名与嵌套结构以最终实现为准；以下为可读占位，便于作者与解析器预留扩展点。
 
-~~~yaml
-version: 1
+```yaml
 kind: derived
 
-~~~
+```
 
 ================================================================================
 复合指标（kind: composite）—— 与 atomic、derived 互斥；metric_type 由生成器填 composite
 
-~~~yaml
-version: 1
+```yaml
 kind: composite
 
-~~~
+```
 -->
 
 ### Time Dimension

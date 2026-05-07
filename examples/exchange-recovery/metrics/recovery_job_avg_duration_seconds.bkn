@@ -3,14 +3,17 @@ type: metric
 id: recovery_job_avg_duration_seconds
 name: 恢复作业平均耗时（秒）
 tags: [恢复作业, 性能, 灾备]
-metric_type: atomic
-unit_type: time
-unit: s
 ---
 
 ## Metric: 恢复作业平均耗时（秒）
 
 对 `duration` 求平均，衡量恢复作业的典型耗时水平（仅当作业具备有效耗时字段时有意义）。
+
+### Metric attributes
+
+| Metric Type | Unit Type | Unit |
+|-------------|-----------|------|
+| atomic | time | s |
 
 ### Scope
 
@@ -20,15 +23,14 @@ unit: s
 
 ### Calculation Formula
 
-~~~yaml
-version: 1
+```yaml
 kind: atomic
 
 atomic:
   aggregation:
     property: duration
     aggr: avg
-~~~
+```
 
 ### Time Dimension
 

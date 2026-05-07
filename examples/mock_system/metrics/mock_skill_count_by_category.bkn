@@ -3,14 +3,17 @@ type: metric
 id: mock_skill_count_by_category
 name: 各技能分类下技能数量
 tags: [mock_system, 技能, 人才]
-metric_type: atomic
-unit_type: count
-unit: 个
 ---
 
 ## Metric: 各技能分类下技能数量
 
 按 `category` 分组统计技能类条目数，并按数量降序排列，便于识别技能库是否向少数类目过度集中。
+
+### Metric attributes
+
+| Metric Type | Unit Type | Unit |
+|-------------|-----------|------|
+| atomic | count | 个 |
 
 ### Scope
 
@@ -20,8 +23,7 @@ unit: 个
 
 ### Calculation Formula
 
-~~~yaml
-version: 1
+```yaml
 kind: atomic
 
 atomic:
@@ -34,7 +36,7 @@ atomic:
   order_by:
     - property: __value
       direction: desc
-~~~
+```
 
 ### Time Dimension
 

@@ -23,7 +23,6 @@ const nameInvalidChars = `/:?\"<>|：？''""！《》,#[]{}%&*$^!=.'`
 
 const (
 	objectNameMaxLength = 40
-	commentMaxLength    = 1000
 	tagsMaxNumber       = 5
 	maxPropertyNum      = 1000
 )
@@ -158,9 +157,6 @@ func ValidateNetwork(doc *BknNetwork) *ValidationResult {
 	if err := validateTags(doc.Tags); err != nil {
 		appendError(result, "network.bkn", "tags", "invalid_tags", err.Error())
 	}
-	if err := validateComment(doc.Description); err != nil {
-		appendError(result, "network.bkn", "description", "invalid_comment", err.Error())
-	}
 
 	duplicateIDs := func(ids []string, kind string) {
 		seen := make(map[string]int)
@@ -252,9 +248,6 @@ func ValidateNetwork(doc *BknNetwork) *ValidationResult {
 		if err := validateTags(ot.Tags); err != nil {
 			appendError(result, t, "tags", "invalid_tags", err.Error())
 		}
-		if err := validateComment(ot.Description); err != nil {
-			appendError(result, t, "description", "invalid_comment", err.Error())
-		}
 		if !ot.HasDataPropertiesSection {
 			appendError(result, t, "", "missing_section", "ObjectType must include a ### Data Properties section")
 		}
@@ -269,9 +262,6 @@ func ValidateNetwork(doc *BknNetwork) *ValidationResult {
 		validateDefFrontmatter(result, t, rt.Type, rt.ID, rt.Name)
 		if err := validateTags(rt.Tags); err != nil {
 			appendError(result, t, "tags", "invalid_tags", err.Error())
-		}
-		if err := validateComment(rt.Description); err != nil {
-			appendError(result, t, "description", "invalid_comment", err.Error())
 		}
 		validateRelationTypeDeep(result, t, rt)
 		src := strings.TrimSpace(rt.Endpoint.Source)
@@ -297,9 +287,6 @@ func ValidateNetwork(doc *BknNetwork) *ValidationResult {
 		if err := validateTags(at.Tags); err != nil {
 			appendError(result, t, "tags", "invalid_tags", err.Error())
 		}
-		if err := validateComment(at.Description); err != nil {
-			appendError(result, t, "description", "invalid_comment", err.Error())
-		}
 		validateActionTypeDeep(result, t, at)
 		bo := strings.TrimSpace(at.BoundObject)
 		if bo != "" {
@@ -315,9 +302,6 @@ func ValidateNetwork(doc *BknNetwork) *ValidationResult {
 		if err := validateTags(r.Tags); err != nil {
 			appendError(result, t, "tags", "invalid_tags", err.Error())
 		}
-		if err := validateComment(r.Description); err != nil {
-			appendError(result, t, "description", "invalid_comment", err.Error())
-		}
 	}
 
 	for _, cg := range doc.ConceptGroups {
@@ -325,9 +309,6 @@ func ValidateNetwork(doc *BknNetwork) *ValidationResult {
 		validateDefFrontmatter(result, t, cg.Type, cg.ID, cg.Name)
 		if err := validateTags(cg.Tags); err != nil {
 			appendError(result, t, "tags", "invalid_tags", err.Error())
-		}
-		if err := validateComment(cg.Description); err != nil {
-			appendError(result, t, "description", "invalid_comment", err.Error())
 		}
 		for _, oid := range cg.ObjectTypes {
 			oid = strings.TrimSpace(oid)
@@ -390,13 +371,6 @@ func validateTags(tags []string) error {
 	return nil
 }
 
-func validateComment(comment string) error {
-	if utf8.RuneCountInString(comment) > commentMaxLength {
-		return fmt.Errorf("description/comment exceeds %d characters", commentMaxLength)
-	}
-	return nil
-}
-
 func validateObjectTypeDeep(result *ValidationResult, table string, ot *BknObjectType) {
 	if ot.DataSource != nil && strings.TrimSpace(ot.DataSource.Type) != "" {
 		if !validDataSourceTypes[normType(ot.DataSource.Type)] {
@@ -423,9 +397,6 @@ func validateObjectTypeDeep(result *ValidationResult, table string, ot *BknObjec
 		}
 		if msg := validateObjectName(dp.DisplayName, ""); msg != "" {
 			appendError(result, table, "data_properties", "invalid_display_name", fmt.Sprintf("property %q: %s", dp.Name, msg))
-		}
-		if err := validateComment(dp.Description); err != nil {
-			appendError(result, table, "data_properties", "invalid_comment", err.Error())
 		}
 		if strings.TrimSpace(dp.Type) != "" {
 			nt := normType(dp.Type)
@@ -498,16 +469,8 @@ func validateObjectTypeDeep(result *ValidationResult, table string, ot *BknObjec
 		if msg := validateObjectName(lp.DisplayName, ""); msg != "" {
 			appendError(result, table, "logic_properties", "invalid_display_name", fmt.Sprintf("logic property %q: %s", lp.Name, msg))
 		}
-		if err := validateComment(lp.Description); err != nil {
-			appendError(result, table, "logic_properties", "invalid_comment", err.Error())
-		}
 		if strings.TrimSpace(lp.Type) != "" {
 			nt := normType(lp.Type)
-			if nt == "metric" {
-				appendError(result, table, "logic_properties", "invalid_object_type",
-					fmt.Sprintf("logic property %q type must be operator (logic type metric is deprecated; define network metrics in metrics/*.bkn as type: metric, see docs/DESIGN_BKN_METRIC.md)", lp.Name))
-				continue
-			}
 			if !validLogicPropertyTypes[nt] {
 				appendError(result, table, "logic_properties", "invalid_object_type",
 					fmt.Sprintf("logic property %q type must be metric or operator", lp.Name))
@@ -515,11 +478,6 @@ func validateObjectTypeDeep(result *ValidationResult, table string, ot *BknObjec
 		}
 		if lp.DataSource != nil {
 			dst := normType(lp.DataSource.Type)
-			if dst == "metric" {
-				appendError(result, table, "logic_properties", "invalid_object_type",
-					fmt.Sprintf("logic property %q data_source.type must be operator (metric source deprecated; use metrics/*.bkn)", lp.Name))
-				continue
-			}
 			if !validLogicSourceTypes[dst] {
 				appendError(result, table, "logic_properties", "invalid_object_type",
 					fmt.Sprintf("logic property %q data_source.type must be metric or operator", lp.Name))
@@ -607,9 +565,6 @@ func validateMetricDeep(result *ValidationResult, table string, met *BknMetric, 
 	if err := validateTags(met.Tags); err != nil {
 		appendError(result, table, "tags", "invalid_tags", err.Error())
 	}
-	if err := validateComment(met.Description); err != nil {
-		appendError(result, table, "description", "invalid_comment", err.Error())
-	}
 	if !met.HasScopeSection {
 		appendError(result, table, "", "missing_section", "Metric must include a ### Scope section")
 	}
@@ -629,8 +584,8 @@ func validateMetricDeep(result *ValidationResult, table string, met *BknMetric, 
 		appendError(result, table, "kind", "unsupported_metric_kind", fmt.Sprintf("only atomic metrics are supported, got %q", met.Formula.Kind))
 		return
 	}
-	if mt := strings.TrimSpace(met.MetricType); mt != "" && normType(mt) != kind {
-		appendError(result, table, "metric_type", "metric_type_kind_mismatch", fmt.Sprintf("frontmatter metric_type %q must match formula kind %q when both are set", met.MetricType, met.Formula.Kind))
+	if mt := strings.TrimSpace(met.MetricAttributes.MetricType); mt != "" && normType(mt) != kind {
+		appendError(result, table, "metric_type", "metric_type_kind_mismatch", fmt.Sprintf("effective metric_type %q must match formula kind %q when both are set", met.MetricAttributes.MetricType, met.Formula.Kind))
 	}
 	if met.Formula.Atomic == nil {
 		appendError(result, table, "atomic", "invalid_metric", "atomic kind requires non-nil atomic subtree")

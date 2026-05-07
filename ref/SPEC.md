@@ -251,23 +251,20 @@ supply-chain 网络
 
 ### 网络级指标文件 (type: metric)
 
-与 **bkn-specification** 仓库及 SDK 对齐：网络级指标使用独立文件声明，**禁止**在对象类 Logic Properties 上使用已废弃的 `metric` 类型（见 `docs/DESIGN_BKN_METRIC.md`）。
+与 **bkn-specification** 仓库及 SDK 对齐：网络级指标可在独立文件 `metrics/*.bkn`（`type: metric`）声明；对象类 **Logic Properties** 仍允许 **`metric` / `operator`** 类型及 `data_source.type` 为 **`metric` / `operator`**，与校验器 `validLogicPropertyTypes` / `validLogicSourceTypes` 一致。
 
 | 字段 | 必填 | 类型 | 说明 |
 |------|:----:|------|------|
 | `type` | **YES** | string | 固定为 `metric` |
 | `id` | **YES** | string | 指标 ID |
 | `name` | **YES** | string | 显示名称 |
-| `metric_type` | **推荐** | string | `atomic` \| `derived` \| `composite`，与平台 Metric DTO 对齐；**须与正文 `### Calculation Formula` 围栏内 YAML 根级 `kind` 一致**；权威来源为 `kind`，解析器可在缺省时据 `kind` 回填 |
-| `unit_type` | NO | string | 单位类型（枚举以后端为准） |
-| `unit` | NO | string | 度量单位展示 |
 | `version` | NO | string | 版本号 |
 | `network` | NO | string | 所属网络 ID |
 | `namespace` | NO | string | 层级分组 |
 | `tags` | NO | [string] | 标签列表 |
 | `checksum` | NO | string | 内容指纹 |
 
-正文结构概要：`## Metric: {名称}`；`### Scope`；`### Calculation Formula`（ fenced YAML，根级 `version` + **`kind`**）；可选 `### Time Dimension`、`### Analysis Dimensions`。详见 `docs/templates/metric.bkn.template` 与 `docs/DESIGN_BKN_METRIC.md`。
+正文结构概要：`## Metric: {名称}`；`### Metric attributes`（**`Metric Type` \| `Unit Type` \| `Unit`** 三列表，单列数据对应 DTO **`metric_type` / `unit_type` / `unit`**；**不得**出现在 YAML `---` 头）；**`Metric Type` 须与** `### Calculation Formula` 围栏内 YAML 根级 **`kind` 一致**，权威来源为 `kind`，解析器可据 `kind` 回填；`### Scope`；`### Calculation Formula`（ fenced YAML，根级 **`kind`**）；可选 `### Time Dimension`、`### Analysis Dimensions`。
 
 ### 混合片段 (type: fragment)
 

@@ -1113,10 +1113,10 @@ func TestParseMetricFile_MockEmployeeOnboarded(t *testing.T) {
 	assert.Equal(t, "employee", m.ScopeRef)
 	require.True(t, m.HasScopeSection)
 	require.True(t, m.HasCalculationFormulaSection)
+	require.True(t, m.HasMetricAttributesSection)
 	require.NotNil(t, m.Formula)
-	assert.Equal(t, 1, m.Formula.Version)
 	assert.Equal(t, "atomic", m.Formula.Kind)
-	assert.Equal(t, "atomic", m.MetricType)
+	assert.Equal(t, "atomic", m.MetricAttributes.MetricType)
 	require.NotNil(t, m.Formula.Atomic)
 	require.NotNil(t, m.Formula.Atomic.Condition)
 	assert.Equal(t, "status", m.Formula.Atomic.Condition.Field)
@@ -1127,6 +1127,16 @@ func TestParseMetricFile_MockEmployeeOnboarded(t *testing.T) {
 	assert.Equal(t, "hire_date", m.TimeDimensions[0].Property)
 	require.Len(t, m.AnalysisDimensions, 1)
 	assert.Equal(t, "name", m.AnalysisDimensions[0].Name)
+}
+
+func TestParseMetricAttributes_WideTable(t *testing.T) {
+	a := parseMetricAttributes(`| Metric Type | Unit Type | Unit |
+|---|---|---|
+| atomic | cnt | pcs |
+`)
+	assert.Equal(t, "atomic", a.MetricType)
+	assert.Equal(t, "cnt", a.UnitType)
+	assert.Equal(t, "pcs", a.Unit)
 }
 
 func TestSerializeMetric_MetricTypeFromKind(t *testing.T) {
@@ -1141,8 +1151,7 @@ func TestSerializeMetric_MetricTypeFromKind(t *testing.T) {
 		ScopeType:   "object_type",
 		ScopeRef:    "obj1",
 		Formula: &MetricFormula{
-			Version: 1,
-			Kind:    "atomic",
+			Kind: "atomic",
 			Atomic: &MetricAtomic{
 				Aggregation: &MetricAggregation{Property: "id", Aggr: "count"},
 			},
@@ -1151,5 +1160,8 @@ func TestSerializeMetric_MetricTypeFromKind(t *testing.T) {
 		HasCalculationFormulaSection: true,
 	}
 	out := SerializeMetric(m)
-	assert.Contains(t, out, "metric_type: atomic")
+	assert.Contains(t, out, "### Metric attributes")
+	assert.Contains(t, out, "| Metric Type | Unit Type | Unit |")
+	assert.Contains(t, out, "| atomic |  |  |")
+	assert.NotContains(t, out, "\nmetric_type: atomic\n")
 }

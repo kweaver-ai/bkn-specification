@@ -3,14 +3,17 @@ type: metric
 id: recovery_verification_failure_count
 name: 可用性验证失败次数
 tags: [验证, 可用性, 灾备]
-metric_type: atomic
-unit_type: count
-unit: 次
 ---
 
 ## Metric: 可用性验证失败次数
 
 统计验证结果为失败的 Exchange 可用性验证记录数，用于恢复质量与演练问题追踪。
+
+### Metric attributes
+
+| Metric Type | Unit Type | Unit |
+|-------------|-----------|------|
+| atomic | count | 次 |
 
 ### Scope
 
@@ -20,8 +23,7 @@ unit: 次
 
 ### Calculation Formula
 
-~~~yaml
-version: 1
+```yaml
 kind: atomic
 
 atomic:
@@ -32,7 +34,7 @@ atomic:
   aggregation:
     property: id
     aggr: count
-~~~
+```
 
 ### Time Dimension
 

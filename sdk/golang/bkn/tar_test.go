@@ -413,8 +413,7 @@ func TestRoundTrip_NetworkWithAllTypes(t *testing.T) {
 				HasScopeSection:              true,
 				HasCalculationFormulaSection: true,
 				Formula: &MetricFormula{
-					Version: 1,
-					Kind:    "atomic",
+					Kind: "atomic",
 					Atomic: &MetricAtomic{
 						Aggregation: &MetricAggregation{Property: "prop1", Aggr: "count"},
 					},

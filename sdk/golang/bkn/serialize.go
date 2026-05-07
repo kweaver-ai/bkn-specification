@@ -14,7 +14,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// encodeMetricFormulaYAML encodes a metric formula using the same fence style as on-disk examples (~~~yaml).
+// encodeMetricFormulaYAML encodes a metric formula fenced with Markdown ```yaml code blocks, matching on-disk examples.
 func encodeMetricFormulaYAML(m *MetricFormula) string {
 	var buf bytes.Buffer
 	enc := yaml.NewEncoder(&buf)
@@ -22,7 +22,7 @@ func encodeMetricFormulaYAML(m *MetricFormula) string {
 	_ = enc.Encode(m)
 	_ = enc.Close()
 	s := strings.TrimSuffix(buf.String(), "\n")
-	return "~~~yaml\n" + s + "\n~~~\n"
+	return "```yaml\n" + s + "\n```\n"
 }
 
 // SerializeMetric serializes BknMetric to BKN markdown.
@@ -33,24 +33,24 @@ func SerializeMetric(m *BknMetric) string {
 	sb.WriteString(fmt.Sprintf("id: %s\n", m.ID))
 	sb.WriteString(fmt.Sprintf("name: %s\n", m.Name))
 	sb.WriteString(fmt.Sprintf("tags: [%s]\n", strings.Join(m.Tags, ", ")))
-	mtOut := strings.TrimSpace(m.MetricType)
-	if mtOut == "" && m.Formula != nil {
-		mtOut = strings.TrimSpace(m.Formula.Kind)
-	}
-	if mtOut != "" {
-		sb.WriteString(fmt.Sprintf("metric_type: %s\n", mtOut))
-	}
-	if strings.TrimSpace(m.UnitType) != "" {
-		sb.WriteString(fmt.Sprintf("unit_type: %s\n", m.UnitType))
-	}
-	if strings.TrimSpace(m.Unit) != "" {
-		sb.WriteString(fmt.Sprintf("unit: %s\n", m.Unit))
-	}
 	sb.WriteString("---\n\n")
 
 	sb.WriteString(fmt.Sprintf("## Metric: %s\n\n", m.Name))
 	if m.Description != "" {
 		sb.WriteString(m.Description + "\n\n")
+	}
+
+	mtOut := strings.TrimSpace(m.MetricAttributes.MetricType)
+	if mtOut == "" && m.Formula != nil {
+		mtOut = strings.TrimSpace(m.Formula.Kind)
+	}
+	utOut := strings.TrimSpace(m.MetricAttributes.UnitType)
+	uOut := strings.TrimSpace(m.MetricAttributes.Unit)
+	if mtOut != "" || utOut != "" || uOut != "" {
+		sb.WriteString("### Metric attributes\n\n")
+		sb.WriteString("| Metric Type | Unit Type | Unit |\n")
+		sb.WriteString("|-------------|-----------|------|\n")
+		sb.WriteString(fmt.Sprintf("| %s | %s | %s |\n\n", mtOut, utOut, uOut))
 	}
 
 	sb.WriteString("### Scope\n\n")

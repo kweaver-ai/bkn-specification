@@ -182,7 +182,7 @@ func TestValidateNetwork_InvalidBoundObjectRef(t *testing.T) {
 	assert.True(t, found, "expected invalid_bound_object_ref, got %+v", res.Errors)
 }
 
-func TestValidateNetwork_LogicPropertyMetricRejected(t *testing.T) {
+func TestValidateNetwork_LogicPropertyMetricOK(t *testing.T) {
 	net := &BknNetwork{
 		BknNetworkFrontmatter: BknNetworkFrontmatter{
 			Type: "knowledge_network",
@@ -198,12 +198,12 @@ func TestValidateNetwork_LogicPropertyMetricRejected(t *testing.T) {
 				},
 				HasDataPropertiesSection: true,
 				HasKeysSection:           true,
-				DataProperties:           []*DataProperty{{Name: "k", Type: "string"}},
+				DataProperties:           []*DataProperty{{Name: "k", DisplayName: "K", Type: "string"}},
 				PrimaryKeys:              []string{"k"},
 				DisplayKey:               "k",
 				LogicProperties: []*LogicProperty{
 					{
-						Name:        "bad_metric",
+						Name:        "m1",
 						DisplayName: "M",
 						Type:        "metric",
 						DataSource:  &ResourceInfo{Type: "metric", ID: "1", Name: "m"},
@@ -213,15 +213,7 @@ func TestValidateNetwork_LogicPropertyMetricRejected(t *testing.T) {
 		},
 	}
 	res := ValidateNetwork(net)
-	assert.False(t, res.OK())
-	var found bool
-	for _, e := range res.Errors {
-		if e.Code == "invalid_object_type" && strings.Contains(e.Message, "bad_metric") && strings.Contains(e.Message, "deprecated") {
-			found = true
-			break
-		}
-	}
-	assert.True(t, found, "expected deprecated metric logic property error, got %+v", res.Errors)
+	assert.True(t, res.OK(), "expected valid logic metric property, errors: %+v", res.Errors)
 }
 
 func testNetworkWithMetric(scopeType, scopeRef string) *BknNetwork {
@@ -257,8 +249,7 @@ func testNetworkWithMetric(scopeType, scopeRef string) *BknNetwork {
 				ScopeType:                    scopeType,
 				ScopeRef:                     scopeRef,
 				Formula: &MetricFormula{
-					Version: 1,
-					Kind:    "atomic",
+					Kind: "atomic",
 					Atomic: &MetricAtomic{
 						Aggregation: &MetricAggregation{Property: "k", Aggr: "count"},
 					},

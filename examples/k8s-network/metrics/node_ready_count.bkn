@@ -3,14 +3,17 @@ type: metric
 id: node_ready_count
 name: Ready 节点数量
 tags: [Kubernetes, Node, 基础设施]
-metric_type: atomic
-unit_type: count
-unit: 个
 ---
 
 ## Metric: Ready 节点数量
 
 统计当前知识网络快照中状态为 Ready 的工作节点数量；节点对象无单独业务时间字段时，以**全量/当前视图**解释结果，时间维度默认 **none**（与排班、节点心跳类数据源对齐时再挂时间列）。
+
+### Metric attributes
+
+| Metric Type | Unit Type | Unit |
+|-------------|-----------|------|
+| atomic | count | 个 |
 
 ### Scope
 
@@ -20,8 +23,7 @@ unit: 个
 
 ### Calculation Formula
 
-~~~yaml
-version: 1
+```yaml
 kind: atomic
 
 atomic:
@@ -32,7 +34,7 @@ atomic:
   aggregation:
     property: id
     aggr: count
-~~~
+```
 
 ### Time Dimension
 

@@ -3,14 +3,17 @@ type: metric
 id: mock_department_count
 name: 部门档案数量
 tags: [mock_system, 组织, 部门]
-metric_type: atomic
-unit_type: count
-unit: 个
 ---
 
 ## Metric: 部门档案数量
 
 统计部门表记录条数，作为示例网络组织规模的粗粒度仪表盘指标（可与员工、资源类对象联动分析）。
+
+### Metric attributes
+
+| Metric Type | Unit Type | Unit |
+|-------------|-----------|------|
+| atomic | count | 个 |
 
 ### Scope
 
@@ -20,15 +23,14 @@ unit: 个
 
 ### Calculation Formula
 
-~~~yaml
-version: 1
+```yaml
 kind: atomic
 
 atomic:
   aggregation:
     property: department_id
     aggr: count
-~~~
+```
 
 ### Time Dimension
 

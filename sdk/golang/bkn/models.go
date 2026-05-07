@@ -78,21 +78,28 @@ type BknObjectType struct {
 	HasKeysSection           bool
 }
 
+// MetricAttributes is parsed from the body section ### Metric attributes
+// (Markdown table: Metric Type | Unit Type | Unit), analogous to Endpoint on BknRelationType.
+// These fields are not part of YAML frontmatter.
+type MetricAttributes struct {
+	MetricType string // DTO metric_type; should match Formula.Kind when set
+	UnitType   string
+	Unit       string
+}
+
 // BknMetricFrontmatter is YAML frontmatter for a type: metric file.
 type BknMetricFrontmatter struct {
 	Type string   `yaml:"type"`
 	ID   string   `yaml:"id"`
 	Name string   `yaml:"name"`
 	Tags []string `yaml:"tags"`
-
-	MetricType string `yaml:"metric_type,omitempty"` // 与 API 对齐；与 Formula.Kind 一致；解析时若缺省则从 kind 回填
-	UnitType   string `yaml:"unit_type,omitempty"`
-	Unit       string `yaml:"unit,omitempty"`
 }
 
 // BknMetric is a network-level metric definition (metrics/*.bkn).
 type BknMetric struct {
 	BknMetricFrontmatter
+
+	MetricAttributes MetricAttributes
 
 	Summary     string
 	Description string
@@ -108,16 +115,16 @@ type BknMetric struct {
 	AnalysisDimensions []MetricAnalysisDimRow
 
 	HasScopeSection              bool
+	HasMetricAttributesSection   bool
 	HasCalculationFormulaSection bool
 	HasTimeDimensionSection      bool
 	HasAnalysisDimensionsSection bool
 }
 
-// MetricFormula is the in-memory shape of the Calculation Formula YAML (version 1).
+// MetricFormula is the in-memory shape of the Calculation Formula YAML.
 type MetricFormula struct {
-	Version int           `yaml:"version"`
-	Kind    string        `yaml:"kind"`
-	Atomic  *MetricAtomic `yaml:"atomic,omitempty"`
+	Kind   string        `yaml:"kind"`
+	Atomic *MetricAtomic `yaml:"atomic,omitempty"`
 }
 
 // MetricAtomic is the atomic metric calculation subtree.

@@ -164,16 +164,14 @@ type: metric
 id: {metric_id}
 name: {显示名称}
 tags: [tag1, tag2]     # 可选
-metric_type: atomic    # atomic | derived | composite；须与正文公式根级 kind 一致；推荐与 kind 同步或由工具回填
-unit_type: count       # 可选
-unit: 个               # 可选
 ---
 ```
 
 正文：
 - `## Metric: {显示名称}` + 简短描述
+- `### Metric attributes`：表格 Metric Type | Unit Type | Unit（单列数据行；对应 `metric_type`、`unit_type`、`unit`）；
 - `### Scope`：表格 Scope Type | Scope Ref
-- `### Calculation Formula`：围栏内 YAML，根级 `version` 与 **`kind`**（权威）；`atomic` / `derived` / `composite` 子树互斥
+- `### Calculation Formula`：围栏内 YAML，根级 **`kind`**（权威）；`atomic` / `derived` / `composite` 子树互斥
 - `### Time Dimension`、`### Analysis Dimensions`（可选）
 
 详见 `docs/DESIGN_BKN_METRIC.md` 与 `docs/templates/metric.bkn.template`。
@@ -197,4 +195,4 @@ unit: 个               # 可选
    - ActionType：Bound Object、Parameter Binding（或 Tool Configuration）
    - RiskType：Control Scope、Control Policy
    - ConceptGroup：Object Types
-   - Metric：Scope、Calculation Formula（须与 frontmatter `metric_type` 及根级 `kind` 一致）
+   - Metric：Metric attributes（三列表）、`### Scope`、`### Calculation Formula`（Metric Type 列须与根级 `kind` 一致）

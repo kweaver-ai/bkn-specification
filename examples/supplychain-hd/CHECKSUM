@@ -1,11 +1,11 @@
 # BKN Directory Checksum
-# generated: 2026-05-07T11:18:45+08:00
+# generated: 2026-05-07T15:02:39+08:00
 SKILL.md  sha256:d88bd5ba972bca41
-metric:hd_forecast_consensus_by_product  sha256:10a3910b0d4fcb2d
-metric:hd_inventory_available_qty_by_org  sha256:cef161fd571a7f01
-metric:hd_mrp_net_demand_by_product  sha256:b899c3f8013bf821
-metric:hd_purchase_order_count_by_supplier  sha256:58a177e97bc03f97
-metric:hd_salesorder_signing_qty_by_product  sha256:c9646212cb70db44
+metric:hd_forecast_consensus_by_product  sha256:e73c7a7840428dec
+metric:hd_inventory_available_qty_by_org  sha256:3484ca0e822dbac2
+metric:hd_mrp_net_demand_by_product  sha256:98aa90f7093a3e29
+metric:hd_purchase_order_count_by_supplier  sha256:4295021d7a92bd3c
+metric:hd_salesorder_signing_qty_by_product  sha256:9f7ed2b1b0f33aba
 object_type:bom  sha256:f4f550e8d816d5e6
 object_type:forecast  sha256:e7f99dc1bfe45d96
 object_type:inventory  sha256:424ff21908128a18

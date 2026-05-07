@@ -49,6 +49,7 @@ var knownConceptGroupSections = map[string]bool{
 }
 
 var knownMetricSections = map[string]bool{
+	"Metric attributes":   true,
 	"Scope":               true,
 	"Calculation Formula": true,
 	"Time Dimension":      true,
@@ -837,22 +838,27 @@ func ParseRiskTypeFile(text string, sourcePath string) (*BknRiskType, error) {
 	return risk, nil
 }
 
-// extractFirstMetricFormulaYAML returns the inner YAML of the first ~~~yaml or ```yaml fence in Calculation Formula body.
+// extractFirstMetricFormulaYAML returns the inner YAML of the first ```yaml fence in Calculation Formula body.
 func extractFirstMetricFormulaYAML(sectionText string) []byte {
 	m := yamlBlockRE.FindStringSubmatch(sectionText)
-	if len(m) == 0 {
+	if len(m) < 2 {
 		return nil
 	}
-	var inner string
-	if m[1] != "" {
-		inner = m[1]
-	} else if len(m) > 2 {
-		inner = m[2]
+	return []byte(strings.TrimSpace(m[1]))
+}
+
+func parseMetricAttributes(sectionText string) MetricAttributes {
+	rows := parseTable(strings.Split(sectionText, "\n"))
+	if len(rows) == 0 {
+		return MetricAttributes{}
 	}
-	if inner == "" {
-		return nil
+
+	r0 := rows[0]
+	return MetricAttributes{
+		MetricType: strings.TrimSpace(firstNonEmpty(r0, "Metric Type", "MetricType", "指标类型")),
+		UnitType:   strings.TrimSpace(firstNonEmpty(r0, "Unit Type", "UnitType", "单位类型")),
+		Unit:       strings.TrimSpace(firstNonEmpty(r0, "Unit", "度量单位")),
 	}
-	return []byte(strings.TrimSpace(inner))
 }
 
 func parseMetricScope(sectionText string) (scopeType, scopeRef string) {
@@ -901,13 +907,10 @@ func ParseMetricFile(text string, sourcePath string) (*BknMetric, error) {
 
 	m := &BknMetric{
 		BknMetricFrontmatter: BknMetricFrontmatter{
-			Type:       strVal(fmData, "type"),
-			ID:         strVal(fmData, "id"),
-			Name:       strVal(fmData, "name"),
-			Tags:       strSliceVal(fmData, "tags"),
-			MetricType: strVal(fmData, "metric_type"),
-			UnitType:   strVal(fmData, "unit_type"),
-			Unit:       strVal(fmData, "unit"),
+			Type: strVal(fmData, "type"),
+			ID:   strVal(fmData, "id"),
+			Name: strVal(fmData, "name"),
+			Tags: strSliceVal(fmData, "tags"),
 		},
 		Description: buildDescription(desc, sections, order, knownMetricSections),
 		RawContent:  text,
@@ -921,6 +924,13 @@ func ParseMetricFile(text string, sourcePath string) (*BknMetric, error) {
 	_, m.HasCalculationFormulaSection = sections["Calculation Formula"]
 	_, m.HasTimeDimensionSection = sections["Time Dimension"]
 	_, m.HasAnalysisDimensionsSection = sections["Analysis Dimensions"]
+	if _, ok := sections["Metric attributes"]; ok {
+		m.HasMetricAttributesSection = true
+	}
+
+	if s, ok := sections["Metric attributes"]; ok {
+		m.MetricAttributes = parseMetricAttributes(s)
+	}
 
 	if s, ok := sections["Scope"]; ok {
 		st, sr := parseMetricScope(s)
@@ -943,9 +953,9 @@ func ParseMetricFile(text string, sourcePath string) (*BknMetric, error) {
 		m.AnalysisDimensions = parseMetricAnalysisDimensions(s)
 	}
 
-	// If frontmatter omits metric_type, derive from authoritative formula kind.
-	if strings.TrimSpace(m.MetricType) == "" && m.Formula != nil && strings.TrimSpace(m.Formula.Kind) != "" {
-		m.MetricType = strings.TrimSpace(m.Formula.Kind)
+	// If Metric Type column empty, derive from authoritative formula kind.
+	if strings.TrimSpace(m.MetricAttributes.MetricType) == "" && m.Formula != nil && strings.TrimSpace(m.Formula.Kind) != "" {
+		m.MetricAttributes.MetricType = strings.TrimSpace(m.Formula.Kind)
 	}
 
 	return m, nil

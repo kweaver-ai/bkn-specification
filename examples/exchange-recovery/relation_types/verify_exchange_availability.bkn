@@ -13,7 +13,7 @@ tags: [to, 流程关系, 灾备]
 
 | Source | Target | Type |
 |--------|--------|------|
-| verify_exchange_availability | generate_recovery_report | direct |
+| recovery_job_verification | recovery_job_verification | direct |
 
 ### Mapping Rules
 

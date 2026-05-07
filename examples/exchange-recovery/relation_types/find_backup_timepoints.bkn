@@ -13,7 +13,7 @@ tags: [to, 流程关系, 灾备]
 
 | Source | Target | Type |
 |--------|--------|------|
-| find_backup_timepoints | browse_backup_emails | direct |
+| backup_timepoint | email | direct |
 
 ### Mapping Rules
 

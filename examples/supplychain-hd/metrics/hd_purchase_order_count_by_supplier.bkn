@@ -3,14 +3,17 @@ type: metric
 id: hd_purchase_order_count_by_supplier
 name: 各供应商采购订单笔数
 tags: [供应链, 采购, HD]
-metric_type: atomic
-unit_type: count
-unit: 笔
 ---
 
 ## Metric: 各供应商采购订单笔数
 
 按供应商维度对采购订单单号计数，观察采购活动集中度与核心供应商依赖（配合 `supplier_name` 展示更清晰）。
+
+### Metric attributes
+
+| Metric Type | Unit Type | Unit |
+|-------------|-----------|------|
+| atomic | count | 笔 |
 
 ### Scope
 
@@ -20,8 +23,7 @@ unit: 笔
 
 ### Calculation Formula
 
-~~~yaml
-version: 1
+```yaml
 kind: atomic
 
 atomic:
@@ -34,7 +36,7 @@ atomic:
   order_by:
     - property: __value
       direction: desc
-~~~
+```
 
 ### Time Dimension
 

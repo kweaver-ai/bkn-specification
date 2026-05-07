@@ -3,14 +3,17 @@ type: metric
 id: service_count_by_type
 name: 各类型 Service 数量
 tags: [Kubernetes, Service, 网络]
-metric_type: atomic
-unit_type: count
-unit: 个
 ---
 
 ## Metric: 各类型 Service 数量
 
 按 Service 类型（ClusterIP / NodePort / LoadBalancer 等）分组计数，用于核对对外暴露面与集群内服务发现规模。
+
+### Metric attributes
+
+| Metric Type | Unit Type | Unit |
+|-------------|-----------|------|
+| atomic | count | 个 |
 
 ### Scope
 
@@ -20,8 +23,7 @@ unit: 个
 
 ### Calculation Formula
 
-~~~yaml
-version: 1
+```yaml
 kind: atomic
 
 atomic:
@@ -31,7 +33,7 @@ atomic:
   group_by:
     - property: service_type
       description: 按 Service 类型聚合条数
-~~~
+```
 
 ### Time Dimension
 

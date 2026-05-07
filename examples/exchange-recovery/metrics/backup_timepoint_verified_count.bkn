@@ -3,14 +3,17 @@ type: metric
 id: backup_timepoint_verified_count
 name: 已验证备份时间点数量
 tags: [备份, 验证, 灾备]
-metric_type: atomic
-unit_type: count
-unit: 个
 ---
 
 ## Metric: 已验证备份时间点数量
 
 仅统计 `is_verified` 为真的备份时间点副本数量，用于可恢复性治理与合规报告。
+
+### Metric attributes
+
+| Metric Type | Unit Type | Unit |
+|-------------|-----------|------|
+| atomic | count | 个 |
 
 ### Scope
 
@@ -20,8 +23,7 @@ unit: 个
 
 ### Calculation Formula
 
-~~~yaml
-version: 1
+```yaml
 kind: atomic
 
 atomic:
@@ -32,7 +34,7 @@ atomic:
   aggregation:
     property: id
     aggr: count
-~~~
+```
 
 ### Time Dimension
 

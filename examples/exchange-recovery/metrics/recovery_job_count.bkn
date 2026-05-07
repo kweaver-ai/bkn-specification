@@ -3,14 +3,17 @@ type: metric
 id: recovery_job_count
 name: 成功恢复作业次数（按执行用户）
 tags: [恢复作业, 灾备, 执行用户]
-metric_type: atomic
-unit_type: count
-unit: 次
 ---
 
 ## Metric: 成功恢复作业次数（按执行用户）
 
 在指定时间窗口内，仅统计**恢复结果为成功**的作业；按**执行用户**分组计数，按次数**降序**排列，并通过 **having** 剔除低频噪声（例如单次操作），便于运营侧识别主要操作者与活跃恢复行为。
+
+### Metric attributes
+
+| Metric Type | Unit Type | Unit |
+|-------------|-----------|------|
+| atomic | count | 次 |
 
 ### Scope
 
@@ -20,8 +23,7 @@ unit: 次
 
 ### Calculation Formula
 
-~~~yaml
-version: 1
+```yaml
 kind: atomic
 
 atomic:
@@ -42,7 +44,7 @@ atomic:
     field: __value
     operation: ">="
     value: 2
-~~~
+```
 
 ### Time Dimension
 
