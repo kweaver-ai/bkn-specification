@@ -1,6 +1,6 @@
 module github.com/kweaver-ai/bkn-specification/cli
 
-go 1.25
+go 1.24.12
 
 require (
 	github.com/kweaver-ai/bkn-specification/sdk/golang v0.0.0
