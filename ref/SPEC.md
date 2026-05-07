@@ -147,7 +147,7 @@ BKN 定义五种**基本类型**和两种**辅助类型**：
 | `relation` | 基本类型 | 关系类定义 |
 | `action` | 基本类型 | 行动类定义 |
 | `risk` | 基本类型 | 风险类定义 |
-| `metric` | 基本类型 | 网络级指标定义（推荐 `metrics/*.bkn`；与 `docs/DESIGN_BKN_METRIC.md`、仓库示例对齐） |
+| `metric` | 基本类型 | 网络级指标定义 |
 | `fragment` | 辅助类型 | 混合片段，一个文件包含多个定义 |
 | `delete` | 辅助类型 | 删除标记，显式声明要删除的定义 |
 
@@ -250,8 +250,6 @@ supply-chain 网络
 | `checksum` | NO | string | 内容指纹 |
 
 ### 网络级指标文件 (type: metric)
-
-与 **bkn-specification** 仓库及 SDK 对齐：网络级指标可在独立文件 `metrics/*.bkn`（`type: metric`）声明；对象类 **Logic Properties** 仍允许 **`metric` / `operator`** 类型及 `data_source.type` 为 **`metric` / `operator`**，与校验器 `validLogicPropertyTypes` / `validLogicSourceTypes` 一致。
 
 | 字段 | 必填 | 类型 | 说明 |
 |------|:----:|------|------|
@@ -935,7 +933,7 @@ graph LR
 │   └── adjust_inventory.bkn           # type: action
 ├── risks/
 │   └── inventory_adjustment_risk.bkn  # type: risk
-└── metrics/                           # 可选，网络级指标（type: metric）
+└── metrics/                           # type: metric
     └── example_count.bkn
 ```
 
@@ -960,7 +958,7 @@ graph LR
 | `relations/` | 关系类定义 |
 | `actions/` | 行动类定义 |
 | `risks/` | 风险类定义 |
-| `metrics/` | 网络级指标（`type: metric`，可选；与 `docs/DESIGN_BKN_METRIC.md` 对齐） |
+| `metrics/` | 网络级指标（`type: metric`） |
 
 目录名是约定而非强制，文件的 `type` 字段才是定义类型的权威声明。**bkn-specification** 仓库中常用 `object_types/`、`relation_types/`、`metrics/` 等命名，与此表所指语义相同。
 

@@ -220,9 +220,6 @@ type: metric
 id: {metric_id}
 name: {显示名称}
 tags: [tag1, tag2]               # 可选
-metric_type: atomic              # atomic | derived | composite；须与正文公式根级 kind 一致
-unit_type: count                 # 可选
-unit: 个                         # 可选
 ---
 ```
 
