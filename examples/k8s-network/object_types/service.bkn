@@ -28,6 +28,9 @@ Kubernetes 服务抽象层，提供稳定的访问入口。
 | service_selector | Pod选择器 | string | Pod选择器标签 | service_selector |
 | service_created_at | 创建时间 | datetime | Service创建时间 | service_created_at |
 
+### Logic Properties
+
+
 ### Keys
 
 Primary Keys: id

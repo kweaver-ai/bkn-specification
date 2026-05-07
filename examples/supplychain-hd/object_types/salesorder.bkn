@@ -29,6 +29,9 @@ tags: [供应链, 销售, 已审核, 老数据]
 | product_name | 产品名称 | string |  | product_name |
 | signing_date | 签约时间 | date |  | signing_date |
 
+### Logic Properties
+
+
 ### Keys
 
 Primary Keys: contract_number

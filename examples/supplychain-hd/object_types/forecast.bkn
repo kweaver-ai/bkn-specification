@@ -25,6 +25,9 @@ tags: [供应链, 预测, 已审核, 模拟数据]
 | month | 预测月份 | date | 以月度为单位的产品预测时间。 | month |
 | consensus_demand | 共识需求 | integer | 最终达成的共识需求 | consensus_demand |
 
+### Logic Properties
+
+
 ### Keys
 
 Primary Keys: product_code, confirmed_order, consensus_demand

@@ -98,11 +98,11 @@ var validIncrementalKeyTypes = map[string]bool{
 }
 
 var validLogicPropertyTypes = map[string]bool{
-	"operator": true,
+	"metric": true, "operator": true,
 }
 
 var validLogicSourceTypes = map[string]bool{
-	"operator": true,
+	"metric": true, "operator": true,
 }
 
 var validActionKinds = map[string]bool{
@@ -510,7 +510,7 @@ func validateObjectTypeDeep(result *ValidationResult, table string, ot *BknObjec
 			}
 			if !validLogicPropertyTypes[nt] {
 				appendError(result, table, "logic_properties", "invalid_object_type",
-					fmt.Sprintf("logic property %q type must be operator", lp.Name))
+					fmt.Sprintf("logic property %q type must be metric or operator", lp.Name))
 			}
 		}
 		if lp.DataSource != nil {
@@ -522,7 +522,7 @@ func validateObjectTypeDeep(result *ValidationResult, table string, ot *BknObjec
 			}
 			if !validLogicSourceTypes[dst] {
 				appendError(result, table, "logic_properties", "invalid_object_type",
-					fmt.Sprintf("logic property %q data_source.type must be operator", lp.Name))
+					fmt.Sprintf("logic property %q data_source.type must be metric or operator", lp.Name))
 			}
 			if strings.TrimSpace(lp.Type) != "" && normType(lp.Type) != dst {
 				appendError(result, table, "logic_properties", "invalid_object_type",

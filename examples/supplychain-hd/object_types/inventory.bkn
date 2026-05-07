@@ -30,6 +30,9 @@ tags: [供应链, 库存, 已审核]
 | inventory_qty | 库存数量 | decimal |  | inventory_qty |
 | inventory_uom | 库存单位 | string | 个，套等单位。 | inventory_uom |
 
+### Logic Properties
+
+
 ### Keys
 
 Primary Keys: seq_no

@@ -27,6 +27,9 @@ tags: [供应链, 采购, 已审核]
 | supplier_name | 供应商名称 | string | 供应商名称 | supplier_name |
 | operatorname | 执行采购人 | string | 执行采购的采购人员 | operatorname |
 
+### Logic Properties
+
+
 ### Keys
 
 Primary Keys: billno

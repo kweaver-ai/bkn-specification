@@ -28,6 +28,9 @@ tags: [可用性验证, 灾备, 验证]
 | verification_time | 验证时间 | datetime | 验证时间 | verification_time |
 | verification_details | 验证详情 | json | 验证详情（Exchange服务状态、邮件功能、邮件主题、发件人、收件人、正文、附件等） | verification_details |
 
+### Logic Properties
+
+
 ### Keys
 
 Primary Keys: id

@@ -55,9 +55,6 @@ var knownMetricSections = map[string]bool{
 	"Analysis Dimensions": true,
 }
 
-// metricYamlFenceRE matches the first fenced YAML block in Calculation Formula (~~~yaml or ```yaml).
-var metricYamlFenceRE = regexp.MustCompile("(?s)(?:~~~yaml\\s*\\n(.*?)~~~|```yaml\\s*\\n(.*?)```)")
-
 var h1HeadingRE = regexp.MustCompile(`(?m)^#\s+(.+)$`)
 var h2HeadingRE = regexp.MustCompile(`(?m)^##\s+(.+)$`)
 var tableSepRE = regexp.MustCompile(`^\|?[\s:*-]+(\|[\s:*-]+)*\|?$`)
@@ -513,7 +510,6 @@ func ParseObjectTypeFile(text string, sourcePath string) (*BknObjectType, error)
 		obj.DataProperties = parseDataProperties(s)
 	}
 	if s, ok := sections["Logic Properties"]; ok {
-		obj.HasLogicPropertiesSection = true
 		obj.LogicProperties = parseLogicProperties(s)
 	}
 	if s, ok := sections["Keys"]; ok {
@@ -843,7 +839,7 @@ func ParseRiskTypeFile(text string, sourcePath string) (*BknRiskType, error) {
 
 // extractFirstMetricFormulaYAML returns the inner YAML of the first ~~~yaml or ```yaml fence in Calculation Formula body.
 func extractFirstMetricFormulaYAML(sectionText string) []byte {
-	m := metricYamlFenceRE.FindStringSubmatch(sectionText)
+	m := yamlBlockRE.FindStringSubmatch(sectionText)
 	if len(m) == 0 {
 		return nil
 	}

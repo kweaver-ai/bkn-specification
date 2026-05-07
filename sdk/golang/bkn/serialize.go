@@ -288,61 +288,50 @@ func SerializeObjectType(ot *BknObjectType) string {
 	}
 	_, _ = fmt.Fprintf(&sb, "\n")
 
-	// Logic Properties: emit heading when there are entries, or when the source file had an explicit
-	// (possibly empty) section so byte-wise round-trip matches examples like mock_system.
-	if len(ot.LogicProperties) > 0 || ot.HasLogicPropertiesSection {
-		_, _ = fmt.Fprintf(&sb, "### Logic Properties\n\n")
-		if len(ot.LogicProperties) == 0 {
-			// Match on-disk examples: empty section leaves an extra blank line before ### Keys
-			_, _ = fmt.Fprintf(&sb, "\n")
+	// Logic Properties
+	_, _ = fmt.Fprintf(&sb, "### Logic Properties\n\n")
+	for _, lp := range ot.LogicProperties {
+		_, _ = fmt.Fprintf(&sb, "#### %s\n\n", lp.Name)
+
+		// Meta table
+		_, _ = fmt.Fprintf(&sb, "**Meta**\n\n")
+		_, _ = fmt.Fprintf(&sb, "| Display Name | Type | Description |\n")
+		_, _ = fmt.Fprintf(&sb, "|--------------|------|-------------|\n")
+		_, _ = fmt.Fprintf(&sb, "| %s | %s | %s |\n\n", lp.DisplayName, lp.Type, lp.Description)
+
+		// Source table
+		_, _ = fmt.Fprintf(&sb, "**Source**\n\n")
+		_, _ = fmt.Fprintf(&sb, "| Source Type | Source ID | Source Name |\n")
+		_, _ = fmt.Fprintf(&sb, "|-------------|-----------|-------------|\n")
+		if lp.DataSource != nil {
+			_, _ = fmt.Fprintf(&sb, "| %s | %s | %s |\n", lp.DataSource.Type, lp.DataSource.ID, lp.DataSource.Name)
 		}
-	}
-	if len(ot.LogicProperties) > 0 {
-		for _, lp := range ot.LogicProperties {
-			_, _ = fmt.Fprintf(&sb, "#### %s\n\n", lp.Name)
+		_, _ = fmt.Fprintf(&sb, "\n")
 
-			// Meta table
-			_, _ = fmt.Fprintf(&sb, "**Meta**\n\n")
-			_, _ = fmt.Fprintf(&sb, "| Display Name | Type | Description |\n")
-			_, _ = fmt.Fprintf(&sb, "|--------------|------|-------------|\n")
-			_, _ = fmt.Fprintf(&sb, "| %s | %s | %s |\n\n", lp.DisplayName, lp.Type, lp.Description)
-
-			// Source table
-			_, _ = fmt.Fprintf(&sb, "**Source**\n\n")
-			_, _ = fmt.Fprintf(&sb, "| Source Type | Source ID | Source Name |\n")
-			_, _ = fmt.Fprintf(&sb, "|-------------|-----------|-------------|\n")
-			if lp.DataSource != nil {
-				_, _ = fmt.Fprintf(&sb, "| %s | %s | %s |\n", lp.DataSource.Type, lp.DataSource.ID, lp.DataSource.Name)
+		// Parameter table
+		_, _ = fmt.Fprintf(&sb, "**Parameters**\n\n")
+		_, _ = fmt.Fprintf(&sb, "| Name | Type | Source | Operation | ValueFrom | Value | Description |\n")
+		_, _ = fmt.Fprintf(&sb, "|------|------|--------|-----------|-----------|-------|-------------|\n")
+		for _, p := range lp.Parameters {
+			v := ""
+			if p.Value != nil {
+				v = fmt.Sprintf("%v", p.Value)
 			}
-			_, _ = fmt.Fprintf(&sb, "\n")
-
-			// Parameter table
-			_, _ = fmt.Fprintf(&sb, "**Parameters**\n\n")
-			_, _ = fmt.Fprintf(&sb, "| Name | Type | Source | Operation | ValueFrom | Value | Description |\n")
-			_, _ = fmt.Fprintf(&sb, "|------|------|--------|-----------|-----------|-------|-------------|\n")
-			for _, p := range lp.Parameters {
-				v := ""
-				if p.Value != nil {
-					v = fmt.Sprintf("%v", p.Value)
-				}
-				_, _ = fmt.Fprintf(&sb, "| %s | %s | %s | %s | %s | %s | %s |\n",
-					p.Name, p.Type, p.Source, p.Operation, p.ValueFrom, v, p.Description)
-			}
-			_, _ = fmt.Fprintf(&sb, "\n")
-
-			// Analysis Dims table
-			_, _ = fmt.Fprintf(&sb, "**Analysis Dimensions**\n\n")
-			_, _ = fmt.Fprintf(&sb, "| Name | Display Name | Type | Description |\n")
-			_, _ = fmt.Fprintf(&sb, "|------|--------------|------|-------------|\n")
-			for _, d := range lp.AnalysisDims {
-				_, _ = fmt.Fprintf(&sb, "| %s | %s | %s | %s |\n", d.Name, d.DisplayName, d.Type, d.Description)
-			}
-			_, _ = fmt.Fprintf(&sb, "\n")
+			_, _ = fmt.Fprintf(&sb, "| %s | %s | %s | %s | %s | %s | %s |\n",
+				p.Name, p.Type, p.Source, p.Operation, p.ValueFrom, v, p.Description)
 		}
-	}
-	if len(ot.LogicProperties) > 0 {
+		_, _ = fmt.Fprintf(&sb, "\n")
+
+		// Analysis Dims table
+		_, _ = fmt.Fprintf(&sb, "**Analysis Dimensions**\n\n")
+		_, _ = fmt.Fprintf(&sb, "| Name | Display Name | Type | Description |\n")
+		_, _ = fmt.Fprintf(&sb, "|------|--------------|------|-------------|\n")
+		for _, d := range lp.AnalysisDims {
+			_, _ = fmt.Fprintf(&sb, "| %s | %s | %s | %s |\n", d.Name, d.DisplayName, d.Type, d.Description)
+		}
 		_, _ = fmt.Fprintf(&sb, "\n")
 	}
+	_, _ = fmt.Fprintf(&sb, "\n")
 
 	// Keys section
 	_, _ = fmt.Fprintf(&sb, "### Keys\n\n")

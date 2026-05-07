@@ -21,7 +21,7 @@ ROOT_CANDIDATE_NAMES = ("network.bkn", "network.md", "index.bkn", "index.md")
 
 KNOWN_SUBDIRS = (
     "object_types", "relation_types", "action_types",
-    "risk_types", "concept_groups", "metrics",
+    "risk_types", "concept_groups",
 )
 
 
@@ -133,7 +133,7 @@ def _collect_subdir_bkn_files(directory: Path) -> list[Path]:
     """Collect BKN files from known subdirectories (Go SDK compatible).
 
     Scans object_types/, relation_types/, action_types/, risk_types/,
-    concept_groups/, metrics/ for .bkn/.bknd/.md files.
+    concept_groups/ for .bkn/.bknd/.md files.
     """
     result: list[Path] = []
     for subdir_name in KNOWN_SUBDIRS:

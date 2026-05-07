@@ -30,6 +30,9 @@ tags: [供应链, 采购, 已审核]
 | material_name | 物料名称 | string | 物料名称 | material_name |
 | qty | 数量 | decimal | 数量 | qty |
 
+### Logic Properties
+
+
 ### Keys
 
 Primary Keys: entry_id

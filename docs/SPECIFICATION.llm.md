@@ -44,9 +44,9 @@
 │   └── {action}.bkn
 ├── risk_types/
 │   └── {risk}.bkn
-├── concept_groups/
-│   └── {group}.bkn
-└── metrics/                     # 可选
+└── concept_groups/
+    └── {group}.bkn
+└── metrics/
     └── {metric}.bkn
 ```
 
@@ -84,7 +84,7 @@ tags: [tag1, tag2]               # 可选
   - `Primary Keys: {key_name}`（至少一个）
   - `Display Key: {key_name}`（一个）
   - `Incremental Key: {key_name}`（可选，可为空）
-- `### Logic Properties`（可选）：**无算子时可整节省略**（与 SDK 序列化一致）；有内容时 `#### {property_name}`，**Type 仅 `operator`**（禁止 `metric`；网络级指标用独立 `type: metric` 文件、`metrics/*.bkn`，见 `DESIGN_BKN_METRIC.md`），含 Meta/Source/Parameters/Analysis Dimensions 等子表（以 `SPECIFICATION.md` 为准）
+- `### Logic Properties`（可选）：无内容时保留空小节；有内容时 `#### {property_name}`，含 Display/Type/Source/Description，以及 Parameter 表（列 Parameter | Type | Source | Binding | Description）
   - Source 值：`property`（对象属性）/ `input`（用户输入）/ `const`（常量）
   - Binding：Source 为 property 时填属性名，const 时填常量值，input 时填 `-`
 - `### Data Source`（可选）：表格，列 Type | ID | Name，行 `data_view | {view_id} | {view_name}`

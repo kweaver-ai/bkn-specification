@@ -547,7 +547,6 @@ Primary Keys: material_code
 	ot, err := ParseObjectTypeFile(text, "/test/material.bkn")
 	require.NoError(t, err)
 	assert.Empty(t, ot.LogicProperties)
-	assert.True(t, ot.HasLogicPropertiesSection)
 }
 
 // === Parameter Binding Tests ===

@@ -29,19 +29,19 @@ d7blk86fmoj81ili0q3g
 
 ### Logic Properties
 
-#### employee_timeseries_query
+#### 111
 
 **Meta**
 
 | Display Name | Type | Description |
 |--------------|------|-------------|
-| 员工时序查询 | operator | 示例算子：按时间参数拉取与员工相关的时序/统计数据（原「逻辑属性-指标」已废止，改为 operator） |
+| 111 | metric |  |
 
 **Source**
 
 | Source Type | Source ID | Source Name |
 |-------------|-----------|-------------|
-| operator | employee_timeseries_stub | employee_timeseries_stub |
+| metric | 2 | 1 |
 
 **Parameters**
 

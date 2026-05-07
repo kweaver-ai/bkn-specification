@@ -22,7 +22,11 @@ Primary Keys: {primary_key}
 Display Key: {display_key}
 Incremental Key:
 
-<!-- 可选：仅当存在算子时增加「### Logic Properties」整节；无算子时整节省略（勿留空标题）。Type 仅 operator。网络级指标勿写在此处，使用 metrics/*.bkn、type: metric（见 docs/DESIGN_BKN_METRIC.md）。
+### Logic Properties
+
+<!-- 可选：为空时留空即可 -->
+
+<!-- 子章节格式（指标、算子等扩展属性）：
 
 #### {logic_property_name}
 

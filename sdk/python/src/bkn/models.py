@@ -25,9 +25,6 @@ class Frontmatter:
     namespace: str = ""
     owner: str = ""
     spec_version: str = ""
-    metric_type: str = ""  # metric 文件：与正文 kind 一致；解析时若缺省可从 kind 回填
-    unit_type: str = ""
-    unit: str = ""
     enabled: Optional[bool] = None
     risk_level: str = ""
     requires_approval: Optional[bool] = None
@@ -99,7 +96,7 @@ class LogicPropertyParameter:
 class LogicProperty:
     """#### {property_name} under ### Logic Properties."""
     name: str = ""
-    lp_type: str = ""          # operator only (legacy metric deprecated; use type: metric files)
+    lp_type: str = ""          # metric | operator
     source: str = ""
     source_type: str = ""
     description: str = ""
@@ -231,91 +228,6 @@ class Risk:
 
 
 @dataclass
-class MetricCondition:
-    """atomic.condition in metric formula YAML."""
-    field: str = ""
-    operation: str = ""
-    value: Any = None
-
-
-@dataclass
-class MetricAggregation:
-    """atomic.aggregation."""
-    property: str = ""
-    aggr: str = ""
-
-
-@dataclass
-class MetricGroupBy:
-    property: str = ""
-    description: str = ""
-
-
-@dataclass
-class MetricOrderBy:
-    property: str = ""
-    direction: str = ""
-
-
-@dataclass
-class MetricHaving:
-    field: str = ""
-    operation: str = ""
-    value: Any = None
-
-
-@dataclass
-class MetricAtomic:
-    condition: MetricCondition | None = None
-    aggregation: MetricAggregation | None = None
-    group_by: list[MetricGroupBy] = field(default_factory=list)
-    order_by: list[MetricOrderBy] = field(default_factory=list)
-    having: MetricHaving | None = None
-
-
-@dataclass
-class MetricFormula:
-    """Calculation formula root (version 1, kind atomic | …)."""
-    version: int = 0
-    kind: str = ""
-    atomic: MetricAtomic | None = None
-
-
-@dataclass
-class MetricTimeDimRow:
-    property: str = ""
-    policy: str = ""
-
-
-@dataclass
-class MetricAnalysisDimRow:
-    name: str = ""
-    display_name: str = ""
-
-
-@dataclass
-class Metric:
-    """type: metric — network-level indicator (metrics/*.bkn)."""
-    id: str = ""
-    name: str = ""
-    tags: list[str] = field(default_factory=list)
-    metric_type: str = ""  # atomic|derived|composite；与 formula.kind 一致
-    unit_type: str = ""
-    unit: str = ""
-    description: str = ""
-    scope_type: str = ""
-    scope_ref: str = ""
-    formula: MetricFormula | None = None
-    time_dimensions: list[MetricTimeDimRow] = field(default_factory=list)
-    analysis_dimensions: list[MetricAnalysisDimRow] = field(default_factory=list)
-    has_scope_section: bool = False
-    has_calculation_formula_section: bool = False
-    has_time_dimension_section: bool = False
-    has_analysis_dimensions_section: bool = False
-    source_path: str = ""
-
-
-@dataclass
 class DataTable:
     """A data table parsed from a .bknd (type: data) document."""
 
@@ -341,7 +253,6 @@ class BknDocument:
     actions: list[Action] = field(default_factory=list)
     risks: list[Risk] = field(default_factory=list)
     connections: list[Connection] = field(default_factory=list)
-    metrics: list[Metric] = field(default_factory=list)
     data_tables: list[DataTable] = field(default_factory=list)
     source_path: str = ""
 
@@ -392,13 +303,6 @@ class BknNetwork:
         result = list(self.root.connections)
         for doc in self.includes:
             result.extend(doc.connections)
-        return result
-
-    @property
-    def all_metrics(self) -> list[Metric]:
-        result = list(self.root.metrics)
-        for doc in self.includes:
-            result.extend(doc.metrics)
         return result
 
     def get_connection(self, connection_id: str) -> Connection | None:

@@ -369,8 +369,8 @@ targets:
 
 #### {property_name}
 
-- **类型**: `operator`（**禁止**在对象类上使用 `metric`；网络级指标见独立 `type: metric` 文件、`metrics/`，参阅 `docs/DESIGN_BKN_METRIC.md`）
-- **来源**: {source_id}（`operator`）
+- **类型**: metric | operator
+- **来源**: {source_id} ({source_type})
 - **说明**: {description}
 
 | 参数名 | 来源 | 绑定值 |
@@ -1080,8 +1080,6 @@ operation: add
 - **类型**: metric
 - **来源**: cpu_metric
 ```
-
-> **已废弃写法**：对象类 Logic Properties 的 **`metric` 类型**已废弃；应改为独立文件 **`type: metric`**（见上文「网络级指标文件」及 `docs/DESIGN_BKN_METRIC.md`）。Patch 示例仅说明历史文档形态。
 
 ### 修改操作
 

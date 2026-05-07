@@ -73,21 +73,21 @@ type BknObjectType struct {
 	DisplayKey     string
 	IncrementalKey string
 
-	// Set during parse; used by ValidateNetwork and SerializeObjectType
-	HasDataPropertiesSection  bool
-	HasLogicPropertiesSection bool
-	HasKeysSection            bool
+	// Set during parse; used by ValidateNetwork
+	HasDataPropertiesSection bool
+	HasKeysSection           bool
 }
 
 // BknMetricFrontmatter is YAML frontmatter for a type: metric file.
 type BknMetricFrontmatter struct {
-	Type       string   `yaml:"type"`
-	ID         string   `yaml:"id"`
-	Name       string   `yaml:"name"`
-	Tags       []string `yaml:"tags"`
-	MetricType string   `yaml:"metric_type,omitempty"` // 与 API 对齐；与 Formula.Kind 一致；解析时若缺省则从 kind 回填
-	UnitType   string   `yaml:"unit_type,omitempty"`
-	Unit       string   `yaml:"unit,omitempty"`
+	Type string   `yaml:"type"`
+	ID   string   `yaml:"id"`
+	Name string   `yaml:"name"`
+	Tags []string `yaml:"tags"`
+
+	MetricType string `yaml:"metric_type,omitempty"` // 与 API 对齐；与 Formula.Kind 一致；解析时若缺省则从 kind 回填
+	UnitType   string `yaml:"unit_type,omitempty"`
+	Unit       string `yaml:"unit,omitempty"`
 }
 
 // BknMetric is a network-level metric definition (metrics/*.bkn).

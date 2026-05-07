@@ -26,6 +26,9 @@ MRP运算产生的物料净需求建议。
 | material_demand_quantity | 物料净需求 | float | 负数为缺口，正数不缺。 | material_demand_quantity |
 | main_material | 物料编码 | string |  | main_material |
 
+### Logic Properties
+
+
 ### Keys
 
 Primary Keys: finished_product_code, specification, main_material

@@ -27,6 +27,9 @@ tags: [备份服务器, 数据域, 灾备]
 | created_time | 创建时间 | datetime | 创建时间 | created_time |
 | updated_time | 更新时间 | datetime | 更新时间 | updated_time |
 
+### Logic Properties
+
+
 ### Keys
 
 Primary Keys: id

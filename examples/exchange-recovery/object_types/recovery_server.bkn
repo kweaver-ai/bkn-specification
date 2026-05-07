@@ -27,6 +27,9 @@ tags: [Exchange, 恢复环境, 灾备, 邮件服务器]
 | is_recovery_target | 是否恢复目标 | boolean | 是否作为恢复目的地 | is_recovery_target |
 | created_at | 创建时间 | datetime | 服务器创建时间 | created_at |
 
+### Logic Properties
+
+
 ### Keys
 
 Primary Keys: id

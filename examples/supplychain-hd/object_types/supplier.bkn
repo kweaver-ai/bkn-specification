@@ -25,6 +25,9 @@ tags: [供应链, 供应商, 已审核]
 | purchaserid_name | 采购员 | string | 负责该供应商的采购员姓名 | purchaserid_name |
 | paycond_name | 付款条件 | string | 供应商的付款结算条款 | paycond_name |
 
+### Logic Properties
+
+
 ### Keys
 
 Primary Keys: supplier_code

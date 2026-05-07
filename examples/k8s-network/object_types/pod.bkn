@@ -28,6 +28,9 @@ Kubernetes 中的最小部署单元，一个或多个容器的集合。
 | pod_ip | Pod IP | string | Pod IP地址 | pod_ip |
 | pod_created_at | 创建时间 | datetime | Pod创建时间 | pod_created_at |
 
+### Logic Properties
+
+
 ### Keys
 
 Primary Keys: id

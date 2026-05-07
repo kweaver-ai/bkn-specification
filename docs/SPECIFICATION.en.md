@@ -29,9 +29,10 @@ This document defines the complete syntax specification for BKN.
 | data_view | Data view; the data source an object/relation maps to |
 | data_properties | Object property definition table; declares field name, type, description |
 | keys | Key definitions; declares primary key, display key, incremental key |
-| logic_properties | Logic properties; derived fields (**operator only**; legacy `metric` type is deprecated) |
+| logic_properties | Logic properties; derived fields from external sources (metric / operator) |
 | primary_key | Primary key field; uniquely identifies an instance (declared in Keys section) |
 | display_key | Display key field; used for UI display and search (declared in Keys section) |
+| metric | Logic property type: metric; measurement value obtained from external data sources |
 | operator | Logic property type: operator; computation logic based on input parameters |
 
 **Action Structure**
@@ -70,7 +71,7 @@ The table below is organized by **unified heading level**, applicable to all BKN
 | `###` | Data Source | The data view this object maps from | `### Data Source` |
 | `###` | Data Properties | Explicit list of fields (name, type, description) | `### Data Properties` |
 | `###` | Keys | Primary key, display key, incremental key | `### Keys` |
-| `###` | Logic Properties | Derived fields: operator only | `### Logic Properties` |
+| `###` | Logic Properties | Derived fields: metric, operator | `### Logic Properties` |
 | `###` | Endpoint | Relation endpoint: source, target, type | `### Endpoint` |
 | `###` | Mapping Rules | How source/target properties map | `### Mapping Rules` |
 | `###` | Mapping View | For data_view relations: the join view | `### Mapping View` |
@@ -244,8 +245,8 @@ Incremental Key: {key_name}
 #### {property_name}
 
 - **Display**: {display_name}
-- **Type**: `operator` (**do not** use `metric` on object_type; define network metrics in `metrics/*.bkn` as `type: metric`, see `docs/DESIGN_BKN_METRIC.md`)
-- **Source**: {source_id} (`operator` and bound operator source)
+- **Type**: metric | operator
+- **Source**: {source_id} ({source_type})
 - **Description**: {description}
 
 | Parameter | Type | Source | Binding | Description |
@@ -272,7 +273,7 @@ Incremental Key: {key_name}
 | {name} | YES | Object type display name |
 | Data Properties | YES | Property definition table |
 | Keys | YES | Primary key, display key declaration |
-| Logic Properties | NO | **Operator-only** extended properties; use `metrics/*.bkn` for metrics |
+| Logic Properties | NO | Metric, operator, and other extended properties |
 | Data Source | NO | Mapped data view; managed by platform if not set |
 
 ### Data Types
