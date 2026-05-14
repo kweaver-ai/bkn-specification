@@ -4,44 +4,12 @@ id: verify_exchange_availability
 name: 验证Exchange可用性
 tags: [Exchange验证, 可用性验证, 灾备]
 action_type: add
+action_intent: add
 ---
 
 ## ActionType: 验证Exchange可用性
 
 验证恢复后的Exchange邮件服务器可用性，检查邮件是否可读、邮件服务器是否可正常对外提供业务。
-
-### Execution Description
-
-1. 读取恢复作业信息：
-   - 根据recovery_job_id读取恢复作业详细信息
-   - 验证恢复作业结果是否为成功
-2. 读取恢复任务信息：
-   - 根据recovery_task_id读取恢复任务详细信息
-   - 获取恢复目的地（production/recovery_server）
-3. 执行Exchange服务可用性检查：
-   - 检查Exchange服务是否正常运行
-   - 检查Exchange服务是否可对外提供业务
-   - 验证Exchange服务端口是否正常监听
-   - 验证Exchange服务响应时间是否正常
-4. 执行邮件可读性检查：
-   - 随机抽样检查恢复的邮件是否可读
-   - 验证邮件主题、发件人、收件人、正文是否完整
-   - 验证邮件附件是否可正常访问
-   - 检查邮件元数据是否正确
-5. 记录验证结果：
-   - 创建recovery_job_verification记录
-   - 记录验证方法（Exchange服务可用性检查/邮件完整性检查/附件检查/可读性检查）
-   - 记录验证结果（通过/失败）
-   - 记录验证时间
-   - 记录验证详情（JSON格式，包含Exchange服务状态、邮件功能、邮件主题、发件人、收件人、正文、附件等）
-6. 更新服务器状态：
-   - 如果验证结果为Pass：
-     - 如果recovery_destination == recovery_server，将recovery_server.status更新为Online
-     - 如果recovery_destination == production，将exchange_server.status更新为Online
-   - 如果验证结果为Fail：
-     - 如果recovery_destination == recovery_server，将recovery_server.status更新为Offline
-     - 如果recovery_destination == production，将exchange_server.status更新为Offline
-7. 输出验证结果和验证详情
 
 ### Verification Methods
 
@@ -76,11 +44,15 @@ action_type: add
 |--------------|
 | recovery_job |
 
-### Affect Object
+### Impact Contracts
 
-| Affect Object | Affect Description |
-|---------------|--------------------|
-| exchange_server |  |
+```yaml
+impact_contracts:
+  - object_type_id: exchange_server
+    expected_operation: add
+    description: ""
+```
+
 
 ### Trigger Condition
 

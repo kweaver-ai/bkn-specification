@@ -36,6 +36,7 @@ var knownRelationTypeSections = map[string]bool{
 var knownActionTypeSections = map[string]bool{
 	"Bound Object":      true,
 	"Affect Object":     true,
+	"Impact Contracts":  true,
 	"Trigger Condition": true,
 	"Action Source":     true,
 	"Parameter Binding": true,
@@ -624,11 +625,12 @@ func ParseActionTypeFile(text string, sourcePath string) (*BknActionType, error)
 
 	act := &BknActionType{
 		BknActionTypeFrontmatter: BknActionTypeFrontmatter{
-			Type:       "action_type",
-			ID:         strVal(fmData, "id"),
-			Name:       strVal(fmData, "name"),
-			Tags:       strSliceVal(fmData, "tags"),
-			ActionType: strVal(fmData, "action_type"),
+			Type:         "action_type",
+			ID:           strVal(fmData, "id"),
+			Name:         strVal(fmData, "name"),
+			Tags:         strSliceVal(fmData, "tags"),
+			ActionType:   strVal(fmData, "action_type"),
+			ActionIntent: strVal(fmData, "action_intent"),
 		},
 		Description: buildDescription(desc, sections, order, knownActionTypeSections),
 		RawContent:  text,
@@ -642,8 +644,17 @@ func ParseActionTypeFile(text string, sourcePath string) (*BknActionType, error)
 			act.ActionType = at
 		}
 	}
+	if act.ActionType == "" && act.ActionIntent != "" {
+		act.ActionType = act.ActionIntent
+	}
+	if act.ActionIntent == "" && act.ActionType != "" {
+		act.ActionIntent = act.ActionType
+	}
 	if s, ok := sections["Affect Object"]; ok {
 		act.AffectObject = parseAffectObject(s)
+	}
+	if s, ok := sections["Impact Contracts"]; ok {
+		act.ImpactContracts = parseImpactContracts(s)
 	}
 	if s, ok := sections["Trigger Condition"]; ok {
 		act.TriggerCondition = parseActionCondition(s)
@@ -687,6 +698,26 @@ func parseAffectObject(sectionText string) (affectObject *ActionAffect) {
 		Description: r["Affect Description"],
 	}
 	return affectObject
+}
+
+// parseImpactContracts reads the ### Impact Contracts YAML block (impact_contracts: [...]).
+func parseImpactContracts(sectionText string) []*ImpactContractItem {
+	matches := yamlBlockRE.FindStringSubmatch(sectionText)
+	if len(matches) < 2 {
+		return nil
+	}
+	yamlContent := strings.TrimSpace(matches[1])
+	var wrapper struct {
+		ImpactContracts []*ImpactContractItem `yaml:"impact_contracts"`
+	}
+	if err := yaml.Unmarshal([]byte(yamlContent), &wrapper); err == nil && len(wrapper.ImpactContracts) > 0 {
+		return wrapper.ImpactContracts
+	}
+	var list []*ImpactContractItem
+	if err := yaml.Unmarshal([]byte(yamlContent), &list); err == nil && len(list) > 0 {
+		return list
+	}
+	return nil
 }
 
 // parseActionCondition parses the trigger condition from YAML code block.

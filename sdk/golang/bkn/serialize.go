@@ -431,12 +431,23 @@ func SerializeRelationType(rt *BknRelationType) string {
 // SerializeActionType Serializes BknActionType to BKN format
 func SerializeActionType(at *BknActionType) string {
 	var sb strings.Builder
+	intent := strings.TrimSpace(at.ActionIntent)
+	actionType := strings.TrimSpace(at.ActionType)
+	if intent == "" && actionType != "" {
+		intent = actionType
+	}
+
 	_, _ = fmt.Fprintf(&sb, "---\n")
 	_, _ = fmt.Fprintf(&sb, "type: action_type\n")
 	_, _ = fmt.Fprintf(&sb, "id: %s\n", at.ID)
 	_, _ = fmt.Fprintf(&sb, "name: %s\n", at.Name)
 	_, _ = fmt.Fprintf(&sb, "tags: [%s]\n", strings.Join(at.Tags, ", "))
-	_, _ = fmt.Fprintf(&sb, "action_type: %s\n", at.ActionType)
+	if actionType != "" {
+		_, _ = fmt.Fprintf(&sb, "action_type: %s\n", actionType)
+	}
+	if intent != "" {
+		_, _ = fmt.Fprintf(&sb, "action_intent: %s\n", intent)
+	}
 	_, _ = fmt.Fprintf(&sb, "---\n\n")
 
 	_, _ = fmt.Fprintf(&sb, "## ActionType: %s\n\n", at.Name)
@@ -461,6 +472,15 @@ func SerializeActionType(at *BknActionType) string {
 		_, _ = fmt.Fprintf(&sb, "| %s | %s |\n", at.AffectObject.ObjectType, at.AffectObject.Description)
 	}
 	_, _ = fmt.Fprintf(&sb, "\n")
+
+	if len(at.ImpactContracts) > 0 {
+		_, _ = fmt.Fprintf(&sb, "### Impact Contracts\n\n")
+		payload := struct {
+			ImpactContracts []*ImpactContractItem `yaml:"impact_contracts"`
+		}{ImpactContracts: at.ImpactContracts}
+		_, _ = fmt.Fprintf(&sb, "%s\n", encodeYAMLBlock(payload))
+		_, _ = fmt.Fprintf(&sb, "\n")
+	}
 
 	// Trigger Condition
 	_, _ = fmt.Fprintf(&sb, "### Trigger Condition\n\n")

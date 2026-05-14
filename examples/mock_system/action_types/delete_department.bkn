@@ -4,6 +4,7 @@ id: delete_department
 name: 删除部门
 tags: []
 action_type: delete
+action_intent: delete
 ---
 
 ## ActionType: 删除部门
@@ -13,11 +14,6 @@ action_type: delete
 | Bound Object |
 |--------------|
 | department |
-
-### Affect Object
-
-| Affect Object | Affect Description |
-|---------------|--------------------|
 
 ### Trigger Condition
 

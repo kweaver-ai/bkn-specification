@@ -6,6 +6,8 @@ tags: [{标签1}, {标签2}]
 enabled: false
 risk_level: medium
 requires_approval: true
+# action_type: modify        # 可选；已废弃但仍兼容（直至另行通知）；导出可与 action_intent 同时出现
+# action_intent: modify      # 推荐；与 bkn-backend OpenAPI 字段一致
 ---
 
 ## ActionType: {行动名称}
@@ -20,9 +22,21 @@ requires_approval: true
 
 ### Affect Object
 
-| Affect Object |
-|---------------|
-| {object_id} |
+| Affect Object | Affect Description |
+|---------------|-------------------|
+| {object_id} | {影响对象说明} |
+
+### Impact Contracts
+
+<!-- 推荐：结构化影响契约（OpenAPI ImpactContractItem）。与 Affect Object 二选一为主时优先本段。 -->
+
+```yaml
+impact_contracts:
+  - object_type_id: {object_id}
+    expected_operation: modify
+    description: {契约说明}
+    affected_fields: []
+```
 
 ### Trigger Condition
 

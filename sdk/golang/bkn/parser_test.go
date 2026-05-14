@@ -899,6 +899,43 @@ value: "1"
 	assert.Equal(t, at1.TriggerCondition.Value, at2.TriggerCondition.Value)
 	assert.Equal(t, at1.BoundObject, at2.BoundObject)
 	assert.Equal(t, at1.ActionType, at2.ActionType)
+	assert.Equal(t, at1.ActionIntent, at2.ActionIntent)
+}
+
+func TestParseActionType_ActionIntentAndImpactContracts(t *testing.T) {
+	text := `---
+type: action_type
+id: act_impact
+name: Test Impact
+tags: []
+action_intent: modify
+---
+
+## ActionType: Test Impact
+
+### Bound Object
+
+| Bound Object | Action Type |
+|--------------|-------------|
+| pod | modify |
+
+### Impact Contracts
+
+` + "```yaml\nimpact_contracts:\n  - object_type_id: pod\n    expected_operation: modify\n    description: restart workload\n    affected_fields: []\n```\n" + `
+
+### Parameter Binding
+
+| Name | Type | Source | Operation | ValueFrom | Value | Description |
+|------|------|--------|-----------|-----------|-------|-------------|
+`
+	at, err := ParseActionTypeFile(text, "/test/act.bkn")
+	require.NoError(t, err)
+	assert.Equal(t, "modify", at.ActionIntent)
+	assert.Equal(t, "modify", at.ActionType)
+	require.Len(t, at.ImpactContracts, 1)
+	assert.Equal(t, "pod", at.ImpactContracts[0].ObjectTypeID)
+	assert.Equal(t, "modify", at.ImpactContracts[0].ExpectedOperation)
+	assert.Equal(t, "restart workload", at.ImpactContracts[0].Description)
 }
 
 // === ActionType Additional Scenarios ===

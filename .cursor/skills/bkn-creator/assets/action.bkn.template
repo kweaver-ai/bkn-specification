@@ -6,6 +6,8 @@ tags: [{标签1}, {标签2}]
 enabled: false
 risk_level: medium
 requires_approval: true
+# action_type: modify
+# action_intent: modify
 ---
 
 ## ActionType: {行动名称}
@@ -20,9 +22,19 @@ requires_approval: true
 
 ### Affect Object
 
-| Affect Object |
-|---------------|
-| {object_id} |
+| Affect Object | Affect Description |
+|---------------|-------------------|
+| {object_id} | {影响对象说明} |
+
+### Impact Contracts
+
+```yaml
+impact_contracts:
+  - object_type_id: {object_id}
+    expected_operation: modify
+    description: {契约说明}
+    affected_fields: []
+```
 
 ### Trigger Condition
 

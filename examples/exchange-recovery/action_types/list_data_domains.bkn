@@ -4,27 +4,12 @@ id: list_data_domains
 name: 列出数据域列表
 tags: [数据域管理, 数据查询, 灾备]
 action_type: add
+action_intent: add
 ---
 
 ## ActionType: 列出数据域列表
 
 列出Agent管理的所有数据域，供用户选择。
-
-### Execution Description
-
-1. 查询Agent管理的所有数据域
-2. 获取每个数据域的详细信息：
-   - 数据域ID
-   - 数据域名称
-   - 数据域IP地址
-   - 数据域类型（备份服务器/存储服务器）
-   - 数据域状态（Online/Offline）
-   - 数据域详情（容量、版本、配置等）
-   - 创建时间
-   - 更新时间
-3. 按数据域名称排序
-4. 输出数据域列表
-5. 如果没有数据域，提示用户需要先配置数据域
 
 ### Output Format
 
@@ -55,11 +40,15 @@ action_type: add
 |--------------|
 | data_domain |
 
-### Affect Object
+### Impact Contracts
 
-| Affect Object | Affect Description |
-|---------------|--------------------|
-| data_domain |  |
+```yaml
+impact_contracts:
+  - object_type_id: data_domain
+    expected_operation: add
+    description: ""
+```
+
 
 ### Trigger Condition
 

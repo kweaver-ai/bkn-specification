@@ -4,6 +4,7 @@ id: assess_department
 name: 评估部门
 tags: []
 action_type: modify
+action_intent: modify
 ---
 
 ## ActionType: 评估部门
@@ -13,11 +14,6 @@ action_type: modify
 | Bound Object |
 |--------------|
 | department |
-
-### Affect Object
-
-| Affect Object | Affect Description |
-|---------------|--------------------|
 
 ### Trigger Condition
 

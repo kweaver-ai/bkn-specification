@@ -189,6 +189,8 @@ type: action_type                # 行动类型定义
 id: string                       # 行动ID，唯一标识
 name: string                     # 行动显示名称
 tags: [string]                   # 可选，标签列表
+action_type: string              # 可选；已废弃但仍兼容，直至另行通知（add/modify/delete）
+action_intent: string             # 推荐；与 action_type 同枚举域；导入工具应支持二者之一或并存导出
 enabled: boolean                 # 可选，是否启用（建议默认 false）
 risk_level: low | medium | high  # 可选，静态风险等级
 requires_approval: boolean       # 可选，是否需要审批
@@ -434,6 +436,19 @@ Pod 实例与其所属 Node 的归属关系。
 |---------------|
 | {affect_type_id} |
 
+### Impact Contracts
+
+(optional) **推荐**：结构化影响契约数组；与运行时 JSON 字段 `impact_contracts` 及 OpenAPI `ImpactContractItem`（`object_type_id`、`expected_operation`、`description`、`affected_fields`）一致。上一节「Affect Object」为遗留单列写法，仍兼容导入，直至另行通知；与写入、混写相关的约束以 bkn-backend 对外 API 文档为准。
+
+```yaml
+impact_contracts:
+  - object_type_id: {object_type_id}
+    expected_operation: add | modify | delete
+    description: {影响说明文案}
+    affected_fields:
+      - {property_name}
+```
+
 ### Trigger Condition
 
 ```yaml
@@ -500,12 +515,18 @@ or
 | {name} | YES | 行动类型显示名称 |
 | Bound Object | YES | 目标对象类型 ID |
 | Action Type | YES | `add` / `modify` / `delete` / `query` |
+| Affect Object | NO | 遗留单列影响声明；仍兼容导入，直至另行通知；优先使用紧随其后的 **Impact Contracts** |
+| Impact Contracts | NO | 结构化影响契约（数组）；与 `impact_contracts` / `ImpactContractItem` 一致 |
 | Trigger Condition | NO | 自动触发的条件 |
 | Pre-conditions | NO | 执行前的数据前置条件 |
 | Scope of Impact | NO | 影响范围声明 |
 | Tool Configuration | YES | 执行的工具或 MCP |
 | Parameter Binding | YES | 参数来源配置 |
 | Schedule | NO | 定时执行配置 |
+
+### 与运行态 API 的对齐说明
+
+正文中的 **Impact Contracts**、`action_intent`，以及遗留的 **Affect Object** / frontmatter **`action_type`**，与 **bkn-backend** 公开的 OpenAPI（如 `impact_contracts`、`action_intent`、废弃字段 `action_type`/`affect`）含义一致。**请求体可同时包含新旧字段的兼容导出**以满足存量客户端。**字段冲突或未支持的混写是否拒绝**以服务端接口为准；本规范不规定裁决逻辑。
 
 ### 触发条件操作符
 

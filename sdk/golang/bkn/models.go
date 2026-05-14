@@ -292,7 +292,9 @@ type BknActionTypeFrontmatter struct {
 	Name string   `yaml:"name"`
 	Tags []string `yaml:"tags"`
 
-	ActionType string `yaml:"action_type"`
+	// ActionType is deprecated in favor of ActionIntent; both may appear for compatibility.
+	ActionType   string `yaml:"action_type"`
+	ActionIntent string `yaml:"action_intent"`
 }
 
 // BknActionType represents an action type definition.
@@ -309,6 +311,9 @@ type BknActionType struct {
 
 	// Affect Object
 	AffectObject *ActionAffect
+
+	// ImpactContracts is the preferred structured impact declaration (OpenAPI ImpactContractItem).
+	ImpactContracts []*ImpactContractItem
 
 	// Trigger Condition
 	TriggerCondition *ActionCondCfg
@@ -344,6 +349,14 @@ type PreCondition struct {
 type ActionAffect struct {
 	ObjectType  string
 	Description string
+}
+
+// ImpactContractItem matches bkn-backend OpenAPI ImpactContractItem (impact_contracts array element).
+type ImpactContractItem struct {
+	ObjectTypeID      string   `yaml:"object_type_id"`
+	ExpectedOperation string   `yaml:"expected_operation"`
+	Description       string   `yaml:"description"`
+	AffectedFields    []string `yaml:"affected_fields,omitempty"`
 }
 
 // Schedule represents an action schedule.

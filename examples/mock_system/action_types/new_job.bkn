@@ -4,6 +4,7 @@ id: new_job
 name: 新员工入职
 tags: []
 action_type: add
+action_intent: add
 ---
 
 ## ActionType: 新员工入职
@@ -14,11 +15,15 @@ action_type: add
 |--------------|
 | employee |
 
-### Affect Object
+### Impact Contracts
 
-| Affect Object | Affect Description |
-|---------------|--------------------|
-| employee | 调用工具后，更新员工入职状态 |
+```yaml
+impact_contracts:
+  - object_type_id: employee
+    expected_operation: add
+    description: 调用工具后，更新员工入职状态
+```
+
 
 ### Trigger Condition
 

@@ -78,6 +78,8 @@ The table below is organized by **unified heading level**, applicable to all BKN
 | `###` | Source Mapping | Map source object props to view | `### Source Mapping` |
 | `###` | Target Mapping | Map view to target object props | `### Target Mapping` |
 | `###` | Bound Object | Object this action operates on | `### Bound Object` |
+| `###` | Affect Object | Legacy single affect target (optional) | `### Affect Object` |
+| `###` | Impact Contracts | Structured impact contracts (preferred) | `### Impact Contracts` |
 | `###` | Trigger Condition | When to run (YAML condition) | `### Trigger Condition` |
 | `###` | Pre-conditions | Data conditions required before action execution | `### Pre-conditions` |
 | `###` | Tool Configuration | tool or MCP binding | `### Tool Configuration` |
@@ -189,6 +191,8 @@ type: action_type                # Action type definition
 id: string                       # Action ID, unique identifier
 name: string                     # Action display name
 tags: [string]                   # Optional, tag list
+action_type: string              # Optional; deprecated but accepted until further notice (add/modify/delete)
+action_intent: string             # Preferred; same value domain as action_type
 enabled: boolean                 # Optional, whether enabled (default false recommended)
 risk_level: low | medium | high  # Optional, static risk level
 requires_approval: boolean       # Optional, whether approval is required
@@ -426,6 +430,27 @@ The like relationship between users and posts.
 |--------------|-------------|
 | {object_type_id} | add or modify or delete or query |
 
+### Affect Object
+
+(optional) Legacy single affect object id; still accepted for import until further notice.
+
+| Affect Object | Affect Description |
+|---------------|--------------------|
+| {affect_type_id} | {description} |
+
+### Impact Contracts
+
+(optional) Structured `impact_contracts` array (OpenAPI `ImpactContractItem`, same fields as bkn-backend).
+
+```yaml
+impact_contracts:
+  - object_type_id: {object_type_id}
+    expected_operation: add | modify | delete
+    description: {description}
+    affected_fields:
+      - {property_name}
+```
+
 ### Trigger Condition
 
 ```yaml
@@ -492,12 +517,18 @@ or
 | {name} | YES | Action type display name |
 | Bound Object | YES | Target object type ID |
 | Action Type | YES | `add` / `modify` / `delete` / `query` |
+| Affect Object | NO | Legacy single-object affect declaration; still compatible until further notice; prefer Impact Contracts below |
+| Impact Contracts | NO | Structured impact contracts; matches `impact_contracts` / `ImpactContractItem` |
 | Trigger Condition | NO | Automatic trigger condition |
 | Pre-conditions | NO | Data pre-conditions before execution |
 | Scope of Impact | NO | Impact scope declaration |
 | Tool Configuration | YES | Tool or MCP to execute |
 | Parameter Binding | YES | Parameter source configuration |
 | Schedule | NO | Scheduled execution configuration |
+
+### Alignment with bkn-backend API
+
+`impact_contracts`, `action_intent`, legacy `action_type`, and **`Affect Object`** correspond to fields in the backend OpenAPI (**deprecated** annotations there apply). Exports may emit **both** old and new fields for compatibility with existing clients; whether conflicting combinations are rejected is defined by the **HTTP API**, not restated here.
 
 ### Trigger Condition Operators
 

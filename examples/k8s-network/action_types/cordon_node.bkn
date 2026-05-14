@@ -4,6 +4,7 @@ id: cordon_node
 name: 隔离节点
 tags: [运维操作, 节点管理]
 action_type: modify
+action_intent: modify
 ---
 
 ## ActionType: 隔离节点
@@ -22,11 +23,15 @@ action_type: modify
 |--------------|
 | node |
 
-### Affect Object
+### Impact Contracts
 
-| Affect Object | Affect Description |
-|---------------|--------------------|
-| node | Mark node unschedulable |
+```yaml
+impact_contracts:
+  - object_type_id: node
+    expected_operation: modify
+    description: Mark node unschedulable
+```
+
 
 ### Trigger Condition
 

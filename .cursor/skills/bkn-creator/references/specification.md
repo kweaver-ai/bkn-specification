@@ -105,6 +105,8 @@ type: action_type
 id: {action_id}
 name: {显示名称}
 tags: [tag1, tag2]     # 可选
+action_type: modify   # 可选；已废弃仍兼容直至另行通知（与 OpenAPI 一致）
+action_intent: modify # 推荐
 enabled: false        # 是否启用，默认 false
 risk_level: low | medium | high
 requires_approval: true  # 是否需要审批
@@ -114,7 +116,8 @@ requires_approval: true  # 是否需要审批
 正文：
 - `## ActionType: {显示名称}` + 简短描述
 - `### Bound Object`（必须）：表格 Bound Object | Action Type（`add` / `modify` / `delete` / `query`）
-- `### Affect Object`（可选）：表格 Affect Object
+- `### Affect Object`（可选）：表格 Affect Object | Affect Description（遗留；仍兼容）
+- `### Impact Contracts`（可选，推荐）：YAML 块 `impact_contracts:` 数组，`ImpactContractItem` 字段
 - `### Trigger Condition`（可选）：YAML 块，含 condition.object_type_id、field、operation、value
 - `### Pre-conditions`（可选）：表格 Object | Check | Condition | Message
 - `### Tool Configuration`（可选）：Type | Toolbox ID | Tool ID

@@ -4,43 +4,12 @@ id: generate_recovery_report
 name: 生成恢复报告
 tags: [报告生成, 灾备, 结果反馈]
 action_type: add
+action_intent: add
 ---
 
 ## ActionType: 生成恢复报告
 
 生成恢复操作的完整报告，包括恢复状态、数据统计、时效评估。
-
-### Execution Description
-
-1. 从recovery_job中获取恢复操作信息：
-   - recovery_task_id：恢复任务ID
-   - user_id：执行用户ID
-   - execution_time：执行时间
-   - end_time：结束时间
-   - duration：恢复耗时
-   - recovery_result：恢复结果
-2. 从recovery_job_verification中获取验证信息（如有）：
-   - verification_id：验证ID
-   - verification_method：验证方法
-   - verification_result：验证结果
-   - verification_time：验证时间
-   - verification_details：验证详情
-3. 从recovery_task中获取恢复策略信息：
-   - timepoint：备份时间点
-   - recovery_type：恢复类型（挂载恢复/数据恢复）
-   - recovery_granularity：恢复粒度（邮件服务器/邮件级别）
-   - recovery_destination：恢复目的地
-4. 统计恢复的数据量（邮件数量、总大小）
-5. 计算业务恢复总耗时（从任务开始到完成）
-6. 生成恢复状态报告（成功/失败/部分成功）
-7. 输出报告，包括：
-   - 恢复状态：邮件已恢复，可用性验证通过（如有验证）
-   - 数据统计：恢复的邮件数量、总数据量（KB/MB）
-   - 时效评估：业务恢复总耗时
-   - 任务信息：恢复任务的timepoint、recovery_type、recovery_granularity、recovery_destination
-   - 作业信息：恢复作业的user_id、execution_time、end_time、duration、recovery_result
-   - 验证信息：验证的verification_method、verification_result、verification_time（如有验证）
-8. 保存报告到指定路径
 
 ### Bound Object
 
@@ -48,11 +17,15 @@ action_type: add
 |--------------|
 | recovery_job |
 
-### Affect Object
+### Impact Contracts
 
-| Affect Object | Affect Description |
-|---------------|--------------------|
-| recovery_task |  |
+```yaml
+impact_contracts:
+  - object_type_id: recovery_task
+    expected_operation: add
+    description: ""
+```
+
 
 ### Trigger Condition
 

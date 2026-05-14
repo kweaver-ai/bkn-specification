@@ -294,6 +294,24 @@ func ValidateNetwork(doc *BknNetwork) *ValidationResult {
 				appendError(result, t, "Bound Object", "invalid_bound_object_ref", fmt.Sprintf("bound object %q is not a defined object type id", bo))
 			}
 		}
+		for i, ic := range at.ImpactContracts {
+			if ic == nil {
+				continue
+			}
+			prefix := fmt.Sprintf("impact_contracts[%d]", i)
+			eo := strings.TrimSpace(ic.ExpectedOperation)
+			if eo != "" && !validActionKinds[strings.ToLower(eo)] {
+				appendError(result, t, prefix+".expected_operation", "invalid_impact_contract",
+					fmt.Sprintf("expected_operation must be one of add, modify, delete, got %q", ic.ExpectedOperation))
+			}
+			oid := strings.TrimSpace(ic.ObjectTypeID)
+			if oid != "" {
+				if _, ok := objectIDs[oid]; !ok {
+					appendError(result, t, prefix+".object_type_id", "invalid_impact_contract_ref",
+						fmt.Sprintf("impact contract object_type_id %q is not a defined object type id", oid))
+				}
+			}
+		}
 	}
 
 	for _, r := range doc.RiskTypes {
@@ -787,9 +805,14 @@ func validateRelationTypeDeep(result *ValidationResult, table string, rt *BknRel
 
 func validateActionTypeDeep(result *ValidationResult, table string, at *BknActionType) {
 	atKind := strings.TrimSpace(at.ActionType)
+	intentKind := strings.TrimSpace(at.ActionIntent)
 	if atKind != "" && !validActionKinds[strings.ToLower(atKind)] {
 		appendError(result, table, "action_type", "invalid_action_type",
 			fmt.Sprintf("action_type must be one of add, modify, delete, got %q", at.ActionType))
+	}
+	if intentKind != "" && !validActionKinds[strings.ToLower(intentKind)] {
+		appendError(result, table, "action_intent", "invalid_action_intent",
+			fmt.Sprintf("action_intent must be one of add, modify, delete, got %q", at.ActionIntent))
 	}
 
 	bound := strings.TrimSpace(at.BoundObject)

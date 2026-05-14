@@ -4,6 +4,7 @@ id: restart_pod
 name: 重启Pod
 tags: [运维操作, 故障恢复]
 action_type: modify
+action_intent: modify
 ---
 
 ## ActionType: 重启Pod
@@ -22,11 +23,15 @@ action_type: modify
 |--------------|
 | pod |
 
-### Affect Object
+### Impact Contracts
 
-| Affect Object | Affect Description |
-|---------------|--------------------|
-| pod | Delete and recreate Pod |
+```yaml
+impact_contracts:
+  - object_type_id: pod
+    expected_operation: modify
+    description: Delete and recreate Pod
+```
+
 
 ### Trigger Condition
 

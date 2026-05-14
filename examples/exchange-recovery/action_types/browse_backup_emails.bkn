@@ -4,6 +4,7 @@ id: browse_backup_emails
 name: 浏览备份邮件
 tags: [备份浏览, 灾备, 邮件]
 action_type: add
+action_intent: add
 ---
 
 ## ActionType: 浏览备份邮件
@@ -31,11 +32,15 @@ action_type: add
 |--------------|
 | backup_timepoint |
 
-### Affect Object
+### Impact Contracts
 
-| Affect Object | Affect Description |
-|---------------|--------------------|
-| email |  |
+```yaml
+impact_contracts:
+  - object_type_id: email
+    expected_operation: add
+    description: 基于备份时间点副本元数据筛选并输出邮件列表（主题、发件人、日期及附件等信息）。
+```
+
 
 ### Trigger Condition
 

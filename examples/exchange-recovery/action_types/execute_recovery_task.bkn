@@ -4,48 +4,12 @@ id: execute_recovery_task
 name: 执行恢复任务
 tags: [任务执行, 恢复任务, 灾备]
 action_type: add
+action_intent: add
 ---
 
 ## ActionType: 执行恢复任务
 
 执行已生成的恢复任务，产生恢复作业。
-
-### Execution Description
-
-1. 检查备份时间点验证状态：
-   - 如果backup_timepoint.is_verified == false || backup_timepoint.verification_result != success，告知用户备份时间点未验证或验证结果为非可恢复
-   - 告知用户：恢复可能失败或数据不完整
-   - 要求用户确认是否继续
-   - 如果用户不确认，不执行恢复任务，创建恢复作业失败
-2. 检查恢复目的地是否为生产服务器：
-   - 如果recovery_destination == production，评估数据覆盖风险
-   - 告知用户：恢复到生产服务器会覆盖现有生产数据
-   - 要求用户确认是否继续
-   - 如果用户不确认，不执行恢复任务
-3. 将任务状态更新为Running
-4. 根据恢复粒度执行恢复：
-   - **邮件服务器级别**：从备份时间点恢复整个邮件服务器到恢复服务器
-   - **邮件级别**：从备份时间点恢复指定的邮件列表到恢复服务器
-5. 根据恢复类型执行恢复：
-   - **挂载恢复**：将备份时间点挂载到恢复服务器
-   - **数据恢复**：将数据从备份时间点恢复到恢复服务器
-6. 执行恢复操作，监控恢复进度
-7. 记录恢复操作的详细信息（时间、数据量、耗时、恢复类型、恢复粒度）
-8. 产生恢复作业，记录：
-   - 执行恢复操作的用户ID
-   - 恢复耗时
-   - 恢复结果
-   - 执行时间
-   - 结束时间
-9. 将任务状态更新为Completed或Failed
-10. 更新服务器状态：
-    - 如果恢复结果为Success：
-      - 如果recovery_destination == recovery_server，将recovery_server.status更新为Online
-      - 如果recovery_destination == production，将exchange_server.status更新为Online
-    - 如果恢复结果为Failed：
-      - 如果recovery_destination == recovery_server，将recovery_server.status更新为Offline
-      - 如果recovery_destination == production，将exchange_server.status更新为Offline
-11. 输出恢复结果和恢复的邮件列表
 
 ### Bound Object
 
@@ -53,11 +17,15 @@ action_type: add
 |--------------|
 | recovery_task |
 
-### Affect Object
+### Impact Contracts
 
-| Affect Object | Affect Description |
-|---------------|--------------------|
-| recovery_server |  |
+```yaml
+impact_contracts:
+  - object_type_id: recovery_server
+    expected_operation: add
+    description: ""
+```
+
 
 ### Trigger Condition
 

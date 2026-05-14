@@ -4,20 +4,12 @@ id: find_backup_timepoints
 name: 查找备份时间点副本
 tags: [备份查找, 时间点, 灾备]
 action_type: add
+action_intent: add
 ---
 
 ## ActionType: 查找备份时间点副本
 
 根据备份的exchange服务器查找该服务器的备份时间点副本。
-
-### Execution Description
-
-1. 接收Exchange服务器名称和地址作为输入参数
-2. 在备份软件中查找该服务器的备份时间点副本
-3. 按备份时间倒序排序
-4. 输出时间点副本列表，包括：
-   - 时间点副本ID、时间点名称、备份时间、时间点大小、是否验证
-   - 每个时间点副本的元数据摘要
 
 ### Bound Object
 
@@ -25,11 +17,15 @@ action_type: add
 |--------------|
 | exchange_server |
 
-### Affect Object
+### Impact Contracts
 
-| Affect Object | Affect Description |
-|---------------|--------------------|
-| backup_timepoint |  |
+```yaml
+impact_contracts:
+  - object_type_id: backup_timepoint
+    expected_operation: add
+    description: ""
+```
+
 
 ### Trigger Condition
 
